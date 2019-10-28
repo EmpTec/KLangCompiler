@@ -19,6 +19,7 @@ public class Klang {
     KlangParser parser = new KlangParser(tokens);
 
     ParseTree tree = parser.parse(); // begin parsing at init rule
-    System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+    EvalVisitor visitor = new EvalVisitor();
+    visitor.visit(tree);
   }
 }

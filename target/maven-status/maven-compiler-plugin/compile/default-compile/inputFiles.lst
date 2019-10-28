@@ -1,5 +1,5 @@
-/home/marvin/Documents/university/compiler/antlr_test/klang/klang/src/main/java/de/hsrm/compiler/Klang/Klang.java
-/home/marvin/Documents/university/compiler/antlr_test/klang/klang/target/generated-sources/antlr4/de/hsrm/compiler/Klang/KlangParser.java
-/home/marvin/Documents/university/compiler/antlr_test/klang/klang/target/generated-sources/antlr4/de/hsrm/compiler/Klang/KlangBaseListener.java
-/home/marvin/Documents/university/compiler/antlr_test/klang/klang/target/generated-sources/antlr4/de/hsrm/compiler/Klang/KlangLexer.java
-/home/marvin/Documents/university/compiler/antlr_test/klang/klang/target/generated-sources/antlr4/de/hsrm/compiler/Klang/KlangListener.java
+/home/marvin/Documents/university/compiler/klang/target/generated-sources/antlr4/de/hsrm/compiler/Klang/KlangLexer.java
+/home/marvin/Documents/university/compiler/klang/target/generated-sources/antlr4/de/hsrm/compiler/Klang/KlangBaseVisitor.java
+/home/marvin/Documents/university/compiler/klang/target/generated-sources/antlr4/de/hsrm/compiler/Klang/KlangParser.java
+/home/marvin/Documents/university/compiler/klang/src/main/java/de/hsrm/compiler/Klang/Klang.java
+/home/marvin/Documents/university/compiler/klang/target/generated-sources/antlr4/de/hsrm/compiler/Klang/KlangVisitor.java

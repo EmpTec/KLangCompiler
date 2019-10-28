@@ -102,12 +102,9 @@ public class KlangParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_parse; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterParse(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitParse(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitParse(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -146,12 +143,9 @@ public class KlangParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_block; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterBlock(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitBlock(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitBlock(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -209,12 +203,9 @@ public class KlangParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_stat; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterStat(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitStat(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitStat(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -287,12 +278,9 @@ public class KlangParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_assignment; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterAssignment(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitAssignment(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitAssignment(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -346,12 +334,9 @@ public class KlangParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_if_stat; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterIf_stat(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitIf_stat(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitIf_stat(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -422,12 +407,9 @@ public class KlangParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_condition_block; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterCondition_block(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitCondition_block(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitCondition_block(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -468,12 +450,9 @@ public class KlangParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_stat_block; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterStat_block(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitStat_block(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitStat_block(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -533,12 +512,9 @@ public class KlangParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_while_stat; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterWhile_stat(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitWhile_stat(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitWhile_stat(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -578,12 +554,9 @@ public class KlangParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_log; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterLog(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitLog(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitLog(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -630,12 +603,9 @@ public class KlangParser extends Parser {
 		}
 		public NotExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterNotExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitNotExpr(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitNotExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class UnaryMinusExprContext extends ExprContext {
@@ -645,12 +615,9 @@ public class KlangParser extends Parser {
 		}
 		public UnaryMinusExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterUnaryMinusExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitUnaryMinusExpr(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitUnaryMinusExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class MultiplicationExprContext extends ExprContext {
@@ -666,12 +633,9 @@ public class KlangParser extends Parser {
 		public TerminalNode MOD() { return getToken(KlangParser.MOD, 0); }
 		public MultiplicationExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterMultiplicationExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitMultiplicationExpr(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitMultiplicationExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class AtomExprContext extends ExprContext {
@@ -680,12 +644,9 @@ public class KlangParser extends Parser {
 		}
 		public AtomExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterAtomExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitAtomExpr(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitAtomExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class OrExprContext extends ExprContext {
@@ -698,12 +659,9 @@ public class KlangParser extends Parser {
 		public TerminalNode OR() { return getToken(KlangParser.OR, 0); }
 		public OrExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterOrExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitOrExpr(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitOrExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class AdditiveExprContext extends ExprContext {
@@ -718,12 +676,9 @@ public class KlangParser extends Parser {
 		public TerminalNode MINUS() { return getToken(KlangParser.MINUS, 0); }
 		public AdditiveExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterAdditiveExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitAdditiveExpr(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitAdditiveExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class PowExprContext extends ExprContext {
@@ -736,12 +691,9 @@ public class KlangParser extends Parser {
 		public TerminalNode POW() { return getToken(KlangParser.POW, 0); }
 		public PowExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterPowExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitPowExpr(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitPowExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class RelationalExprContext extends ExprContext {
@@ -758,12 +710,9 @@ public class KlangParser extends Parser {
 		public TerminalNode GT() { return getToken(KlangParser.GT, 0); }
 		public RelationalExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterRelationalExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitRelationalExpr(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitRelationalExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class EqualityExprContext extends ExprContext {
@@ -778,12 +727,9 @@ public class KlangParser extends Parser {
 		public TerminalNode NEQ() { return getToken(KlangParser.NEQ, 0); }
 		public EqualityExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterEqualityExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitEqualityExpr(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitEqualityExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class AndExprContext extends ExprContext {
@@ -796,12 +742,9 @@ public class KlangParser extends Parser {
 		public TerminalNode AND() { return getToken(KlangParser.AND, 0); }
 		public AndExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterAndExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitAndExpr(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitAndExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1023,12 +966,9 @@ public class KlangParser extends Parser {
 		public TerminalNode CPAR() { return getToken(KlangParser.CPAR, 0); }
 		public ParExprContext(AtomContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterParExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitParExpr(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitParExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class BooleanAtomContext extends AtomContext {
@@ -1036,48 +976,36 @@ public class KlangParser extends Parser {
 		public TerminalNode FALSE() { return getToken(KlangParser.FALSE, 0); }
 		public BooleanAtomContext(AtomContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterBooleanAtom(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitBooleanAtom(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitBooleanAtom(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class IdAtomContext extends AtomContext {
 		public TerminalNode ID() { return getToken(KlangParser.ID, 0); }
 		public IdAtomContext(AtomContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterIdAtom(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitIdAtom(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitIdAtom(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class StringAtomContext extends AtomContext {
 		public TerminalNode STRING() { return getToken(KlangParser.STRING, 0); }
 		public StringAtomContext(AtomContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterStringAtom(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitStringAtom(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitStringAtom(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class NilAtomContext extends AtomContext {
 		public TerminalNode NIL() { return getToken(KlangParser.NIL, 0); }
 		public NilAtomContext(AtomContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterNilAtom(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitNilAtom(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitNilAtom(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class NumberAtomContext extends AtomContext {
@@ -1085,12 +1013,9 @@ public class KlangParser extends Parser {
 		public TerminalNode FLOAT() { return getToken(KlangParser.FLOAT, 0); }
 		public NumberAtomContext(AtomContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).enterNumberAtom(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof KlangListener ) ((KlangListener)listener).exitNumberAtom(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof KlangVisitor ) return ((KlangVisitor<? extends T>)visitor).visitNumberAtom(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
