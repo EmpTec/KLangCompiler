@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Klang",
+            "request": "launch",
+            "mainClass": "de.hsrm.compiler.Klang.Klang",
+            "projectName": "klang"
+        }
+    ]
+}
