@@ -16,20 +16,23 @@ public class KlangParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		PRINT=1, SCOL=2, MULT=3, ADD=4, SUB=5, MOD=6, INTEGER_LITERAL=7, WS=8;
+		PRINT=1, IF=2, THEN=3, ELSE=4, SCOL=5, OBRK=6, CBRK=7, MULT=8, ADD=9, 
+		SUB=10, MOD=11, INTEGER_LITERAL=12, WS=13;
 	public static final int
-		RULE_parse = 0, RULE_block = 1, RULE_statement = 2, RULE_print = 3, RULE_expression = 4, 
-		RULE_atom = 5;
+		RULE_parse = 0, RULE_block = 1, RULE_braced_block = 2, RULE_statement = 3, 
+		RULE_print = 4, RULE_if_statement = 5, RULE_expression = 6, RULE_atom = 7;
 	public static final String[] ruleNames = {
-		"parse", "block", "statement", "print", "expression", "atom"
+		"parse", "block", "braced_block", "statement", "print", "if_statement", 
+		"expression", "atom"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "'print'", "';'", "'*'", "'+'", "'-'", "'%'"
+		null, "'print'", "'if'", "'then'", "'else'", "';'", "'{'", "'}'", "'*'", 
+		"'+'", "'-'", "'%'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, "PRINT", "SCOL", "MULT", "ADD", "SUB", "MOD", "INTEGER_LITERAL", 
-		"WS"
+		null, "PRINT", "IF", "THEN", "ELSE", "SCOL", "OBRK", "CBRK", "MULT", "ADD", 
+		"SUB", "MOD", "INTEGER_LITERAL", "WS"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -96,7 +99,7 @@ public class KlangParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(12);
+			setState(16);
 			block();
 			}
 		}
@@ -131,20 +134,73 @@ public class KlangParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(17);
+			setState(21);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==PRINT) {
+			while (_la==PRINT || _la==IF) {
 				{
 				{
-				setState(14);
+				setState(18);
 				statement();
 				}
 				}
-				setState(19);
+				setState(23);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class Braced_blockContext extends ParserRuleContext {
+		public TerminalNode OBRK() { return getToken(KlangParser.OBRK, 0); }
+		public TerminalNode CBRK() { return getToken(KlangParser.CBRK, 0); }
+		public List<StatementContext> statement() {
+			return getRuleContexts(StatementContext.class);
+		}
+		public StatementContext statement(int i) {
+			return getRuleContext(StatementContext.class,i);
+		}
+		public Braced_blockContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_braced_block; }
+	}
+
+	public final Braced_blockContext braced_block() throws RecognitionException {
+		Braced_blockContext _localctx = new Braced_blockContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_braced_block);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(24);
+			match(OBRK);
+			setState(28);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==PRINT || _la==IF) {
+				{
+				{
+				setState(25);
+				statement();
+				}
+				}
+				setState(30);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			setState(31);
+			match(CBRK);
 			}
 		}
 		catch (RecognitionException re) {
@@ -162,6 +218,9 @@ public class KlangParser extends Parser {
 		public PrintContext print() {
 			return getRuleContext(PrintContext.class,0);
 		}
+		public If_statementContext if_statement() {
+			return getRuleContext(If_statementContext.class,0);
+		}
 		public StatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -170,12 +229,27 @@ public class KlangParser extends Parser {
 
 	public final StatementContext statement() throws RecognitionException {
 		StatementContext _localctx = new StatementContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_statement);
+		enterRule(_localctx, 6, RULE_statement);
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(20);
-			print();
+			setState(35);
+			_errHandler.sync(this);
+			switch (_input.LA(1)) {
+			case PRINT:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(33);
+				print();
+				}
+				break;
+			case IF:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(34);
+				if_statement();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -203,16 +277,75 @@ public class KlangParser extends Parser {
 
 	public final PrintContext print() throws RecognitionException {
 		PrintContext _localctx = new PrintContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_print);
+		enterRule(_localctx, 8, RULE_print);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(22);
+			setState(37);
 			match(PRINT);
-			setState(23);
+			setState(38);
 			expression();
-			setState(24);
+			setState(39);
 			match(SCOL);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class If_statementContext extends ParserRuleContext {
+		public TerminalNode IF() { return getToken(KlangParser.IF, 0); }
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode THEN() { return getToken(KlangParser.THEN, 0); }
+		public List<Braced_blockContext> braced_block() {
+			return getRuleContexts(Braced_blockContext.class);
+		}
+		public Braced_blockContext braced_block(int i) {
+			return getRuleContext(Braced_blockContext.class,i);
+		}
+		public TerminalNode ELSE() { return getToken(KlangParser.ELSE, 0); }
+		public If_statementContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_if_statement; }
+	}
+
+	public final If_statementContext if_statement() throws RecognitionException {
+		If_statementContext _localctx = new If_statementContext(_ctx, getState());
+		enterRule(_localctx, 10, RULE_if_statement);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(41);
+			match(IF);
+			setState(42);
+			expression();
+			setState(43);
+			match(THEN);
+			setState(44);
+			braced_block();
+			setState(47);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			if (_la==ELSE) {
+				{
+				setState(45);
+				match(ELSE);
+				setState(46);
+				braced_block();
+				}
+			}
+
 			}
 		}
 		catch (RecognitionException re) {
@@ -266,6 +399,12 @@ public class KlangParser extends Parser {
 		}
 		public UnaryNegateExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
 	}
+	public static class AtomExpressionContext extends ExpressionContext {
+		public AtomContext atom() {
+			return getRuleContext(AtomContext.class,0);
+		}
+		public AtomExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+	}
 	public static class MultiplicationExpressionContext extends ExpressionContext {
 		public List<AtomContext> atom() {
 			return getRuleContexts(AtomContext.class);
@@ -279,21 +418,21 @@ public class KlangParser extends Parser {
 
 	public final ExpressionContext expression() throws RecognitionException {
 		ExpressionContext _localctx = new ExpressionContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_expression);
+		enterRule(_localctx, 12, RULE_expression);
 		int _la;
 		try {
-			setState(40);
+			setState(64);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 			case 1:
 				_localctx = new MultiplicationExpressionContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(26);
+				setState(49);
 				atom();
-				setState(27);
+				setState(50);
 				match(MULT);
-				setState(28);
+				setState(51);
 				atom();
 				}
 				break;
@@ -301,9 +440,9 @@ public class KlangParser extends Parser {
 				_localctx = new AdditiveExpressionContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(30);
+				setState(53);
 				atom();
-				setState(31);
+				setState(54);
 				((AdditiveExpressionContext)_localctx).op = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==ADD || _la==SUB) ) {
@@ -314,7 +453,7 @@ public class KlangParser extends Parser {
 					_errHandler.reportMatch(this);
 					consume();
 				}
-				setState(32);
+				setState(55);
 				atom();
 				}
 				break;
@@ -322,11 +461,11 @@ public class KlangParser extends Parser {
 				_localctx = new ModuloExpressionContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(34);
+				setState(57);
 				atom();
-				setState(35);
+				setState(58);
 				match(MOD);
-				setState(36);
+				setState(59);
 				atom();
 				}
 				break;
@@ -334,9 +473,17 @@ public class KlangParser extends Parser {
 				_localctx = new UnaryNegateExpressionContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(38);
+				setState(61);
 				match(SUB);
-				setState(39);
+				setState(62);
+				atom();
+				}
+				break;
+			case 5:
+				_localctx = new AtomExpressionContext(_localctx);
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(63);
 				atom();
 				}
 				break;
@@ -371,12 +518,12 @@ public class KlangParser extends Parser {
 
 	public final AtomContext atom() throws RecognitionException {
 		AtomContext _localctx = new AtomContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_atom);
+		enterRule(_localctx, 14, RULE_atom);
 		try {
 			_localctx = new IntAtomContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(42);
+			setState(66);
 			match(INTEGER_LITERAL);
 			}
 		}
@@ -392,18 +539,24 @@ public class KlangParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\n/\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2\3\2\3\3\7\3\22\n\3\f\3\16\3\25"+
-		"\13\3\3\4\3\4\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6"+
-		"\3\6\3\6\3\6\3\6\5\6+\n\6\3\7\3\7\3\7\2\2\b\2\4\6\b\n\f\2\3\3\2\6\7\2"+
-		",\2\16\3\2\2\2\4\23\3\2\2\2\6\26\3\2\2\2\b\30\3\2\2\2\n*\3\2\2\2\f,\3"+
-		"\2\2\2\16\17\5\4\3\2\17\3\3\2\2\2\20\22\5\6\4\2\21\20\3\2\2\2\22\25\3"+
-		"\2\2\2\23\21\3\2\2\2\23\24\3\2\2\2\24\5\3\2\2\2\25\23\3\2\2\2\26\27\5"+
-		"\b\5\2\27\7\3\2\2\2\30\31\7\3\2\2\31\32\5\n\6\2\32\33\7\4\2\2\33\t\3\2"+
-		"\2\2\34\35\5\f\7\2\35\36\7\5\2\2\36\37\5\f\7\2\37+\3\2\2\2 !\5\f\7\2!"+
-		"\"\t\2\2\2\"#\5\f\7\2#+\3\2\2\2$%\5\f\7\2%&\7\b\2\2&\'\5\f\7\2\'+\3\2"+
-		"\2\2()\7\7\2\2)+\5\f\7\2*\34\3\2\2\2* \3\2\2\2*$\3\2\2\2*(\3\2\2\2+\13"+
-		"\3\2\2\2,-\7\t\2\2-\r\3\2\2\2\4\23*";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\17G\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\3\2\3\2\3\3\7\3\26"+
+		"\n\3\f\3\16\3\31\13\3\3\4\3\4\7\4\35\n\4\f\4\16\4 \13\4\3\4\3\4\3\5\3"+
+		"\5\5\5&\n\5\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\5\7\62\n\7\3\b\3\b"+
+		"\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\bC\n\b\3\t\3\t"+
+		"\3\t\2\2\n\2\4\6\b\n\f\16\20\2\3\3\2\13\f\2F\2\22\3\2\2\2\4\27\3\2\2\2"+
+		"\6\32\3\2\2\2\b%\3\2\2\2\n\'\3\2\2\2\f+\3\2\2\2\16B\3\2\2\2\20D\3\2\2"+
+		"\2\22\23\5\4\3\2\23\3\3\2\2\2\24\26\5\b\5\2\25\24\3\2\2\2\26\31\3\2\2"+
+		"\2\27\25\3\2\2\2\27\30\3\2\2\2\30\5\3\2\2\2\31\27\3\2\2\2\32\36\7\b\2"+
+		"\2\33\35\5\b\5\2\34\33\3\2\2\2\35 \3\2\2\2\36\34\3\2\2\2\36\37\3\2\2\2"+
+		"\37!\3\2\2\2 \36\3\2\2\2!\"\7\t\2\2\"\7\3\2\2\2#&\5\n\6\2$&\5\f\7\2%#"+
+		"\3\2\2\2%$\3\2\2\2&\t\3\2\2\2\'(\7\3\2\2()\5\16\b\2)*\7\7\2\2*\13\3\2"+
+		"\2\2+,\7\4\2\2,-\5\16\b\2-.\7\5\2\2.\61\5\6\4\2/\60\7\6\2\2\60\62\5\6"+
+		"\4\2\61/\3\2\2\2\61\62\3\2\2\2\62\r\3\2\2\2\63\64\5\20\t\2\64\65\7\n\2"+
+		"\2\65\66\5\20\t\2\66C\3\2\2\2\678\5\20\t\289\t\2\2\29:\5\20\t\2:C\3\2"+
+		"\2\2;<\5\20\t\2<=\7\r\2\2=>\5\20\t\2>C\3\2\2\2?@\7\f\2\2@C\5\20\t\2AC"+
+		"\5\20\t\2B\63\3\2\2\2B\67\3\2\2\2B;\3\2\2\2B?\3\2\2\2BA\3\2\2\2C\17\3"+
+		"\2\2\2DE\7\16\2\2E\21\3\2\2\2\7\27\36%\61B";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

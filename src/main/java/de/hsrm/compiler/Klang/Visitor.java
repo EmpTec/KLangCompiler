@@ -10,6 +10,17 @@ public class Visitor extends KlangBaseVisitor<Value> {
   }
 
   @Override
+  public Value visitIf_statement(KlangParser.If_statementContext ctx) {
+    Value cond = this.visit(ctx.expression());
+    if (cond.asInteger() != 0) {
+      this.visit(ctx.braced_block(0));
+    } else if (ctx.braced_block().size() > 1) {
+      this.visit(ctx.braced_block(1));
+    }
+    return null;
+  }
+
+  @Override
   public Value visitMultiplicationExpression(KlangParser.MultiplicationExpressionContext ctx) {
     Value left = this.visit(ctx.atom(0));
     Value right = this.visit(ctx.atom(1));
@@ -27,7 +38,8 @@ public class Visitor extends KlangBaseVisitor<Value> {
     case KlangParser.SUB:
       return new Value(left.asInteger() - right.asInteger());
     default:
-      throw new RuntimeException("Unknown operator for additive expression: "+ KlangParser.VOCABULARY.getDisplayName(ctx.op.getType()));
+      throw new RuntimeException(
+          "Unknown operator for additive expression: " + KlangParser.VOCABULARY.getDisplayName(ctx.op.getType()));
     }
   }
 
@@ -42,6 +54,11 @@ public class Visitor extends KlangBaseVisitor<Value> {
   public Value visitUnaryNegateExpression(KlangParser.UnaryNegateExpressionContext ctx) {
     Value value = this.visit(ctx.atom());
     return new Value(-value.asInteger());
+  }
+
+  @Override
+  public Value visitAtomExpression(KlangParser.AtomExpressionContext ctx) {
+    return this.visit(ctx.atom());
   }
 
   @Override

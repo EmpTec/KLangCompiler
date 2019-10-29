@@ -19,9 +19,9 @@ public class Klang {
     KlangParser parser = new KlangParser(tokens);
 
     ParseTree tree = parser.parse(); // begin parsing at init rule
-    StringBuilder sb = new StringBuilder();
-    JSVisitor visitor = new JSVisitor(sb);
+    // StringBuilder sb = new StringBuilder();
+    Visitor visitor = new Visitor();
     visitor.visit(tree);
-    System.out.println(sb.toString());
+    // System.out.println(sb.toString());
   }
 }
