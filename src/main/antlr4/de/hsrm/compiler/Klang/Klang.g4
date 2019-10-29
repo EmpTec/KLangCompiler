@@ -37,10 +37,6 @@ atom
   : INTEGER_LITERAL #intAtom
   ;
 
-/*
-  if 5 = 5 then whatever else whatever
- */
-
 PRINT: 'print';
 IF: 'if';
 ELSE: 'else';
