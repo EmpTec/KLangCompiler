@@ -22,7 +22,7 @@ print
   ;
 
 if_statement
-  : IF expression THEN braced_block (ELSE braced_block)?
+  : IF expression braced_block (ELSE braced_block)?
   ;  
 
 expression
@@ -43,7 +43,6 @@ atom
 
 PRINT: 'print';
 IF: 'if';
-THEN: 'then';
 ELSE: 'else';
 
 SCOL: ';';
