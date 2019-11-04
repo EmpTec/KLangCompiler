@@ -1,4 +1,4 @@
-// Generated from /home/marvin/Documents/university/compiler/klang/src/main/antlr4/de/hsrm/compiler/Klang/Klang.g4 by ANTLR 4.7.1
+// Generated from /home/nitrix/Development/hsrm/cb/klang/src/main/antlr4/de/hsrm/compiler/Klang/Klang.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
