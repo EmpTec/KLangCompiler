@@ -4,8 +4,9 @@ package de.hsrm.compiler.Klang;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
+import java.io.*;
 import de.hsrm.compiler.Klang.nodes.Node;
-import de.hsrm.compiler.Klang.visitors.EvalVisitor;
+import de.hsrm.compiler.Klang.visitors.*;
 
 public class Klang {
   public static void main(String[] args) throws Exception {
@@ -24,9 +25,11 @@ public class Klang {
     ParseTree tree = parser.parse(); // begin parsing at init rule
     ContextAnalysis ctxAnal = new ContextAnalysis();
     Node node = ctxAnal.visit(tree); // this gets us the DAST
-
-    // This 
-    EvalVisitor visitor = new EvalVisitor();
+    //EvalVisitor visitor = new EvalVisitor();
+    StringWriter w = new StringWriter();
+    PrettyPrintVisitor.ExWriter ex = new PrettyPrintVisitor.ExWriter(w);
+    PrettyPrintVisitor visitor = new PrettyPrintVisitor(ex);
     node.welcome(visitor);
+    System.out.println(w.toString());
   }
 }
