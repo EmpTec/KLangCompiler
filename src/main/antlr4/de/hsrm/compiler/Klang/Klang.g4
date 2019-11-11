@@ -5,11 +5,11 @@ parse
   ;
 
 block
-  : statement*
+  : statement+
   ;
 
 braced_block
-  : OBRK statement* CBRK
+  : OBRK statement+ CBRK
   ;
 
 statement
