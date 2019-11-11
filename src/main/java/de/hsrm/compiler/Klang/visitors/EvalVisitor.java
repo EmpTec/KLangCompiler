@@ -1,6 +1,7 @@
 package de.hsrm.compiler.Klang.visitors;
 
 import de.hsrm.compiler.Klang.Value;
+import de.hsrm.compiler.Klang.nodes.Block;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
@@ -46,7 +47,7 @@ public class EvalVisitor implements Visitor<Value> {
 
         if (condition.asInteger() != 0) {
             e.then.welcome(this);
-        } else if(e.alt != null) {
+        } else if (e.alt != null) {
             e.alt.welcome(this);
         }
 
@@ -60,6 +61,12 @@ public class EvalVisitor implements Visitor<Value> {
         // In the future we have to determine of which type the value is
         // before calling an "asX()" method
         System.out.println(value.asInteger());
+        return null;
+    }
+
+    @Override
+    public Value visit(Block e) {
+        // TODO Auto-generated method stub
         return null;
     }
 
