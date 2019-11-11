@@ -99,6 +99,9 @@ public class PrettyPrintVisitor implements Visitor<Void> {
         if (e.alt != null) {
             ex.write(" else ");
             e.alt.welcome(this);
+        } else if (e.elif != null) {
+            ex.write(" else ");
+            e.elif.welcome(this);
         }
         return null;
     }

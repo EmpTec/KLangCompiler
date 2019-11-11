@@ -42,14 +42,17 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
 
   @Override
   public Node visitIf_statement(KlangParser.If_statementContext ctx) {
-    Node condition = this.visit(ctx.expression());
-    Node thenBlock = this.visit(ctx.braced_block(0));
+    Node condition = this.visit(ctx.cond);
+    Node thenBlock = this.visit(ctx.then);
 
-    if (ctx.braced_block().size() > 1) {
-      Node elseBlock = this.visit(ctx.braced_block(1));
+    if (ctx.alt != null) {
+      Node elseBlock = this.visit(ctx.alt);
       return new IfStatement((Expression) condition, (Block) thenBlock, (Block) elseBlock);
+    } else if(ctx.elif != null) {
+      Node elif = this.visit(ctx.elif);
+      return new IfStatement((Expression) condition, (Block) thenBlock, (IfStatement) elif);
     } else {
-      return new IfStatement((Expression) condition, (Block) thenBlock, null);
+      return new IfStatement((Expression) condition, (Block) thenBlock);
     }
   }
 

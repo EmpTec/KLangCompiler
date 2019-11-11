@@ -22,7 +22,7 @@ print
   ;
 
 if_statement
-  : IF OPAR expression CPAR braced_block (ELSE braced_block)?
+  : IF OPAR cond = expression CPAR then = braced_block (ELSE (alt = braced_block | elif = if_statement) )?
   ;  
 
 expression

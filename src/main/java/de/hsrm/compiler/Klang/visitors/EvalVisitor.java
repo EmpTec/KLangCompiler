@@ -49,6 +49,8 @@ public class EvalVisitor implements Visitor<Value> {
             e.then.welcome(this);
         } else if (e.alt != null) {
             e.alt.welcome(this);
+        } else if (e.elif != null) {
+            e.elif.welcome(this);
         }
 
         return null;
@@ -66,7 +68,9 @@ public class EvalVisitor implements Visitor<Value> {
 
     @Override
     public Value visit(Block e) {
-        // TODO Auto-generated method stub
+        for (var stmt: e.statements) {
+            stmt.welcome(this);
+        }
         return null;
     }
 
