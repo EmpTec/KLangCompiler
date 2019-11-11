@@ -6,6 +6,29 @@ import de.hsrm.compiler.Klang.nodes.statements.*;
 import de.hsrm.compiler.Klang.types.Type;
 
 public class ContextAnalysis extends KlangBaseVisitor<Node> {
+  @Override
+  public Node visitBlock(KlangParser.BlockContext ctx) {
+    Statement[] statements = new Statement[ctx.statement().size()];
+
+    for (int i = 0; i < ctx.statement().size(); i++) {
+      Node currentStatement = this.visit(ctx.statement(i));
+      statements[i] = (Statement) currentStatement;
+    }
+    
+    return new Block(statements);
+  }
+
+  @Override
+  public Node visitBraced_block(KlangParser.Braced_blockContext ctx) {
+    Statement[] statements = new Statement[ctx.statement().size()];
+
+    for (int i = 0; i < ctx.statement().size(); i++) {
+      Node currentStatement = this.visit(ctx.statement(i));
+      statements[i] = (Statement) currentStatement;
+    }
+    
+    return new Block(statements);
+  }
 
   @Override
   public Node visitPrint(KlangParser.PrintContext ctx) {
