@@ -1,15 +1,9 @@
 package de.hsrm.compiler.Klang.visitors;
 
 import java.io.*;
-import de.hsrm.compiler.Klang.nodes.Block;
-import de.hsrm.compiler.Klang.nodes.expressions.AdditiveExpression;
-import de.hsrm.compiler.Klang.nodes.expressions.IntegerExpression;
-import de.hsrm.compiler.Klang.nodes.expressions.ModuloExpression;
-import de.hsrm.compiler.Klang.nodes.expressions.MultiplicativeExpression;
-import de.hsrm.compiler.Klang.nodes.expressions.NegateExpression;
-import de.hsrm.compiler.Klang.nodes.statements.IfStatement;
-import de.hsrm.compiler.Klang.nodes.statements.PrintStatement;
-import de.hsrm.compiler.Klang.nodes.statements.Statement;;
+import de.hsrm.compiler.Klang.nodes.*;
+import de.hsrm.compiler.Klang.nodes.expressions.*;
+import de.hsrm.compiler.Klang.nodes.statements.*;
 
 public class PrettyPrintVisitor implements Visitor<Void> {
 
