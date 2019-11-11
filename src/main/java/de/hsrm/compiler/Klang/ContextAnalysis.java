@@ -14,8 +14,10 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       Node currentStatement = this.visit(ctx.statement(i));
       statements[i] = (Statement) currentStatement;
     }
-    
-    return new Block(statements);
+
+    Block result = new Block(statements);
+    result.type = null;
+    return result;
   }
 
   @Override
@@ -27,7 +29,9 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       statements[i] = (Statement) currentStatement;
     }
     
-    return new Block(statements);
+    Block result = new Block(statements);
+    result.type = null;
+    return result;
   }
 
   @Override
