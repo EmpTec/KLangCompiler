@@ -13,7 +13,7 @@ public class Block extends Node {
 
     @Override
     public <R> R welcome(Visitor<R> v) {
-        return null;
+        return v.visit(this);
     }
 
 }
