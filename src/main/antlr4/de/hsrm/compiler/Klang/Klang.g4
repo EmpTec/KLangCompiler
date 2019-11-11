@@ -22,7 +22,7 @@ print
   ;
 
 if_statement
-  : IF expression braced_block (ELSE braced_block)?
+  : IF OPAR expression CPAR braced_block (ELSE braced_block)?
   ;  
 
 expression
@@ -44,6 +44,8 @@ ELSE: 'else';
 SCOL: ';';
 OBRK: '{';
 CBRK: '}';
+OPAR: '(';
+CPAR: ')';
 
 MULT: '*';
 ADD: '+';
