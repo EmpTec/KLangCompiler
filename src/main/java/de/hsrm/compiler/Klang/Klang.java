@@ -25,11 +25,23 @@ public class Klang {
     ParseTree tree = parser.parse(); // begin parsing at init rule
     ContextAnalysis ctxAnal = new ContextAnalysis();
     Node node = ctxAnal.visit(tree); // this gets us the DAST
-    //EvalVisitor visitor = new EvalVisitor();
+
+    // Pretty Print the sourcecode
+    System.out.println("\nPrinting the sourcecode:");
     StringWriter w = new StringWriter();
     PrettyPrintVisitor.ExWriter ex = new PrettyPrintVisitor.ExWriter(w);
-    PrettyPrintVisitor visitor = new PrettyPrintVisitor(ex);
-    node.welcome(visitor);
+    PrettyPrintVisitor printVisitor = new PrettyPrintVisitor(ex);
+    node.welcome(printVisitor);
     System.out.println(w.toString());
+
+    // Evaluate the sourcecode and print the result
+    System.out.println("\nEvaluating the source code:");
+    EvalVisitor evalVisitor = new EvalVisitor();
+    Value result = node.welcome(evalVisitor);
+    if (result != null) {
+      System.out.println("result: " + result.asInteger());
+    } else {
+      System.out.println("result was null");
+    }
   }
 }
