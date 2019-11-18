@@ -61,6 +61,7 @@ public class PrettyPrintVisitor implements Visitor<Void> {
             ex.nl();
         }
         e.expression.welcome(this);
+        ex.write(";");
         return null;
     }
 
@@ -151,7 +152,7 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     public Void visit(FunctionDefinition e) {
         ex.write("function ");
         ex.write(e.name);
-        ex.write(" (");
+        ex.write("(");
         boolean first = true;
         for (String param : e.parameters) {
             if (!first) {
