@@ -8,6 +8,7 @@ import de.hsrm.compiler.Klang.nodes.statements.*;
 
 public interface Visitor<R> {
     R visit(IntegerExpression e);
+    R visit(Variable e);
     R visit(MultiplicativeExpression e);
     R visit(AdditiveExpression e);
     R visit(NegateExpression e);

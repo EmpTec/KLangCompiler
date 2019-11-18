@@ -52,6 +52,7 @@ arguments
 
 atom
   : INTEGER_LITERAL #intAtom
+  | IDENT # variable
   ;
 
 PRINT: 'print';

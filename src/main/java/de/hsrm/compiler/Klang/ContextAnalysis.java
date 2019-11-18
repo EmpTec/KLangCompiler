@@ -88,6 +88,11 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitVariable(KlangParser.VariableContext ctx) {
+    return new Variable(ctx.IDENT().getText());
+  }
+
+  @Override
   public Node visitAtomExpression(KlangParser.AtomExpressionContext ctx) {
     return this.visit(ctx.atom());
   }

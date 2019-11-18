@@ -1,12 +1,19 @@
 package de.hsrm.compiler.Klang.visitors;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.hsrm.compiler.Klang.Value;
 import de.hsrm.compiler.Klang.nodes.Block;
 import de.hsrm.compiler.Klang.nodes.FunctionDefinition;
+import de.hsrm.compiler.Klang.nodes.Program;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
 public class EvalVisitor implements Visitor<Value> {
+
+  Map<String, FunctionDefinition> funcs = new HashMap<>();
+  Map<String, Value> env = new HashMap<>();
 
   @Override
   public Value visit(IntegerExpression e) {
@@ -41,6 +48,17 @@ public class EvalVisitor implements Visitor<Value> {
   }
 
   @Override
+  public Value visit(Variable e) {
+    Value result = this.env.get(e.name);
+
+    if (result == null) {
+      throw new RuntimeException("Variable with name " +e.name + " not found.");
+    }
+
+    return result;
+  }
+
+  @Override
   public Value visit(IfStatement e) {
     // In the future we have to make sure that the
     // value is actually a type that we can use as boolean
@@ -69,22 +87,55 @@ public class EvalVisitor implements Visitor<Value> {
 
   @Override
   public Value visit(Block e) {
+    Value result = null;
     for (var stmt : e.statements) {
-      stmt.welcome(this);
+      result = stmt.welcome(this);
     }
-    return null;
+    return result;
   }
 
   @Override
   public Value visit(FunctionDefinition e) {
-    // TODO Auto-generated method stub
-    return null;
+    // Ein Eval über eine FunDef macht keinen Sinn
+    throw new RuntimeException("Wir sind im Eval und visiten eine Funktionsdefinition.. WUT?!");
   }
 
   @Override
   public Value visit(FunctionCall e) {
-    // TODO Auto-generated method stub
-    return null;
+    // Die funktionsdefinition speichern
+    FunctionDefinition func = this.funcs.get(e.name);
+
+    // Stelle sicher, dass die Länge der argumente und parameter übereinstimmen
+    if (e.arguments.length != func.parameters.length) {
+      throw new RuntimeException("Error with function call " +e.name + ": Number of parameters wrong");
+    }
+
+    // Baue ein neues environment
+    Map<String, Value> newEnv = new HashMap<>();
+    for (int i = 0; i < func.parameters.length; i++) {
+      newEnv.put(func.parameters[i], e.arguments[i].welcome(this));
+    }
+    var oldEnv = this.env;
+    this.env = newEnv;
+
+    // Execute
+    Value result = func.block.welcome(this);
+
+    // Das alte env wiederherstellen
+    this.env = oldEnv;
+
+    return result;
+  }
+
+  @Override
+  public Value visit(Program e) {
+    // Funktionsdefinitionen für die Auswertung
+    // von Funktionsaufrufen speichern
+    for (var funcDef: e.funcs) {
+      this.funcs.put(funcDef.name, funcDef);
+    }
+
+    return e.expression.welcome(this);
   }
 
 }
