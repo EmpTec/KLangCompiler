@@ -1,11 +1,19 @@
 grammar Klang;
 
 parse
-  : block <EOF>
+  : program <EOF>
   ;
 
-block
-  : statement+
+program
+  : functionDef* expression
+  ;
+
+functionDef
+  : FUNC funcName=IDENT OPAR parameters CPAR braced_block
+  ;
+
+parameters
+  : (IDENT (COMMA IDENT)*)?
   ;
 
 braced_block
@@ -31,6 +39,15 @@ expression
   | atom MOD atom #moduloExpression
   | SUB atom #unaryNegateExpression
   | atom #atomExpression
+  | functionCall #functionCallExpression
+  ;
+
+functionCall
+  : IDENT OPAR arguments CPAR SCOL
+  ;
+
+arguments
+  : (expression (COMMA expression)*)?
   ;
 
 atom
@@ -40,12 +57,14 @@ atom
 PRINT: 'print';
 IF: 'if';
 ELSE: 'else';
+FUNC: 'function';
 
 SCOL: ';';
 OBRK: '{';
 CBRK: '}';
 OPAR: '(';
 CPAR: ')';
+COMMA: ',';
 
 MULT: '*';
 ADD: '+';
@@ -54,6 +73,10 @@ MOD: '%';
 
 INTEGER_LITERAL
   : [0-9]+
+  ;
+
+IDENT
+  : [a-zA-Z][a-zA-Z0-9]*
   ;
 
 WS

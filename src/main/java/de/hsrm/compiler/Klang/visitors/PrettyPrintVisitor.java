@@ -54,6 +54,17 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     }
 
     @Override
+    public Void visit(Program e) {
+      for (var funcDef : e.funcs) {
+        funcDef.welcome(this);
+        ex.nl();
+        ex.nl();
+      }
+      e.expression.welcome(this);
+      return null;
+    }
+
+    @Override
     public Void visit(IntegerExpression e) {
         ex.write(e.value);
         return null;
@@ -127,5 +138,41 @@ public class PrettyPrintVisitor implements Visitor<Void> {
         ex.write("}");
         return null;
     }
+
+  @Override
+  public Void visit(FunctionDefinition e) {
+    ex.write("function ");
+    ex.write(e.name);
+    ex.write(" (");
+    boolean first = true;
+    for (String param : e.parameters) {
+      if (!first) {
+        ex.write(", ");
+      } else {
+        first = false;
+      }
+      ex.write(param);
+    }
+    ex.write(") ");
+    e.block.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(FunctionCall e) {
+    ex.write(e.name);
+    ex.write("(");
+    boolean first = true;
+    for (Expression arg : e.arguments) {
+      if (!first) {
+        ex.write(", ");
+      } else {
+        first = false;
+      }
+      arg.welcome(this);
+    }
+    ex.write(");");
+    return null;
+  }
 
 }

@@ -7,17 +7,13 @@ import de.hsrm.compiler.Klang.types.Type;
 
 public class ContextAnalysis extends KlangBaseVisitor<Node> {
   @Override
-  public Node visitBlock(KlangParser.BlockContext ctx) {
-    Statement[] statements = new Statement[ctx.statement().size()];
-
-    for (int i = 0; i < ctx.statement().size(); i++) {
-      Node currentStatement = this.visit(ctx.statement(i));
-      statements[i] = (Statement) currentStatement;
+  public Node visitProgram(KlangParser.ProgramContext ctx) {
+    FunctionDefinition[] funcs = new FunctionDefinition[ctx.functionDef().size()];
+    for (int i = 0; i < ctx.functionDef().size(); i++) {
+      funcs[i] = (FunctionDefinition) this.visit(ctx.functionDef(i));
     }
-
-    Block result = new Block(statements);
-    result.type = null;
-    return result;
+    Expression expression = (Expression) this.visit(ctx.expression());
+    return new Program(funcs, expression);
   }
 
   @Override
@@ -28,7 +24,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       Node currentStatement = this.visit(ctx.statement(i));
       statements[i] = (Statement) currentStatement;
     }
-    
+
     Block result = new Block(statements);
     result.type = null;
     return result;
@@ -48,7 +44,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     if (ctx.alt != null) {
       Node elseBlock = this.visit(ctx.alt);
       return new IfStatement((Expression) condition, (Block) thenBlock, (Block) elseBlock);
-    } else if(ctx.elif != null) {
+    } else if (ctx.elif != null) {
       Node elif = this.visit(ctx.elif);
       return new IfStatement((Expression) condition, (Block) thenBlock, (IfStatement) elif);
     } else {
@@ -101,5 +97,26 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Node n = new IntegerExpression(Integer.parseInt(ctx.getText()));
     n.type = Type.getIntegerType();
     return n;
+  }
+
+  @Override
+  public Node visitFunctionDef(KlangParser.FunctionDefContext ctx) {
+    String name = ctx.funcName.getText();
+    String[] params = new String[ctx.parameters().IDENT().size()];
+    for (int i = 0; i < ctx.parameters().IDENT().size(); i++) {
+      params[i] = ctx.parameters().IDENT(i).getText();
+    }
+    Node block = this.visit(ctx.braced_block());
+    return new FunctionDefinition(name, params, (Block) block);
+  }
+
+  @Override
+  public Node visitFunctionCallExpression(KlangParser.FunctionCallExpressionContext ctx) {
+    String name = ctx.functionCall().IDENT().getText();
+    Expression[] args = new Expression[ctx.functionCall().arguments().expression().size()];
+    for (int i = 0; i < ctx.functionCall().arguments().expression().size(); i++) {
+      args[i] = (Expression) this.visit(ctx.functionCall().arguments().expression(i));
+    }
+    return new FunctionCall(name, args);
   }
 }

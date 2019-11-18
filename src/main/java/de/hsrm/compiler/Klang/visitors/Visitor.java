@@ -1,6 +1,8 @@
 package de.hsrm.compiler.Klang.visitors;
 
 import de.hsrm.compiler.Klang.nodes.Block;
+import de.hsrm.compiler.Klang.nodes.FunctionDefinition;
+import de.hsrm.compiler.Klang.nodes.Program;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
@@ -13,4 +15,7 @@ public interface Visitor<R> {
     R visit(IfStatement e);
     R visit(PrintStatement e);
     R visit(Block e);
+    R visit(FunctionDefinition e);
+    R visit(FunctionCall e);
+    R visit(Program e);
 }
