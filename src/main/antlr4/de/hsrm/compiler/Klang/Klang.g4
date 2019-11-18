@@ -5,7 +5,7 @@ parse
   ;
 
 program
-  : functionDef* expression
+  : functionDef* expression SCOL
   ;
 
 functionDef
@@ -23,6 +23,7 @@ braced_block
 statement
   : print
   | if_statement
+  | variable_assignment
   ;
 
 print
@@ -32,6 +33,10 @@ print
 if_statement
   : IF OPAR cond = expression CPAR then = braced_block (ELSE (alt = braced_block | elif = if_statement) )?
   ;  
+
+variable_assignment
+  : IDENT EQUAL expression SCOL
+  ;
 
 expression
   : atom MULT atom #multiplicationExpression
@@ -43,7 +48,7 @@ expression
   ;
 
 functionCall
-  : IDENT OPAR arguments CPAR SCOL
+  : IDENT OPAR arguments CPAR
   ;
 
 arguments
@@ -66,6 +71,7 @@ CBRK: '}';
 OPAR: '(';
 CPAR: ')';
 COMMA: ',';
+EQUAL: '=';
 
 MULT: '*';
 ADD: '+';

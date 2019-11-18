@@ -53,6 +53,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitVariable_assignment(KlangParser.Variable_assignmentContext ctx) {
+    String name = ctx.IDENT().getText();
+    Expression expression = (Expression) this.visit(ctx.expression());
+    return new VariableAssignment(name, expression);
+  }
+
+  @Override
   public Node visitMultiplicationExpression(KlangParser.MultiplicationExpressionContext ctx) {
     Node left = this.visit(ctx.atom(0));
     Node right = this.visit(ctx.atom(1));

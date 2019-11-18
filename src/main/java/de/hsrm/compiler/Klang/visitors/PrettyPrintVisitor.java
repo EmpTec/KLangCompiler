@@ -126,6 +126,14 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     }
 
     @Override
+    public Void visit(VariableAssignment e) {
+        ex.write(e.name + " = ");
+        e.expression.welcome(this);
+        ex.write(";");
+        return null;
+    }
+
+    @Override
     public Void visit(Block e) {
         ex.write("{");
         ex.addIndent();
@@ -171,7 +179,7 @@ public class PrettyPrintVisitor implements Visitor<Void> {
             }
             arg.welcome(this);
         }
-        ex.write(");");
+        ex.write(")");
         return null;
     }
 
