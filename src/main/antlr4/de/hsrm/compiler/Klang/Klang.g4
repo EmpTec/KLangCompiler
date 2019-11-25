@@ -24,6 +24,7 @@ statement
   : print
   | if_statement
   | variable_assignment
+  | return_statement
   ;
 
 print
@@ -36,6 +37,10 @@ if_statement
 
 variable_assignment
   : IDENT EQUAL expression SCOL
+  ;
+
+return_statement
+  : RETURN expression SCOL
   ;
 
 expression
@@ -64,6 +69,7 @@ PRINT: 'print';
 IF: 'if';
 ELSE: 'else';
 FUNC: 'function';
+RETURN: 'return';
 
 SCOL: ';';
 OBRK: '{';
