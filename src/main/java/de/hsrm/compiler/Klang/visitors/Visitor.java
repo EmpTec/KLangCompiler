@@ -16,6 +16,7 @@ public interface Visitor<R> {
     R visit(IfStatement e);
     R visit(PrintStatement e);
     R visit(VariableAssignment e);
+    R visit(ReturnStatement e);
     R visit(Block e);
     R visit(FunctionDefinition e);
     R visit(FunctionCall e);

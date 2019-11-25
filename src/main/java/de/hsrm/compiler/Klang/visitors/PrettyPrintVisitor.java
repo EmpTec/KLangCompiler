@@ -135,6 +135,14 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     }
 
     @Override
+    public Void visit(ReturnStatement e) {
+        ex.write("return ");
+        e.expression.welcome(this);
+        ex.write(";");
+        return null;
+    }
+
+    @Override
     public Void visit(Block e) {
         ex.write("{");
         ex.addIndent();

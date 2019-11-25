@@ -64,15 +64,17 @@ public class EvalVisitor implements Visitor<Value> {
     // value is actually a type that we can use as boolean
     Value condition = e.cond.welcome(this);
 
+    Value result = null;
+
     if (condition.asInteger() != 0) {
-      e.then.welcome(this);
+      result = e.then.welcome(this);
     } else if (e.alt != null) {
-      e.alt.welcome(this);
+      result = e.alt.welcome(this);
     } else if (e.elif != null) {
-      e.elif.welcome(this);
+      result = e.elif.welcome(this);
     }
 
-    return null;
+    return result;
   }
 
   @Override
@@ -89,16 +91,23 @@ public class EvalVisitor implements Visitor<Value> {
   public Value visit(VariableAssignment e) {
     Value result = e.expression.welcome(this);
     this.env.put(e.name, result);
-    return result;
+    return null;
+  }
+
+  @Override
+  public Value visit(ReturnStatement e) {
+    return e.expression.welcome(this);
   }
 
   @Override
   public Value visit(Block e) {
-    Value result = null;
     for (var stmt : e.statements) {
-      result = stmt.welcome(this);
+      Value result = stmt.welcome(this);
+      if (result != null) {
+        return result;
+      }
     }
-    return result;
+    return null;
   }
 
   @Override

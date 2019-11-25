@@ -60,6 +60,12 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitReturn_statement(KlangParser.Return_statementContext ctx) {
+    Expression expression = (Expression) this.visit(ctx.expression()); 
+    return new ReturnStatement(expression);
+  }
+
+  @Override
   public Node visitMultiplicationExpression(KlangParser.MultiplicationExpressionContext ctx) {
     Node left = this.visit(ctx.atom(0));
     Node right = this.visit(ctx.atom(1));
