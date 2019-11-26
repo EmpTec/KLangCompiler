@@ -34,6 +34,14 @@ public class Klang {
     node.welcome(printVisitor);
     System.out.println(w.toString());
 
+    // Generate assembler code
+    System.out.println("\nPrinting the assembler code");
+    StringWriter wAsm = new StringWriter();
+    GenASM.ExWriter exAsm = new GenASM.ExWriter(wAsm);
+    GenASM genasm = new GenASM(exAsm);
+    node.welcome(genasm);
+    System.out.println(wAsm.toString());
+
     // Evaluate the sourcecode and print the result
     System.out.println("\nEvaluating the source code:");
     EvalVisitor evalVisitor = new EvalVisitor();
