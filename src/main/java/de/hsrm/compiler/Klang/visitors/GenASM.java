@@ -3,8 +3,9 @@ package de.hsrm.compiler.Klang.visitors;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
-import de.hsrm.compiler.Klang.Value;
 import de.hsrm.compiler.Klang.nodes.Block;
 import de.hsrm.compiler.Klang.nodes.FunctionDefinition;
 import de.hsrm.compiler.Klang.nodes.Program;
@@ -63,9 +64,9 @@ public class GenASM implements Visitor<Void> {
     }
 
     public ExWriter ex;
-    Map<String, FunctionDefinition> funcs = new HashMap<>();
-    Map<String, Value> env = new HashMap<>();
+    Map<String, Integer> env = new HashMap<>();
     String[] rs = { "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9" };
+    private int lCount = 0; // Invariante: lCount ist benutzt
 
     public GenASM(ExWriter ex) {
         this.ex = ex;
@@ -79,61 +80,93 @@ public class GenASM implements Visitor<Void> {
 
     @Override
     public Void visit(Variable e) {
-        // TODO Auto-generated method stub
+        this.ex.write("    pushq " +this.env.get(e.name) +"(%rbp)\n");
         return null;
     }
 
     @Override
     public Void visit(MultiplicativeExpression e) {
-        // TODO Auto-generated method stub
+        e.lhs.welcome(this);
+        this.ex.write("    movq  %rax, %rbx\n");
+        e.rhs.welcome(this);
+        this.ex.write("    imulq %rbx, %rax\n");
         return null;
     }
 
     @Override
     public Void visit(AdditiveExpression e) {
-        // TODO Auto-generated method stub
+        e.lhs.welcome(this);
+        this.ex.write("    movq  %rax, %rbx\n");
+        e.rhs.welcome(this);
+        this.ex.write("    iaddq %rbx, %rax\n");
         return null;
     }
 
     @Override
     public Void visit(NegateExpression e) {
-        // TODO Auto-generated method stub
+        e.lhs.welcome(this);
+        this.ex.write("    neg %rax\n");
         return null;
     }
 
     @Override
     public Void visit(ModuloExpression e) {
-        // TODO Auto-generated method stub
+        e.rhs.welcome(this);
+        this.ex.write("    movq %rax, %rbx\n");
+        e.lhs.welcome(this);
+        this.ex.write("    xor %rdx, %rdx\n"); // clear remainder register
+        this.ex.write("    idiv %ebx\n"); // %rax/%rbx, remainder now in %rdx
+        this.ex.write("    movq %rdx, %rax\n");
         return null;
     }
 
     @Override
     public Void visit(IfStatement e) {
-        // TODO Auto-generated method stub
+        int then = ++lCount;
+        int end = ++lCount;
+        
+        e.cond.welcome(this);
+        this.ex.write("    cmp $0, %rax\n");
+        this.ex.write("    jz L" + then + "\n");
+        // else Part
+        if (e.alt != null) {
+            e.alt.welcome(this);
+        } else if (e.elif != null) {
+            e.elif.welcome(this);
+        }
+        this.ex.write("   j L" + end + "\n");
+        // then Part
+        this.ex.write(".L" + then + "/n");
+        e.then.welcome(this);
+        this.ex.write(".L" + end + "\n");
         return null;
     }
 
     @Override
     public Void visit(PrintStatement e) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new RuntimeException("Das machen wir mal nicht, ne?!");
     }
 
     @Override
     public Void visit(VariableAssignment e) {
-        // TODO Auto-generated method stub
+        e.expression.welcome(this);
+        int offset = this.env.get(e.name);
+        this.ex.write("    movq %rax, " + offset + "(%rbp)\n");
         return null;
     }
 
     @Override
     public Void visit(ReturnStatement e) {
-        // TODO Auto-generated method stub
+        e.expression.welcome(this);
+        this.ex.write("    ret\n");
         return null;
     }
 
     @Override
     public Void visit(Block e) {
-        // TODO Auto-generated method stub
+        for (var statement : e.statements) {
+            statement.welcome(this);
+        }
         return null;
     }
 
@@ -144,12 +177,39 @@ public class GenASM implements Visitor<Void> {
         this.ex.write(e.name + ":\n");
         this.ex.write("    pushq %rbp\n");
         this.ex.write("    movq %rsp, %rbp\n");
-        // TODO hier fehlt noch einiges
 
+        // hole die anzahl der lokalen variablen
+        Set<String> vars = new TreeSet<String>();
+        GetVars getvars = new GetVars(vars);
+        getvars.visit(e);
+
+        // Erzeuge ein environment
+        this.env = new HashMap<String, Integer>();
+
+        // Merke dir die offsets der parameter, die direkt auf den stack gelegt wurden
+        int m = e.parameters.length - this.rs.length;
+        for (int i = this.rs.length; i < e.parameters.length; i++) {
+            int j = i - this.rs.length;
+            this.env.put(e.parameters[i], -((m - j) * 8));
+        }
+
+        // pushe die aufrufparameter wieder auf den stack
+        for (int i = 0; i < Math.min(this.rs.length, e.parameters.length); i++) {
+            this.ex.write("    pushq " + this.rs[i] + "\n");
+            this.env.put(e.parameters[i], (i + 2) * 8);
+        }
+
+        // Reserviere Platz auf dem Stack für jede lokale variable
+        int offset = 2 + Math.min(this.rs.length, e.parameters.length); // der offset des letzten register parameters
+        for (String lok_var: vars) {
+            this.ex.write("    pushq $0\n");
+            this.env.put(lok_var, ++offset * 8);
+        }
 
         e.block.welcome(this);
+
         this.ex.write("    popq %rax\n");
-        this.ex.write("    popq %rpb\n");
+        this.ex.write("    popq %rbp\n");
         this.ex.write("    ret\n");
         return null;
     }
@@ -159,7 +219,7 @@ public class GenASM implements Visitor<Void> {
         // Die ersten sechs params in die register schieben
         for (int i = 0; i < Math.min(this.rs.length, e.arguments.length); i++) {
             e.arguments[i].welcome(this);
-            this.ex.write("    popq" + this.rs[i] + "\n");
+            this.ex.write("    popq " + this.rs[i] + "\n");
         }
 
         // Den Rest auf den stack pushen
@@ -178,15 +238,16 @@ public class GenASM implements Visitor<Void> {
             this.ex.write("\n");
         }
 
-        this.ex.write(".globl prog\n");
-        this.ex.write(".type prog, @function\n");
-        this.ex.write("prog:\n");
+        this.ex.write(".globl main\n");
+        this.ex.write(".type main, @function\n");
+        this.ex.write("main:\n");
         this.ex.write("    pushq %rbp\n");
         this.ex.write("    movq %rsp, %rbp\n");
         e.expression.welcome(this);
         this.ex.write("    popq %rax\n");
-        this.ex.write("    popq %rpb\n");
+        this.ex.write("    popq %rbp\n");
         this.ex.write("    ret\n");
+        this.ex.write("\n");
         return null;
     }
 }
