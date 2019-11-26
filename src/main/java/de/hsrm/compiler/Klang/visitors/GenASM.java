@@ -74,13 +74,13 @@ public class GenASM implements Visitor<Void> {
 
     @Override
     public Void visit(IntegerExpression e) {
-        this.ex.write("    pushq $" + e.value + "\n");
+        this.ex.write("    movq $" + e.value + ", %rax\n");
         return null;
     }
 
     @Override
     public Void visit(Variable e) {
-        this.ex.write("    pushq " +this.env.get(e.name) +"(%rbp)\n");
+        this.ex.write("    movq " +this.env.get(e.name) +"(%rbp), %rax\n");
         return null;
     }
 
@@ -158,6 +158,7 @@ public class GenASM implements Visitor<Void> {
     @Override
     public Void visit(ReturnStatement e) {
         e.expression.welcome(this);
+        this.ex.write("    popq %rbp\n");
         this.ex.write("    ret\n");
         return null;
     }
@@ -182,6 +183,11 @@ public class GenASM implements Visitor<Void> {
         Set<String> vars = new TreeSet<String>();
         GetVars getvars = new GetVars(vars);
         getvars.visit(e);
+        // System.out.println("Function: " + e.name);
+        // System.out.println("vars size: " + vars.size());
+        // for (var s : vars) {
+        //   System.out.println(s);
+        // }
 
         // Erzeuge ein environment
         this.env = new HashMap<String, Integer>();
@@ -193,9 +199,9 @@ public class GenASM implements Visitor<Void> {
             this.env.put(e.parameters[i], -((m - j) * 8));
         }
 
-        // pushe die aufrufparameter wieder auf den stack
+        // pushe die aufrufparameter aus den Registern wieder auf den Stack
         for (int i = 0; i < Math.min(this.rs.length, e.parameters.length); i++) {
-            this.ex.write("    pushq " + this.rs[i] + "\n");
+            this.ex.write("    popq " + this.rs[i] + "\n");
             this.env.put(e.parameters[i], (i + 2) * 8);
         }
 
@@ -208,9 +214,9 @@ public class GenASM implements Visitor<Void> {
 
         e.block.welcome(this);
 
-        this.ex.write("    popq %rax\n");
-        this.ex.write("    popq %rbp\n");
-        this.ex.write("    ret\n");
+        // this.ex.write("    popq %rax\n");
+        // this.ex.write("    popq %rbp\n");
+        // this.ex.write("    ret\n");
         return null;
     }
 
@@ -219,7 +225,7 @@ public class GenASM implements Visitor<Void> {
         // Die ersten sechs params in die register schieben
         for (int i = 0; i < Math.min(this.rs.length, e.arguments.length); i++) {
             e.arguments[i].welcome(this);
-            this.ex.write("    popq " + this.rs[i] + "\n");
+            this.ex.write("    movq %rax,  " + this.rs[i] + "\n");
         }
 
         // Den Rest auf den stack pushen
@@ -233,20 +239,21 @@ public class GenASM implements Visitor<Void> {
 
     @Override
     public Void visit(Program e) {
+      this.ex.write(".text\n");
         for (var func : e.funcs) {
             func.welcome(this);
             this.ex.write("\n");
         }
-
         this.ex.write(".globl main\n");
         this.ex.write(".type main, @function\n");
         this.ex.write("main:\n");
         this.ex.write("    pushq %rbp\n");
         this.ex.write("    movq %rsp, %rbp\n");
         e.expression.welcome(this);
-        this.ex.write("    popq %rax\n");
+        // this.ex.write("    popq %rax\n");
         this.ex.write("    popq %rbp\n");
-        this.ex.write("    ret\n");
+        this.ex.write("    ret\n"); 
+        this.ex.write("\n");
         this.ex.write("\n");
         return null;
     }
