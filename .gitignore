@@ -16,3 +16,9 @@ src/main/antlr4/de/hsrm/compiler/Klang/.antlr
 
 # assembly files
 *.s
+
+# other sourcecode files
+*.c
+
+# build output
+out
