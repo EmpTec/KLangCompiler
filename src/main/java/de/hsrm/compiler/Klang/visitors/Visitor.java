@@ -17,6 +17,7 @@ public interface Visitor<R> {
     R visit(NegateExpression e);
     R visit(IfStatement e);
     R visit(PrintStatement e);
+    R visit(VariableDeclaration e);
     R visit(VariableAssignment e);
     R visit(ReturnStatement e);
     R visit(Block e);

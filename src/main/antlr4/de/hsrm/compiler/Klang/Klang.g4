@@ -23,6 +23,7 @@ braced_block
 statement
   : print
   | if_statement
+  | variable_declaration
   | variable_assignment
   | return_statement
   ;
@@ -33,7 +34,11 @@ print
 
 if_statement
   : IF OPAR cond = expression CPAR then = braced_block (ELSE (alt = braced_block | elif = if_statement) )?
-  ;  
+  ; 
+
+variable_declaration
+  : LET IDENT (EQUAL expression)? SCOL
+  ;
 
 variable_assignment
   : IDENT EQUAL expression SCOL
@@ -72,6 +77,7 @@ IF: 'if';
 ELSE: 'else';
 FUNC: 'function';
 RETURN: 'return';
+LET: 'let';
 
 SCOL: ';';
 OBRK: '{';

@@ -163,6 +163,18 @@ public class GenASM implements Visitor<Void> {
   }
 
   @Override
+  public Void visit(VariableDeclaration e) {
+    // If there is an initialization present,
+    // push it to the location of the local var
+    if (e.expression != null) {
+      e.expression.welcome(this);
+      int offset = this.env.get(e.name);
+      this.ex.write("    movq %rax, " + offset + "(%rbp)\n");
+    }
+    return null;
+  }
+
+  @Override
   public Void visit(VariableAssignment e) {
     e.expression.welcome(this);
     int offset = this.env.get(e.name);
