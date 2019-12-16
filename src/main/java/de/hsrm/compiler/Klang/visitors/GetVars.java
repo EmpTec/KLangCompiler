@@ -2,20 +2,9 @@ package de.hsrm.compiler.Klang.visitors;
 
 import java.util.Set;
 
-import de.hsrm.compiler.Klang.nodes.Block;
-import de.hsrm.compiler.Klang.nodes.FunctionDefinition;
-import de.hsrm.compiler.Klang.nodes.Program;
-import de.hsrm.compiler.Klang.nodes.expressions.AdditiveExpression;
-import de.hsrm.compiler.Klang.nodes.expressions.FunctionCall;
-import de.hsrm.compiler.Klang.nodes.expressions.IntegerExpression;
-import de.hsrm.compiler.Klang.nodes.expressions.ModuloExpression;
-import de.hsrm.compiler.Klang.nodes.expressions.MultiplicativeExpression;
-import de.hsrm.compiler.Klang.nodes.expressions.NegateExpression;
-import de.hsrm.compiler.Klang.nodes.expressions.Variable;
-import de.hsrm.compiler.Klang.nodes.statements.IfStatement;
-import de.hsrm.compiler.Klang.nodes.statements.PrintStatement;
-import de.hsrm.compiler.Klang.nodes.statements.ReturnStatement;
-import de.hsrm.compiler.Klang.nodes.statements.VariableAssignment;
+import de.hsrm.compiler.Klang.nodes.*;
+import de.hsrm.compiler.Klang.nodes.expressions.*;
+import de.hsrm.compiler.Klang.nodes.statements.*;
 
 class GetVars implements Visitor<Void> {
 
@@ -36,14 +25,35 @@ class GetVars implements Visitor<Void> {
   }
 
   @Override
-  public Void visit(MultiplicativeExpression e) {
+  public Void visit(AdditionExpression e) {
     e.lhs.welcome(this);
     e.rhs.welcome(this);
     return null;
   }
 
   @Override
-  public Void visit(AdditiveExpression e) {
+  public Void visit(SubstractionExpression e) {
+    e.lhs.welcome(this);
+    e.rhs.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(MultiplicationExpression e) {
+    e.lhs.welcome(this);
+    e.rhs.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(DivisionExpression e) {
+    e.lhs.welcome(this);
+    e.rhs.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(ModuloExpression e) {
     e.lhs.welcome(this);
     e.rhs.welcome(this);
     return null;
@@ -52,13 +62,6 @@ class GetVars implements Visitor<Void> {
   @Override
   public Void visit(NegateExpression e) {
     e.lhs.welcome(this);
-    return null;
-  }
-
-  @Override
-  public Void visit(ModuloExpression e) {
-    e.lhs.welcome(this);
-    e.rhs.welcome(this);
     return null;
   }
 

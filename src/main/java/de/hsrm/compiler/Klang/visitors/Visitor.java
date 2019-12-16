@@ -9,10 +9,12 @@ import de.hsrm.compiler.Klang.nodes.statements.*;
 public interface Visitor<R> {
     R visit(IntegerExpression e);
     R visit(Variable e);
-    R visit(MultiplicativeExpression e);
-    R visit(AdditiveExpression e);
-    R visit(NegateExpression e);
+    R visit(AdditionExpression e);
+    R visit(SubstractionExpression e);
+    R visit(MultiplicationExpression e);
+    R visit(DivisionExpression e);
     R visit(ModuloExpression e);
+    R visit(NegateExpression e);
     R visit(IfStatement e);
     R visit(PrintStatement e);
     R visit(VariableAssignment e);

@@ -72,33 +72,60 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     }
 
     @Override
-    public Void visit(MultiplicativeExpression e) {
-        e.lhs.welcome(this);
-        ex.write(" * ");
-        e.rhs.welcome(this);
-        return null;
-    }
-
-    @Override
-    public Void visit(AdditiveExpression e) {
+    public Void visit(AdditionExpression e) {
+        ex.write("(");
         e.lhs.welcome(this);
         ex.write(" + ");
         e.rhs.welcome(this);
+        ex.write(")");
         return null;
     }
 
     @Override
-    public Void visit(NegateExpression e) {
-        ex.write(" - ");
+    public Void visit(SubstractionExpression e) {
+        ex.write("(");
         e.lhs.welcome(this);
+        ex.write(" - ");
+        e.rhs.welcome(this);
+        ex.write(")");
+        return null;
+    }
+
+    @Override
+    public Void visit(MultiplicationExpression e) {
+        ex.write("(");
+        e.lhs.welcome(this);
+        ex.write(" * ");
+        e.rhs.welcome(this);
+        ex.write(")");
+        return null;
+    }
+
+    @Override
+    public Void visit(DivisionExpression e) {
+        ex.write("(");
+        e.lhs.welcome(this);
+        ex.write(" / ");
+        e.rhs.welcome(this);
+        ex.write(")");
         return null;
     }
 
     @Override
     public Void visit(ModuloExpression e) {
+        ex.write("(");
         e.lhs.welcome(this);
         ex.write(" % ");
         e.rhs.welcome(this);
+        ex.write(")");
+        return null;
+    }
+
+
+    @Override
+    public Void visit(NegateExpression e) {
+        ex.write(" - ");
+        e.lhs.welcome(this);
         return null;
     }
 
