@@ -10,3 +10,9 @@ buildNumber.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
 src/main/antlr4/de/hsrm/compiler/Klang/.antlr
+
+# klang sourcecode files
+*.k
+
+# assembly files
+*.s
