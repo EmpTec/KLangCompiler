@@ -1,11 +1,16 @@
 package de.hsrm.compiler.Klang;
 
+import java.util.Set;
+import java.util.HashSet;
+
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 import de.hsrm.compiler.Klang.types.Type;
 
 public class ContextAnalysis extends KlangBaseVisitor<Node> {
+  Set<String> vars = new HashSet<>();
+
   @Override
   public Node visitProgram(KlangParser.ProgramContext ctx) {
     FunctionDefinition[] funcs = new FunctionDefinition[ctx.functionDef().size()];
@@ -53,15 +58,37 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitVariable_declaration(KlangParser.Variable_declarationContext ctx) {
+    String name = ctx.IDENT().getText();
+
+    if (this.vars.contains(name)) {
+      throw new RuntimeException("Redeclaration of variable with name \"" + name +"\".");
+    }
+
+    this.vars.add(name);
+
+    if (ctx.expression() != null) {
+      return new VariableDeclaration(name, (Expression) this.visit(ctx.expression()));
+    } else {
+      return new VariableDeclaration(name);
+    }
+  }
+
+  @Override
   public Node visitVariable_assignment(KlangParser.Variable_assignmentContext ctx) {
     String name = ctx.IDENT().getText();
+
+    if (!this.vars.contains(name)) {
+      throw new RuntimeException("Variable with name \"" + name + "\" not defined.");
+    }
+
     Expression expression = (Expression) this.visit(ctx.expression());
     return new VariableAssignment(name, expression);
   }
 
   @Override
   public Node visitReturn_statement(KlangParser.Return_statementContext ctx) {
-    Expression expression = (Expression) this.visit(ctx.expression()); 
+    Expression expression = (Expression) this.visit(ctx.expression());
     return new ReturnStatement(expression);
   }
 
@@ -97,6 +124,12 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
 
   @Override
   public Node visitVariable(KlangParser.VariableContext ctx) {
+    String name = ctx.IDENT().getText();
+
+    if (!this.vars.contains(name)) {
+      throw new RuntimeException("Variable with name \"" + name + "\" not defined.");
+    }
+
     return new Variable(ctx.IDENT().getText());
   }
 
@@ -115,9 +148,16 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   @Override
   public Node visitFunctionDef(KlangParser.FunctionDefContext ctx) {
     String name = ctx.funcName.getText();
+
+    // Create a new set for the variables of the current function
+    // this will be filled in the variable declaration visitor aswell
+    this.vars = new HashSet<>();
+
     String[] params = new String[ctx.parameters().IDENT().size()];
     for (int i = 0; i < ctx.parameters().IDENT().size(); i++) {
-      params[i] = ctx.parameters().IDENT(i).getText();
+      String paramName = ctx.parameters().IDENT(i).getText();
+      params[i] = paramName;
+      this.vars.add(paramName); // add the param as a variable
     }
     Node block = this.visit(ctx.braced_block());
     return new FunctionDefinition(name, params, (Block) block);
