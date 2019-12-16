@@ -66,38 +66,33 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
-  public Node visitMultiplicationExpression(KlangParser.MultiplicationExpressionContext ctx) {
-    Node left = this.visit(ctx.atom(0));
-    Node right = this.visit(ctx.atom(1));
-    Node result = new MultiplicativeExpression((Expression) left, (Expression) right);
-    result.type = left.type; // We have to actually compute this in the future
-    return result;
+  public Node visitAdditionExpression(KlangParser.AdditionExpressionContext ctx) {
+    return new AdditionExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
   }
 
   @Override
-  public Node visitAdditiveExpression(KlangParser.AdditiveExpressionContext ctx) {
-    Node left = this.visit(ctx.atom(0));
-    Node right = this.visit(ctx.atom(1));
-    Node result = new AdditiveExpression((Expression) left, (Expression) right);
-    result.type = left.type; // We have to actually compute this in the future
-    return result;
+  public Node visitSubstractionExpression(KlangParser.SubstractionExpressionContext ctx) {
+    return new SubstractionExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
+  @Override
+  public Node visitMultiplicationExpression(KlangParser.MultiplicationExpressionContext ctx) {
+    return new MultiplicationExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
+  @Override
+  public Node visitDivisionExpression(KlangParser.DivisionExpressionContext ctx) {
+    return new DivisionExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
   }
 
   @Override
   public Node visitModuloExpression(KlangParser.ModuloExpressionContext ctx) {
-    Node left = this.visit(ctx.atom(0));
-    Node right = this.visit(ctx.atom(1));
-    Node result = new ModuloExpression((Expression) left, (Expression) right);
-    result.type = left.type; // We have to actually compute this in the future
-    return result;
+    return new ModuloExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
   }
 
   @Override
-  public Node visitUnaryNegateExpression(KlangParser.UnaryNegateExpressionContext ctx) {
-    Node atom = this.visit(ctx.atom());
-    Node result = new NegateExpression((Expression) atom);
-    result.type = atom.type;
-    return result;
+  public Node visitNegateExpression(KlangParser.NegateExpressionContext ctx) {
+    return new NegateExpression((Expression) this.visit(ctx.expression()));
   }
 
   @Override

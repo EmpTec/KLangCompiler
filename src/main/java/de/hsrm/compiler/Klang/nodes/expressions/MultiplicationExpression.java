@@ -2,8 +2,8 @@ package de.hsrm.compiler.Klang.nodes.expressions;
 
 import de.hsrm.compiler.Klang.visitors.Visitor;
 
-public class ModuloExpression extends BinaryExpression {
-    public ModuloExpression(Expression lhs, Expression rhs) {
+public class MultiplicationExpression extends BinaryExpression {
+    public MultiplicationExpression(Expression lhs, Expression rhs) {
         super(lhs, rhs);
     }
 

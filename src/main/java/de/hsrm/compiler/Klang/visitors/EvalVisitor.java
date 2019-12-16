@@ -21,24 +21,38 @@ public class EvalVisitor implements Visitor<Value> {
   }
 
   @Override
-  public Value visit(MultiplicativeExpression e) {
-    Value a = e.lhs.welcome(this);
-    Value b = e.rhs.welcome(this);
-    return new Value(a.asInteger() * b.asInteger());
+  public Value visit(AdditionExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    return new Value(lhs.asInteger() + rhs.asInteger());
   }
 
   @Override
-  public Value visit(AdditiveExpression e) {
-    Value a = e.lhs.welcome(this);
-    Value b = e.rhs.welcome(this);
-    return new Value(a.asInteger() + b.asInteger());
+  public Value visit(SubstractionExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    return new Value(lhs.asInteger() - rhs.asInteger());
+  }
+
+  @Override
+  public Value visit(MultiplicationExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    return new Value(lhs.asInteger() * rhs.asInteger());
+  }
+
+  @Override
+  public Value visit(DivisionExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    return new Value(lhs.asInteger() / rhs.asInteger());
   }
 
   @Override
   public Value visit(ModuloExpression e) {
-    Value a = e.lhs.welcome(this);
-    Value b = e.rhs.welcome(this);
-    return new Value(a.asInteger() % b.asInteger());
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    return new Value(lhs.asInteger() % rhs.asInteger());
   }
 
   @Override
@@ -52,7 +66,7 @@ public class EvalVisitor implements Visitor<Value> {
     Value result = this.env.get(e.name);
 
     if (result == null) {
-      throw new RuntimeException("Variable with name " +e.name + " not found.");
+      throw new RuntimeException("Variable with name " + e.name + " not found.");
     }
 
     return result;
@@ -123,7 +137,7 @@ public class EvalVisitor implements Visitor<Value> {
 
     // Stelle sicher, dass die Länge der argumente und parameter übereinstimmen
     if (e.arguments.length != func.parameters.length) {
-      throw new RuntimeException("Error with function call " +e.name + ": Number of parameters wrong");
+      throw new RuntimeException("Error with function call " + e.name + ": Number of parameters wrong");
     }
 
     // Baue ein neues environment
@@ -147,7 +161,7 @@ public class EvalVisitor implements Visitor<Value> {
   public Value visit(Program e) {
     // Funktionsdefinitionen für die Auswertung
     // von Funktionsaufrufen speichern
-    for (var funcDef: e.funcs) {
+    for (var funcDef : e.funcs) {
       this.funcs.put(funcDef.name, funcDef);
     }
 

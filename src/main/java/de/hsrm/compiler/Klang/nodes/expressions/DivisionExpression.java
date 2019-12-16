@@ -2,9 +2,8 @@ package de.hsrm.compiler.Klang.nodes.expressions;
 
 import de.hsrm.compiler.Klang.visitors.Visitor;
 
-public class AdditiveExpression extends BinaryExpression {
-
-    public AdditiveExpression(Expression lhs, Expression rhs) {
+public class DivisionExpression extends BinaryExpression {
+    public DivisionExpression(Expression lhs, Expression rhs) {
         super(lhs, rhs);
     }
 
@@ -12,5 +11,4 @@ public class AdditiveExpression extends BinaryExpression {
     public <R> R welcome(Visitor<R> v) {
         return v.visit(this);
     }
-
 }

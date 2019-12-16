@@ -44,12 +44,19 @@ return_statement
   ;
 
 expression
-  : atom MULT atom #multiplicationExpression
-  | atom op=(ADD | SUB) atom #additiveExpression
-  | atom MOD atom #moduloExpression
-  | SUB atom #unaryNegateExpression
-  | atom #atomExpression
+  : atom #atomExpression
+  | OPAR lhs=expression ADD rhs=expression CPAR #additionExpression
+  | OPAR lhs=expression SUB rhs=expression CPAR #substractionExpression
+  | OPAR lhs=expression MUL rhs=expression CPAR #multiplicationExpression
+  | OPAR lhs=expression DIV rhs=expression CPAR #divisionExpression
+  | OPAR lhs=expression MOD rhs=expression CPAR #moduloExpression
+  | SUB expression #negateExpression
   | functionCall #functionCallExpression
+  ;
+
+atom
+  : INTEGER_LITERAL #intAtom
+  | IDENT # variable
   ;
 
 functionCall
@@ -58,11 +65,6 @@ functionCall
 
 arguments
   : (expression (COMMA expression)*)?
-  ;
-
-atom
-  : INTEGER_LITERAL #intAtom
-  | IDENT # variable
   ;
 
 PRINT: 'print';
@@ -79,10 +81,11 @@ CPAR: ')';
 COMMA: ',';
 EQUAL: '=';
 
-MULT: '*';
+MUL: '*';
 ADD: '+';
 SUB: '-';
 MOD: '%';
+DIV: '/';
 
 INTEGER_LITERAL
   : [0-9]+
