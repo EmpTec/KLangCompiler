@@ -102,6 +102,17 @@ public class EvalVisitor implements Visitor<Value> {
   }
 
   @Override
+  public Value visit(VariableDeclaration e) {
+    Value initialValue = null;
+    if (e.expression != null) {
+      initialValue = e.expression.welcome(this);
+    }
+
+    this.env.put(e.name, initialValue);
+    return null;
+  }
+
+  @Override
   public Value visit(VariableAssignment e) {
     Value result = e.expression.welcome(this);
     this.env.put(e.name, result);

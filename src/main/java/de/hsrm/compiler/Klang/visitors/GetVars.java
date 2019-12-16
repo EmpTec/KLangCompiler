@@ -84,8 +84,13 @@ class GetVars implements Visitor<Void> {
   }
 
   @Override
-  public Void visit(VariableAssignment e) {
+  public Void visit(VariableDeclaration e) {
     vars.add(e.name);
+    return null;
+  }
+
+  @Override
+  public Void visit(VariableAssignment e) {
     e.expression.welcome(this);
     return null;
   }
