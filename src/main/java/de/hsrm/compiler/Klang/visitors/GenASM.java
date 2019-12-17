@@ -222,20 +222,21 @@ public class GenASM implements Visitor<Void> {
     this.env = new HashMap<String, Integer>();
 
     // Merke dir die offsets der parameter, die direkt auf den stack gelegt wurden
-    int m = e.parameters.length - this.rs.length;
-    for (int i = this.rs.length; i < e.parameters.length; i++) {
-      int j = i - this.rs.length;
-      this.env.put(e.parameters[i], (((m - j) + 1) * 8)); // positiv, liegt über unserem stack frame
-    }
+    int offset = 16; // Per Stack übergebene Parameter liegen über unserm BSP
+    // Per stack übergebene variablen in env registrieren
+		for (int i = this.rs.length; i < e.parameters.length; i++) {
+			env.put(e.parameters[i], offset);
+			offset += 8;
+		}
 
     // pushe die aufrufparameter aus den Registern wieder auf den Stack
-    int offset = 0;
+    offset = 0;
     for (int i = 0; i < Math.min(this.rs.length, e.parameters.length); i++) {
       this.ex.write("    pushq " + this.rs[i] + "\n");
       offset -= 8;
       this.env.put(e.parameters[i], offset); // negative, liegt unter aktuellem BP
     }
-
+    
     // Reserviere Platz auf dem Stack für jede lokale variable
     for (String lok_var : vars) {
       offset -= 8;
@@ -256,7 +257,7 @@ public class GenASM implements Visitor<Void> {
     }
 
     // Den Rest auf den stack pushen
-    for (int i = this.rs.length; i < e.arguments.length; i++) {
+    for (int i = e.arguments.length -1; i >= this.rs.length; i--) {
       e.arguments[i].welcome(this);
       this.ex.write("  pushq %rax\n");
     }

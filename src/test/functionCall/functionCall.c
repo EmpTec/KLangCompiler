@@ -21,7 +21,7 @@ int argumentTest(char* name, int expected, int result) {
 
 int runFunctionCallTests () {
   int failed = 0;
-  printf("\nFunctionCallTests Tests \n");
+  printf("\nFunction Call Tests \n");
   // Checks that parameters are correctly passed from gcc to functions
   failed += argumentTest("arg1", 1, arg1(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
   failed += argumentTest("arg2", 2, arg2(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));

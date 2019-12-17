@@ -105,7 +105,7 @@ int main(){
   failed +=  testOneArg("id", cId, id, -1);
   failed +=  testOneArg("id", cId, id, 15);
 
-  printf("\nFunction Argument Tests\n");
+  // Test for passing arguments to functions
   failed += runFunctionCallTests();
 
   printf("\n=== Failed Tests: %d\n", failed);
