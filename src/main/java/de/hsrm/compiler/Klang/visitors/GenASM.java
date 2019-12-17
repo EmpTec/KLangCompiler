@@ -137,24 +137,30 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(IfStatement e) {
-    int then = ++lCount;
-    int end = ++lCount;
-
-    e.cond.welcome(this);
-    this.ex.write("    cmp $0, %rax\n");
-    this.ex.write("    jz .L" + then + "\n");
-    // else Part
-    if (e.alt != null) {
-      e.alt.welcome(this);
-    } else if (e.elif != null) {
-      e.elif.welcome(this);
-    }
-    this.ex.write("   jmp .L" + end + "\n");
-    // then Part
-    this.ex.write(".L" + then + ":\n");
-    e.then.welcome(this);
-    this.ex.write(".L" + end + ":\n");
-    return null;
+      int lblElse = ++lCount;
+      int lblEnd = ++lCount;
+      boolean hasElse = e.alt != null || e.elif != null;
+      e.cond.welcome(this);
+      this.ex.write("    cmp $0, %rax\n");
+      // in case of cond evaluating to false, jump to else/elif
+      // Jump to end if there is no else part, this saves a label declaration
+      if (hasElse) {
+        this.ex.write("    jz .L" + lblElse + "\n");
+      } else {
+        this.ex.write("    jz .L" + lblEnd + "\n");
+      }
+      e.then.welcome(this);
+      if (hasElse) {
+        this.ex.write("    jmp .L" + lblEnd + "\n");
+        this.ex.write(".L" + lblElse + ":\n");
+        if (e.alt != null) {
+          e.alt.welcome(this);
+        } else {
+          e.elif.welcome(this);
+        }
+      }
+      this.ex.write(".L" + lblEnd + ":\n");
+      return null;
   }
 
   @Override
