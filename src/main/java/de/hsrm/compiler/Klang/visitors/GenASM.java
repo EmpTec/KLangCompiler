@@ -258,6 +258,7 @@ public class GenASM implements Visitor<Void> {
     // Den Rest auf den stack pushen
     for (int i = this.rs.length; i < e.arguments.length; i++) {
       e.arguments[i].welcome(this);
+      this.ex.write("  pushq %rax\n");
     }
 
     this.ex.write("    call " + e.name + "\n");
