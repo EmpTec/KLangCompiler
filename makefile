@@ -3,6 +3,9 @@
 run: code.k target/klang-1.0-jar-with-dependencies.jar
 	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang < code.k > code.s
 
+pretty: code.k target/klang-1.0-jar-with-dependencies.jar
+	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang --pretty --no-compile < code.k > pretty.k
+
 build: clean target/klang-1.0-jar-with-dependencies.jar
 
 target/klang-1.0-jar-with-dependencies.jar:
