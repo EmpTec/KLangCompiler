@@ -2,4 +2,5 @@
   Alle Test Module
 */
 
-int runFunctionCallTests ();
+int runFunctionCallTests();
+int runRecursiveTests();
