@@ -10,12 +10,12 @@ build:
     - mvn package
 
 test:
-  image: ubuntu:latest 
+  image: ubuntu/rolling:latest
   stage: test
   tags:
     - docker
   before_script:
     - apt update
-    - apt install -y build-essential
+    - apt install -y build-essential openjdk-13-jre-headless openjdk-13-jdk-headless
   script:
     - make runTest
