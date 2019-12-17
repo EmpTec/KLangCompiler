@@ -3,6 +3,9 @@ build:
   stage: build
   tags:
     - docker
+  artifacts:
+    paths:
+      - target/
   script:
     - mvn package
 
