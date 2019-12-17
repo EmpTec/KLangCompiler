@@ -11,5 +11,7 @@ test:
   stage: test
   tags:
     - docker
+  before_script:
+    - apt install build-essential
   script:
     - make runTest
