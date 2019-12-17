@@ -1,14 +1,13 @@
-image: maven:latest
-
 build:
+  image: maven:latest
   stage: build
   tags:
     - docker
-
   script:
-    - make build
+    - mvn package
 
 test:
+  image: ubuntu:latest 
   stage: test
   tags:
     - docker
