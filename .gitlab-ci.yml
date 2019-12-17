@@ -12,6 +12,7 @@ test:
   tags:
     - docker
   before_script:
-    - apt install build-essential
+    - apt update
+    - apt install -y build-essential
   script:
     - make runTest
