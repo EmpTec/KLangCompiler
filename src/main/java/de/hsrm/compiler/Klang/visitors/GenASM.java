@@ -225,7 +225,7 @@ public class GenASM implements Visitor<Void> {
     int m = e.parameters.length - this.rs.length;
     for (int i = this.rs.length; i < e.parameters.length; i++) {
       int j = i - this.rs.length;
-      this.env.put(e.parameters[i], ((m - j) * 8)); // positiv, liegt über unserem stack frame
+      this.env.put(e.parameters[i], (((m - j) + 1) * 8)); // positiv, liegt über unserem stack frame
     }
 
     // pushe die aufrufparameter aus den Registern wieder auf den Stack
