@@ -2,10 +2,15 @@ image: maven:latest
 
 build:
   stage: build
+  tags:
+    - docker
+
   script:
     - make build
 
 test:
   stage: test
+  tags:
+    - docker
   script:
     - make runTest
