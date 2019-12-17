@@ -2,4 +2,4 @@
   Alle Test Module
 */
 
-void runFunctionCallTests ();
+int runFunctionCallTests ();
