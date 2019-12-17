@@ -5,11 +5,42 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
+
 import de.hsrm.compiler.Klang.nodes.Node;
 import de.hsrm.compiler.Klang.visitors.*;
 
 public class Klang {
+
   public static void main(String[] args) throws Exception {
+    boolean evaluate = false;
+    boolean prettyPrint = false;
+    boolean compile = true;
+
+    List<String> arguments = Arrays.asList(args);
+    if (arguments.contains("-h") || arguments.contains("--help") || arguments.contains("?")) {
+      System.out.println("\nKaiser Lang Compiler");
+      System.out.println("Authors: Dennis Kaiser and Marvin Kaiser");
+      System.out.println("");
+      System.out.println("Pass source code via stdin");
+      System.out.println("");
+      System.out.println("Arguments:");
+      System.out.println("--evaluate:\t Evaluates the given source code");
+      System.out.println("--pretty:\t Pretty print the given source code");
+      System.out.println("--no-compile:\t Do not compile the source code");
+      return;
+    }
+    if (arguments.contains("--evaluate")) {
+      evaluate = true;
+    }
+    if (arguments.contains("--pretty")) {
+      prettyPrint = true;
+    }
+    if (arguments.contains("--no-compile")) {
+      compile = false;
+    }
+
     // create a CharStream that reads from standard input
     CharStream input = CharStreams.fromStream(System.in);
 
@@ -26,30 +57,35 @@ public class Klang {
     ContextAnalysis ctxAnal = new ContextAnalysis();
     Node node = ctxAnal.visit(tree); // this gets us the DAST
 
-    // // Pretty Print the sourcecode
-    // System.out.println("\nPrinting the sourcecode:");
-    // StringWriter w = new StringWriter();
-    // PrettyPrintVisitor.ExWriter ex = new PrettyPrintVisitor.ExWriter(w);
-    // PrettyPrintVisitor printVisitor = new PrettyPrintVisitor(ex);
-    // node.welcome(printVisitor);
-    // System.out.println(w.toString());
+    if (prettyPrint) {
+      // Pretty Print the sourcecode
+      StringWriter w = new StringWriter();
+      PrettyPrintVisitor.ExWriter ex = new PrettyPrintVisitor.ExWriter(w);
+      PrettyPrintVisitor printVisitor = new PrettyPrintVisitor(ex);
+      node.welcome(printVisitor);
+      System.out.println(w.toString());
+    }
 
-    // Generate assembler code
-    // System.out.println("\nPrinting the assembler code");
-    StringWriter wAsm = new StringWriter();
-    GenASM.ExWriter exAsm = new GenASM.ExWriter(wAsm);
-    GenASM genasm = new GenASM(exAsm);
-    node.welcome(genasm);
-    System.out.println(wAsm.toString());
+    if (compile) {
+      // Generate assembler code
+      // System.out.println("\nPrinting the assembler code");
+      StringWriter wAsm = new StringWriter();
+      GenASM.ExWriter exAsm = new GenASM.ExWriter(wAsm);
+      GenASM genasm = new GenASM(exAsm);
+      node.welcome(genasm);
+      System.out.println(wAsm.toString());
+    }
 
-    // Evaluate the sourcecode and print the result
-    // System.out.println("\nEvaluating the source code:");
-    // EvalVisitor evalVisitor = new EvalVisitor();
-    // Value result = node.welcome(evalVisitor);
-    // if (result != null) {
-    //   System.out.println("result: " + result.asInteger());
-    // } else {
-    //   System.out.println("result was null");
-    // }
+    if (evaluate) {
+      // Evaluate the sourcecode and print the result
+      System.out.println("\nEvaluating the source code:");
+      EvalVisitor evalVisitor = new EvalVisitor();
+      Value result = node.welcome(evalVisitor);
+      if (result != null) {
+        System.out.println("result: " + result.asInteger());
+      } else {
+        System.out.println("result was null");
+      }
+    }
   }
 }
