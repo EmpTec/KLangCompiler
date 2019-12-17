@@ -22,6 +22,7 @@ int argumentTest(char* name, int expected, int result) {
 int runFunctionCallTests () {
   int failed = 0;
   printf("\nFunctionCallTests Tests \n");
+  // Checks that parameters are correctly passed from gcc to functions
   failed += argumentTest("arg1", 1, arg1(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
   failed += argumentTest("arg2", 2, arg2(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
   failed += argumentTest("arg3", 3, arg3(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
@@ -32,5 +33,16 @@ int runFunctionCallTests () {
   failed += argumentTest("arg8", 8, arg8(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
   failed += argumentTest("arg9", 9, arg9(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
   failed += argumentTest("arg10", 10, arg10(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+  // Checks that parameters are correctly passed from klang to functions
+  failed += argumentTest("get1()", 1, get1());
+  failed += argumentTest("get2()", 2, get2());
+  failed += argumentTest("get3()", 3, get3());
+  failed += argumentTest("get4()", 4, get4());
+  failed += argumentTest("get5()", 5, get5());
+  failed += argumentTest("get6()", 6, get6());
+  failed += argumentTest("get7()", 7, get7());
+  failed += argumentTest("get8()", 8, get8());
+  failed += argumentTest("get9()", 9, get9());
+  failed += argumentTest("get10()", 10, get10());
   return failed;
 }
