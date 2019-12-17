@@ -26,16 +26,16 @@ public class Klang {
     ContextAnalysis ctxAnal = new ContextAnalysis();
     Node node = ctxAnal.visit(tree); // this gets us the DAST
 
-    // Pretty Print the sourcecode
-    System.out.println("\nPrinting the sourcecode:");
-    StringWriter w = new StringWriter();
-    PrettyPrintVisitor.ExWriter ex = new PrettyPrintVisitor.ExWriter(w);
-    PrettyPrintVisitor printVisitor = new PrettyPrintVisitor(ex);
-    node.welcome(printVisitor);
-    System.out.println(w.toString());
+    // // Pretty Print the sourcecode
+    // System.out.println("\nPrinting the sourcecode:");
+    // StringWriter w = new StringWriter();
+    // PrettyPrintVisitor.ExWriter ex = new PrettyPrintVisitor.ExWriter(w);
+    // PrettyPrintVisitor printVisitor = new PrettyPrintVisitor(ex);
+    // node.welcome(printVisitor);
+    // System.out.println(w.toString());
 
     // Generate assembler code
-    System.out.println("\nPrinting the assembler code");
+    // System.out.println("\nPrinting the assembler code");
     StringWriter wAsm = new StringWriter();
     GenASM.ExWriter exAsm = new GenASM.ExWriter(wAsm);
     GenASM genasm = new GenASM(exAsm);
@@ -43,13 +43,13 @@ public class Klang {
     System.out.println(wAsm.toString());
 
     // Evaluate the sourcecode and print the result
-    System.out.println("\nEvaluating the source code:");
-    EvalVisitor evalVisitor = new EvalVisitor();
-    Value result = node.welcome(evalVisitor);
-    if (result != null) {
-      System.out.println("result: " + result.asInteger());
-    } else {
-      System.out.println("result was null");
-    }
+    // System.out.println("\nEvaluating the source code:");
+    // EvalVisitor evalVisitor = new EvalVisitor();
+    // Value result = node.welcome(evalVisitor);
+    // if (result != null) {
+    //   System.out.println("result: " + result.asInteger());
+    // } else {
+    //   System.out.println("result was null");
+    // }
   }
 }
