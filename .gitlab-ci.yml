@@ -16,6 +16,6 @@ test:
     - docker
   before_script:
     - apt update
-    - apt install -y build-essential openjdk-13-jre-headless openjdk-13-jdk-headless
+    - apt install -y build-essential openjdk-13-jre-headless
   script:
     - make runTest
