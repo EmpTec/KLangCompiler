@@ -10,7 +10,7 @@ build:
     - mvn package
 
 test:
-  image: ubuntu/rolling:latest
+  image: ubuntu:rolling
   stage: test
   tags:
     - docker
