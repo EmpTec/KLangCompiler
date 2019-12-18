@@ -158,7 +158,8 @@ public class PrettyPrintVisitor implements Visitor<Void> {
         ex.write("let " + e.name);
 
         if (e.expression != null) {
-            ex.write(" = " + e.expression.welcome(this));
+            ex.write(" = ");
+            e.expression.welcome(this);
         }
 
         ex.write(";");
