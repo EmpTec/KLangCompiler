@@ -118,6 +118,7 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(ModuloExpression e) {
+    e.lhs.welcome(this);
     this.ex.write("    pushq %rax\n");
     e.rhs.welcome(this);
     this.ex.write("    movq %rax, %rbx\n");
