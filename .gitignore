@@ -16,3 +16,4 @@ src/main/antlr4/de/hsrm/compiler/Klang/.antlr
 
 # build output
 out
+src/test/test
