@@ -111,6 +111,9 @@ int main(){
   // Tests for recursive funtions
   failed += runRecursiveTests();
 
+  // Tests for comparison expressions
+  failed += runComparisonTests();
+
   printf("\n=== Failed Tests: %d\n", failed);
 
   if (failed > 0) {

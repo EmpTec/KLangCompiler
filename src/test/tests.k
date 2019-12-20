@@ -49,6 +49,7 @@ function get3() {
 function arg4(a, b, c, d, e, f, g, h, i ,j) {
   return d;
 }
+
 function get4() {
   return arg4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
@@ -56,6 +57,7 @@ function get4() {
 function arg5(a, b, c, d, e, f, g, h, i ,j) {
   return e;
 }
+
 function get5() {
   return arg5(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
@@ -63,6 +65,7 @@ function get5() {
 function arg6(a, b, c, d, e, f, g, h, i ,j) {
   return f;
 }
+
 function get6() {
   return arg6(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
@@ -70,6 +73,7 @@ function get6() {
 function arg7(a, b, c, d, e, f, g, h, i ,j) {
   return g;
 }
+
 function get7() {
   return arg7(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
@@ -77,6 +81,7 @@ function get7() {
 function arg8(a, b, c, d, e, f, g, h, i ,j) {
   return h;
 }
+
 function get8() {
   return arg8(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
@@ -84,6 +89,7 @@ function get8() {
 function arg9(a, b, c, d, e, f, g, h, i ,j) {
   return i;
 }
+
 function get9() {
   return arg9(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
@@ -91,6 +97,7 @@ function get9() {
 function arg10(a, b, c, d, e, f, g, h, i ,j) {
   return j;
 }
+
 function get10() {
   return arg10(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
@@ -100,6 +107,26 @@ function fac(x) {
     return (x * fac((x - 1)));
   }
   return 1;
+}
+
+function eq(x, y) {
+  return (x == y);
+}
+
+function lt(x, y) {
+  return (x < y);
+}
+
+function lte(x, y) {
+  return (x <= y);
+}
+
+function gt(x, y) {
+  return (x > y);
+}
+
+function gte(x, y) {
+  return (x >= y);
 }
 
 add(1, 1);
