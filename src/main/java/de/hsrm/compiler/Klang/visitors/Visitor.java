@@ -10,6 +10,12 @@ public interface Visitor<R> {
     R visit(IntegerExpression e);
     R visit(Variable e);
     R visit(AdditionExpression e);
+    R visit(EqualityExpression e);
+    R visit(NotEqualityExpression e);
+    R visit(GTExpression e);
+    R visit(GTEExpression e);
+    R visit(LTExpression e);
+    R visit(LTEExpression e);
     R visit(SubstractionExpression e);
     R visit(MultiplicationExpression e);
     R visit(DivisionExpression e);

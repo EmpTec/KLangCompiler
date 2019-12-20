@@ -72,6 +72,66 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     }
 
     @Override
+    public Void visit(EqualityExpression e) {
+      ex.write("(");
+      e.lhs.welcome(this);
+      ex.write(" == ");
+      e.rhs.welcome(this);
+      ex.write(")");
+      return null;
+    }
+
+    @Override
+    public Void visit(NotEqualityExpression e) {
+      ex.write("(");
+      e.lhs.welcome(this);
+      ex.write(" != ");
+      e.rhs.welcome(this);
+      ex.write(")");
+      return null;
+    }
+  
+    @Override
+    public Void visit(GTExpression e) {
+      ex.write("(");
+      e.lhs.welcome(this);
+      ex.write(" > ");
+      e.rhs.welcome(this);
+      ex.write(")");
+      return null;
+    }
+  
+    @Override
+    public Void visit(GTEExpression e) {
+      ex.write("(");
+      e.lhs.welcome(this);
+      ex.write(" >= ");
+      e.rhs.welcome(this);
+      ex.write(")");
+      return null;
+    }
+  
+    @Override
+    public Void visit(LTExpression e) {
+      ex.write("(");
+      e.lhs.welcome(this);
+      ex.write(" < ");
+      e.rhs.welcome(this);
+      ex.write(")");
+      return null;
+    }
+  
+    @Override
+    public Void visit(LTEExpression e) {
+      ex.write("(");
+      e.lhs.welcome(this);
+      ex.write(" <= ");
+      e.rhs.welcome(this);
+      ex.write(")");
+      return null;
+    }
+
+    @Override
     public Void visit(AdditionExpression e) {
         ex.write("(");
         e.lhs.welcome(this);
@@ -120,7 +180,6 @@ public class PrettyPrintVisitor implements Visitor<Void> {
         ex.write(")");
         return null;
     }
-
 
     @Override
     public Void visit(NegateExpression e) {

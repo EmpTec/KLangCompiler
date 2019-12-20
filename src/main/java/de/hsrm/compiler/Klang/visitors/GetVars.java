@@ -25,6 +25,48 @@ class GetVars implements Visitor<Void> {
   }
 
   @Override
+  public Void visit(EqualityExpression e) {
+    e.lhs.welcome(this);
+    e.rhs.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(NotEqualityExpression e) {
+    e.lhs.welcome(this);
+    e.rhs.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(GTExpression e) {
+    e.lhs.welcome(this);
+    e.rhs.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(GTEExpression e) {
+    e.lhs.welcome(this);
+    e.rhs.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(LTExpression e) {
+    e.lhs.welcome(this);
+    e.rhs.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(LTEExpression e) {
+    e.lhs.welcome(this);
+    e.rhs.welcome(this);
+    return null;
+  }
+
+  @Override
   public Void visit(AdditionExpression e) {
     e.lhs.welcome(this);
     e.rhs.welcome(this);
