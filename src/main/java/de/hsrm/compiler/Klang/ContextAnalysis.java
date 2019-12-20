@@ -97,6 +97,31 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     return new AdditionExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
   }
 
+  @Override 
+  public Node visitEqualityExpression(KlangParser.EqualityExpressionContext ctx) { 
+    return new EqualityExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
+  @Override 
+  public Node visitLessThanExpression(KlangParser.LessThanExpressionContext ctx) { 
+    return new LTExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
+  @Override 
+  public Node visitGreaterThanExpression(KlangParser.GreaterThanExpressionContext ctx) { 
+    return new GTExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
+  @Override 
+  public Node visitLessThanOrEqualToExpression(KlangParser.LessThanOrEqualToExpressionContext ctx) { 
+    return new LTEExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
+  @Override 
+  public Node visitGreaterThanOrEqualToExpression(KlangParser.GreaterThanOrEqualToExpressionContext ctx) { 
+    return new GTEExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
   @Override
   public Node visitSubstractionExpression(KlangParser.SubstractionExpressionContext ctx) {
     return new SubstractionExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));

@@ -21,6 +21,56 @@ public class EvalVisitor implements Visitor<Value> {
   }
 
   @Override
+  public Value visit(EqualityExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    if (lhs.asInteger() == rhs.asInteger()) {
+      return new Value(1);
+    }
+    return new Value(0);
+  }
+
+  @Override
+  public Value visit(GTExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    if (lhs.asInteger() > rhs.asInteger()) {
+      return new Value(1);
+    }
+    return new Value(0);
+  }
+
+  @Override
+  public Value visit(GTEExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    if (lhs.asInteger() >= rhs.asInteger()) {
+      return new Value(1);
+    }
+    return new Value(0);
+  }
+
+  @Override
+  public Value visit(LTExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    if (lhs.asInteger() < rhs.asInteger()) {
+      return new Value(1);
+    }
+    return new Value(0);
+  }
+
+  @Override
+  public Value visit(LTEExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    if (lhs.asInteger() <= rhs.asInteger()) {
+      return new Value(1);
+    }
+    return new Value(0);
+  }
+
+  @Override
   public Value visit(AdditionExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
