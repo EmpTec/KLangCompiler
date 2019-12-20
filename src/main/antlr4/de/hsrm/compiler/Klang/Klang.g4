@@ -55,6 +55,12 @@ expression
   | OPAR lhs=expression MUL rhs=expression CPAR #multiplicationExpression
   | OPAR lhs=expression DIV rhs=expression CPAR #divisionExpression
   | OPAR lhs=expression MOD rhs=expression CPAR #moduloExpression
+  | OPAR lhs=expression EQEQ rhs=expression CPAR #equalityExpression
+  | OPAR lhs=expression LT rhs=expression CPAR #lessThanExpression
+  | OPAR lhs=expression GT rhs=expression CPAR #greaterThanExpression
+  | OPAR lhs=expression LTE rhs=expression CPAR #lessThanOrEqualToExpression
+  | OPAR lhs=expression GTE rhs=expression CPAR #GreaterThanOrEqualToExpression
+  
   | SUB expression #negateExpression
   | functionCall #functionCallExpression
   ;
@@ -86,6 +92,11 @@ OPAR: '(';
 CPAR: ')';
 COMMA: ',';
 EQUAL: '=';
+EQEQ: '==';
+LT: '<';
+GT: '>';
+LTE: '<=';
+GTE: '>=';
 
 MUL: '*';
 ADD: '+';
