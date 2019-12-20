@@ -96,6 +96,27 @@ public class GenASM implements Visitor<Void> {
   }
 
   @Override
+  public Void visit(NotEqualityExpression e) {
+    int lblTrue = ++lCount;
+    int lblEnd = ++lCount;
+
+    e.lhs.welcome(this);
+    this.ex.write("    pushq %rax\n");
+    e.rhs.welcome(this);
+    this.ex.write("    popq %rbx\n");
+    this.ex.write("    cmp %rax, %rbx\n");
+    this.ex.write("    jne .L" + lblTrue + "\n");
+    // false
+    this.ex.write("    movq $0, %rax\n");
+    this.ex.write("    jmp .L" + lblEnd + "\n");
+    this.ex.write(".L" + lblTrue + ":\n");
+    // true
+    this.ex.write("   movq $1, %rax\n");
+    this.ex.write(".L" + lblEnd + ":\n");
+    return null;
+  }
+
+  @Override
   public Void visit(GTExpression e) {
     int lblTrue = ++lCount;
     int lblEnd = ++lCount;

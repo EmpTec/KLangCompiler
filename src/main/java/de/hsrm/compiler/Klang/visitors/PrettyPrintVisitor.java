@@ -80,6 +80,16 @@ public class PrettyPrintVisitor implements Visitor<Void> {
       ex.write(")");
       return null;
     }
+
+    @Override
+    public Void visit(NotEqualityExpression e) {
+      ex.write("(");
+      e.lhs.welcome(this);
+      ex.write(" != ");
+      e.rhs.welcome(this);
+      ex.write(")");
+      return null;
+    }
   
     @Override
     public Void visit(GTExpression e) {

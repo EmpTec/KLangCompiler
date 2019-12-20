@@ -11,6 +11,7 @@ public interface Visitor<R> {
     R visit(Variable e);
     R visit(AdditionExpression e);
     R visit(EqualityExpression e);
+    R visit(NotEqualityExpression e);
     R visit(GTExpression e);
     R visit(GTEExpression e);
     R visit(LTExpression e);

@@ -113,6 +113,10 @@ function eq(x, y) {
   return (x == y);
 }
 
+function neq(x, y) {
+  return (x != y);
+}
+
 function lt(x, y) {
   return (x < y);
 }

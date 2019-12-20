@@ -27,6 +27,11 @@ int runComparisonTests() {
   failed += comparisonTest("==", 0, 1, 0, eq(0, 1));
   failed += comparisonTest("==", 0, 0, 1, eq(0, 0));
 
+  failed += comparisonTest("!=", 1, 1, 0, neq(1, 1));
+  failed += comparisonTest("!=", 1, 0, 1, neq(1, 0));
+  failed += comparisonTest("!=", 0, 1, 1, neq(0, 1));
+  failed += comparisonTest("!=", 0, 0, 0, neq(0, 0));
+
   failed += comparisonTest("<", 1, 1, 0, lt(1, 1));
   failed += comparisonTest("<", 1, 0, 0, lt(1, 0));
   failed += comparisonTest("<", 0, 1, 1, lt(0, 1));

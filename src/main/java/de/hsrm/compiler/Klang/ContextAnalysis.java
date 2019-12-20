@@ -103,6 +103,11 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override 
+  public Node visitNotEqualityExpression(KlangParser.NotEqualityExpressionContext ctx) { 
+    return new NotEqualityExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
+  @Override 
   public Node visitLessThanExpression(KlangParser.LessThanExpressionContext ctx) { 
     return new LTExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
   }

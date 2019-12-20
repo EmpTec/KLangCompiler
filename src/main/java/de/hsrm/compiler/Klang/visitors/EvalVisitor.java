@@ -31,6 +31,16 @@ public class EvalVisitor implements Visitor<Value> {
   }
 
   @Override
+  public Value visit(NotEqualityExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    if (lhs.asInteger() != rhs.asInteger()) {
+      return new Value(1);
+    }
+    return new Value(0);
+  }
+
+  @Override
   public Value visit(GTExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
