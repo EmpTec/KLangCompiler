@@ -133,6 +133,11 @@ function gte(x, y) {
   return (x >= y);
 }
 
+function selfMinus(x) {
+  x = (x - 1);
+  return x;
+}
+
 function myWhile(end) {
   let cond = 0;
   while ((cond < end)) {
@@ -141,4 +146,4 @@ function myWhile(end) {
   return cond;
 }
 
-add(1, 1);
+add(1, 1); 

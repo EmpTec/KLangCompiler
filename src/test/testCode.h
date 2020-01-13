@@ -8,3 +8,4 @@ int mul(int x, int y);
 int modulo(int x, int y);
 int neg(int x);
 int id(int x);
+int selfMinus(int x);

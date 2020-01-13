@@ -21,6 +21,10 @@ int cNeg(int x) {
 int cId(int x) {
   return x;
 }
+int cSelfMinus(int x) {
+  x = x - 1;
+  return x;
+}
 
 void printSuccess(char* name, int x, int y, int expected, int result) {
   printf("SUCCESS:\t%s(%d, %d)\tGOT: %d\tExpected: %d\n", name, x, y, result, expected);
@@ -104,6 +108,12 @@ int main(){
   failed +=  testOneArg("id", cId, id, 0);
   failed +=  testOneArg("id", cId, id, -1);
   failed +=  testOneArg("id", cId, id, 15);
+
+  printf("\nMisc Tests\n");
+  failed += testOneArg("selfMinus", cSelfMinus, selfMinus, 5);
+  failed += testOneArg("selfMinus", cSelfMinus, selfMinus, 0);
+  failed += testOneArg("selfMinus", cSelfMinus, selfMinus, 100);
+  failed += testOneArg("selfMinus", cSelfMinus, selfMinus, -50);
 
   // Tests for passing arguments to functions
   failed += runFunctionCallTests();
