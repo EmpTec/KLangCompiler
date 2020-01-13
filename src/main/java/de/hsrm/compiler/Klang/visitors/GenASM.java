@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
+import de.hsrm.compiler.Klang.nodes.loops.whileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
 public class GenASM implements Visitor<Void> {
@@ -264,30 +265,44 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(IfStatement e) {
-      int lblElse = ++lCount;
-      int lblEnd = ++lCount;
-      boolean hasElse = e.alt != null || e.elif != null;
-      e.cond.welcome(this);
-      this.ex.write("    cmp $0, %rax\n");
-      // in case of cond evaluating to false, jump to else/elif
-      // Jump to end if there is no else part, this saves a label declaration
-      if (hasElse) {
-        this.ex.write("    jz .L" + lblElse + "\n");
+    int lblElse = ++lCount;
+    int lblEnd = ++lCount;
+    boolean hasElse = e.alt != null || e.elif != null;
+    e.cond.welcome(this);
+    this.ex.write("    cmp $0, %rax\n");
+    // in case of cond evaluating to false, jump to else/elif
+    // Jump to end if there is no else part, this saves a label declaration
+    if (hasElse) {
+      this.ex.write("    jz .L" + lblElse + "\n");
+    } else {
+      this.ex.write("    jz .L" + lblEnd + "\n");
+    }
+    e.then.welcome(this);
+    if (hasElse) {
+      this.ex.write("    jmp .L" + lblEnd + "\n");
+      this.ex.write(".L" + lblElse + ":\n");
+      if (e.alt != null) {
+        e.alt.welcome(this);
       } else {
-        this.ex.write("    jz .L" + lblEnd + "\n");
+        e.elif.welcome(this);
       }
-      e.then.welcome(this);
-      if (hasElse) {
-        this.ex.write("    jmp .L" + lblEnd + "\n");
-        this.ex.write(".L" + lblElse + ":\n");
-        if (e.alt != null) {
-          e.alt.welcome(this);
-        } else {
-          e.elif.welcome(this);
-        }
-      }
-      this.ex.write(".L" + lblEnd + ":\n");
-      return null;
+    }
+    this.ex.write(".L" + lblEnd + ":\n");
+    return null;
+  }
+  
+  @Override
+  public Void visit(whileLoop e) {
+    int lblCond = ++lCount;
+    int lblEnd = ++lCount;
+    this.ex.write(".L" + lblCond + ":\n");
+    e.cond.welcome(this);
+    this.ex.write("    cmp $0, %rax\n");
+    this.ex.write("    jz .L" + lblEnd + "\n");
+    e.block.welcome(this);
+    this.ex.write("    jmp .L" + lblCond + "\n");
+    this.ex.write(".L" + lblEnd + ":\n");
+    return null;
   }
 
   @Override
@@ -351,10 +366,10 @@ public class GenASM implements Visitor<Void> {
     // Merke dir die offsets der parameter, die direkt auf den stack gelegt wurden
     int offset = 16; // Per Stack übergebene Parameter liegen über unserm BSP
     // Per stack übergebene variablen in env registrieren
-		for (int i = this.rs.length; i < e.parameters.length; i++) {
-			env.put(e.parameters[i], offset);
-			offset += 8;
-		}
+    for (int i = this.rs.length; i < e.parameters.length; i++) {
+      env.put(e.parameters[i], offset);
+      offset += 8;
+    }
 
     // pushe die aufrufparameter aus den Registern wieder auf den Stack
     offset = 0;
@@ -363,7 +378,7 @@ public class GenASM implements Visitor<Void> {
       offset -= 8;
       this.env.put(e.parameters[i], offset); // negative, liegt unter aktuellem BP
     }
-    
+
     // Reserviere Platz auf dem Stack für jede lokale variable
     for (String lok_var : vars) {
       offset -= 8;
@@ -384,7 +399,7 @@ public class GenASM implements Visitor<Void> {
     }
 
     // Den Rest auf den stack pushen
-    for (int i = e.arguments.length -1; i >= this.rs.length; i--) {
+    for (int i = e.arguments.length - 1; i >= this.rs.length; i--) {
       e.arguments[i].welcome(this);
       this.ex.write("  pushq %rax\n");
     }

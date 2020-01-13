@@ -114,6 +114,9 @@ int main(){
   // Tests for comparison expressions
   failed += runComparisonTests();
 
+  // Tests for while loop
+  failed += runWhileTests();
+
   printf("\n=== Failed Tests: %d\n", failed);
 
   if (failed > 0) {

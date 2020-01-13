@@ -4,6 +4,7 @@ import java.util.Set;
 
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
+import de.hsrm.compiler.Klang.nodes.loops.whileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
 class GetVars implements Visitor<Void> {
@@ -116,6 +117,13 @@ class GetVars implements Visitor<Void> {
     } else if (e.elif != null) {
       e.elif.welcome(this);
     }
+    return null;
+  }
+
+  @Override
+  public Void visit(whileLoop e) {
+    e.cond.welcome(this);
+    e.block.welcome(this);
     return null;
   }
 

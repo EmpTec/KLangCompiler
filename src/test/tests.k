@@ -133,4 +133,12 @@ function gte(x, y) {
   return (x >= y);
 }
 
+function myWhile(end) {
+  let cond = 0;
+  while ((cond < end)) {
+    cond = (cond + 1);
+  } 
+  return cond;
+}
+
 add(1, 1);

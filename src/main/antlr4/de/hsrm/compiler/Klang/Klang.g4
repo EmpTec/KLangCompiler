@@ -26,6 +26,7 @@ statement
   | variable_declaration
   | variable_assignment
   | return_statement
+  | whileLoop
   ;
 
 print
@@ -79,12 +80,17 @@ arguments
   : (expression (COMMA expression)*)?
   ;
 
+whileLoop
+  : WHILE OPAR cond = expression CPAR braced_block
+  ;
+
 PRINT: 'print';
 IF: 'if';
 ELSE: 'else';
 FUNC: 'function';
 RETURN: 'return';
 LET: 'let';
+WHILE: 'while';
 
 SCOL: ';';
 OBRK: '{';

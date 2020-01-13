@@ -4,6 +4,7 @@ import de.hsrm.compiler.Klang.nodes.Block;
 import de.hsrm.compiler.Klang.nodes.FunctionDefinition;
 import de.hsrm.compiler.Klang.nodes.Program;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
+import de.hsrm.compiler.Klang.nodes.loops.*;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
 public interface Visitor<R> {
@@ -22,6 +23,7 @@ public interface Visitor<R> {
     R visit(ModuloExpression e);
     R visit(NegateExpression e);
     R visit(IfStatement e);
+    R visit(whileLoop e);
     R visit(PrintStatement e);
     R visit(VariableDeclaration e);
     R visit(VariableAssignment e);
