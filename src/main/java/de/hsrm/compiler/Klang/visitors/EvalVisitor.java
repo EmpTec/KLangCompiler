@@ -8,6 +8,7 @@ import de.hsrm.compiler.Klang.nodes.Block;
 import de.hsrm.compiler.Klang.nodes.FunctionDefinition;
 import de.hsrm.compiler.Klang.nodes.Program;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
+import de.hsrm.compiler.Klang.nodes.loops.doWhileLoop;
 import de.hsrm.compiler.Klang.nodes.loops.whileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
@@ -156,14 +157,24 @@ public class EvalVisitor implements Visitor<Value> {
   public Value visit(whileLoop e) {
     Value condition = e.cond.welcome(this);
     Value result = null;
-    while(condition.asInteger() != 0) {
-      System.out.println(condition.asInteger());
+    while (condition.asInteger() != 0) {
       result = e.block.welcome(this);
     }
-    
+
     return result;
   }
- 
+
+  @Override
+  public Value visit(doWhileLoop e) {
+    Value condition = e.cond.welcome(this);
+    Value result = null;
+    do {
+      result = e.block.welcome(this);
+    } while (condition.asInteger() != 0);
+
+    return result;
+  }
+
   @Override
   public Value visit(PrintStatement e) {
     Value value = e.expression.welcome(this);

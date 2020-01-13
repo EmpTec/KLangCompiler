@@ -125,7 +125,7 @@ int main(){
   failed += runComparisonTests();
 
   // Tests for while loop
-  failed += runWhileTests();
+  failed += runLoopTests();
 
   printf("\n=== Failed Tests: %d\n", failed);
 

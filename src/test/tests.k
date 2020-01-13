@@ -146,4 +146,12 @@ function myWhile(end) {
   return cond;
 }
 
+function myDoWhile(end) {
+  let cond = 0;
+  do {
+    cond = (cond + 1);
+  } while((cond < end));
+  return cond;
+}
+
 add(1, 1); 

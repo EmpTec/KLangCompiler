@@ -27,6 +27,7 @@ statement
   | variable_assignment
   | return_statement
   | whileLoop
+  | doWhileLoop
   ;
 
 print
@@ -84,6 +85,10 @@ whileLoop
   : WHILE OPAR cond = expression CPAR braced_block
   ;
 
+doWhileLoop
+  : DO braced_block WHILE OPAR cond = expression CPAR SCOL
+  ;
+
 PRINT: 'print';
 IF: 'if';
 ELSE: 'else';
@@ -91,6 +96,7 @@ FUNC: 'function';
 RETURN: 'return';
 LET: 'let';
 WHILE: 'while';
+DO: 'do';
 
 SCOL: ';';
 OBRK: '{';

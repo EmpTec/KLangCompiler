@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
+import de.hsrm.compiler.Klang.nodes.loops.doWhileLoop;
 import de.hsrm.compiler.Klang.nodes.loops.whileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
@@ -302,6 +303,18 @@ public class GenASM implements Visitor<Void> {
     e.block.welcome(this);
     this.ex.write("    jmp .L" + lblCond + "\n");
     this.ex.write(".L" + lblEnd + ":\n");
+    return null;
+  }
+
+
+  @Override
+  public Void visit(doWhileLoop e) {
+    int lblStart = ++lCount;
+    this.ex.write(".L" + lblStart + ":\n");
+    e.block.welcome(this);
+    e.cond.welcome(this);
+    this.ex.write("    cmp $0, %rax\n");
+    this.ex.write("    jnz .L" + lblStart + "\n");
     return null;
   }
 

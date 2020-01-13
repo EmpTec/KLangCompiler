@@ -24,6 +24,7 @@ public interface Visitor<R> {
     R visit(NegateExpression e);
     R visit(IfStatement e);
     R visit(whileLoop e);
+    R visit(doWhileLoop e);
     R visit(PrintStatement e);
     R visit(VariableDeclaration e);
     R visit(VariableAssignment e);

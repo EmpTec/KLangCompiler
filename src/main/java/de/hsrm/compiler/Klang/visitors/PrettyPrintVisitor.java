@@ -3,7 +3,7 @@ package de.hsrm.compiler.Klang.visitors;
 import java.io.*;
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
-import de.hsrm.compiler.Klang.nodes.loops.whileLoop;
+import de.hsrm.compiler.Klang.nodes.loops.*;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
 public class PrettyPrintVisitor implements Visitor<Void> {
@@ -211,6 +211,16 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     e.cond.welcome(this);
     ex.write(") ");
     e.block.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(doWhileLoop e) {
+    ex.write("do ");
+    e.block.welcome(this);
+    ex.write(" while (");
+    e.cond.welcome(this);
+    ex.write(");");
     return null;
   }
 

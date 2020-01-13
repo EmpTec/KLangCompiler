@@ -1,1 +1,0 @@
-int myWhile(int x);
