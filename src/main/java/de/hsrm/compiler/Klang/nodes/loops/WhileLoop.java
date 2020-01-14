@@ -1,7 +1,7 @@
 package de.hsrm.compiler.Klang.nodes.loops;
 
 import de.hsrm.compiler.Klang.nodes.Block;
-import de.hsrm.compiler.Klang.nodes.statements.Statement;;
+import de.hsrm.compiler.Klang.nodes.statements.Statement;
 import de.hsrm.compiler.Klang.nodes.expressions.Expression;
 import de.hsrm.compiler.Klang.visitors.Visitor;
 
