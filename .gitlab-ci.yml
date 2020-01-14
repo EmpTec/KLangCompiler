@@ -18,4 +18,4 @@ test:
     - apt update
     - apt install -y build-essential openjdk-13-jre-headless
   script:
-    - make runTest
+    - make test
