@@ -1,3 +1,6 @@
+void incSuccess();
+void incFailure();
+
 void succ(char* name, int expected, int result);
 void err(char* name, int expected, int result);
 

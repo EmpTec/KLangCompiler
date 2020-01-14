@@ -2,29 +2,41 @@
 #include <stdlib.h>
 #include "test.h"
 
-int main(){
-  int failed = 0;
+int successes, failures = 0;
 
+void incSuccess() {
+  successes += 1;
+}
+
+void incFailure() {
+  failures += 1;
+}
+
+int main(){
   // Tests for various math related functions
-  failed += runMathTests();
+  runMathTests();
 
   // Tests for passing arguments to functions
-  failed += runFunctionCallTests();
+  runFunctionCallTests();
 
   // Tests for recursive funtions
-  failed += runRecursiveTests();
+  runRecursiveTests();
 
   // Tests for comparison expressions
-  failed += runComparisonTests();
+  runComparisonTests();
 
   // Tests for while loop
-  failed += runLoopTests();
+  runLoopTests();
 
-  printf("\n=== Failed Tests: %d\n", failed);
+  printf("\n%d tests in total\n", successes + failures);
 
-  if (failed > 0) {
+  if (failures > 0) {
+    printf("\033[0;31m%d tests were successful\033[0;0m\n", successes);
+    printf("\033[0;31m%d tests failed\033[0;0m\n", failures);
     return EXIT_FAILURE;
   } else {
+    printf("\033[0;32m%d tests were successful\033[0;0m\n", successes);
+    printf("\033[0;32m%d tests failed\033[0;0m\n", failures);
     return EXIT_SUCCESS;
   }
 }

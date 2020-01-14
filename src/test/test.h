@@ -2,8 +2,8 @@
   Alle Test Module
 */
 
-int runFunctionCallTests();
-int runRecursiveTests();
-int runComparisonTests();
-int runLoopTests();
-int runMathTests();
+void runFunctionCallTests();
+void runRecursiveTests();
+void runComparisonTests();
+void runLoopTests();
+void runMathTests();

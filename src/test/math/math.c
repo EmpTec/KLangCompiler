@@ -55,49 +55,46 @@ int math_testOneArg(char* name, int (*correctFunction)(int), int (*testFunction)
 }
 
 int runMathTests() {
-  int failed = 0;
-    printf("\nAddition Tests \n");
-  failed += math_test("add", cAdd, add, 0, 0);
-  failed += math_test("add", cAdd, add, 1, 1);
-  failed += math_test("add", cAdd, add, 2, 0);
-  failed += math_test("add", cAdd, add, 1, 5);
-  failed += math_test("add", cAdd, add, -1, -1);
+  printf("\nAddition Tests \n");
+  math_test("add", cAdd, add, 0, 0);
+  math_test("add", cAdd, add, 1, 1);
+  math_test("add", cAdd, add, 2, 0);
+  math_test("add", cAdd, add, 1, 5);
+  math_test("add", cAdd, add, -1, -1);
 
   printf("\nSubtraction Tests \n");
-  failed += math_test("sub", cSub, sub, 0, 0);
-  failed += math_test("sub", cSub, sub, 1, 1);
-  failed += math_test("sub", cSub, sub, 2, 0);
-  failed += math_test("sub", cSub, sub, 1, 5);
-  failed += math_test("sub", cSub, sub, -1, -1);
+  math_test("sub", cSub, sub, 0, 0);
+  math_test("sub", cSub, sub, 1, 1);
+  math_test("sub", cSub, sub, 2, 0);
+  math_test("sub", cSub, sub, 1, 5);
+  math_test("sub", cSub, sub, -1, -1);
 
   printf("\nMultiplication Tests \n");
-  failed += math_test("mul", cMul, mul, 0, 0);
-  failed += math_test("mul", cMul, mul, 1, 1);
-  failed += math_test("mul", cMul, mul, 2, 0);
-  failed += math_test("mul", cMul, mul, 1, 5);
-  failed += math_test("mul", cMul, mul, -1, -1);
+  math_test("mul", cMul, mul, 0, 0);
+  math_test("mul", cMul, mul, 1, 1);
+  math_test("mul", cMul, mul, 2, 0);
+  math_test("mul", cMul, mul, 1, 5);
+  math_test("mul", cMul, mul, -1, -1);
 
   printf("\nModulo Tests \n");
-  failed +=  math_test("modulo", cModulo, modulo, 1, 1);
-  failed +=  math_test("modulo", cModulo, modulo, 1, 5);
-  failed +=  math_test("modulo", cModulo, modulo, -1, -1);
-  failed +=  math_test("modulo", cModulo, modulo, 1337, 42);
+   math_test("modulo", cModulo, modulo, 1, 1);
+   math_test("modulo", cModulo, modulo, 1, 5);
+   math_test("modulo", cModulo, modulo, -1, -1);
+   math_test("modulo", cModulo, modulo, 1337, 42);
 
   printf("\nNegative Tests\n");
-  failed += math_testOneArg("neg", cNeg, neg, 0);
-  failed += math_testOneArg("neg", cNeg, neg, 1);
-  failed += math_testOneArg("neg", cNeg, neg, -1);
+  math_testOneArg("neg", cNeg, neg, 0);
+  math_testOneArg("neg", cNeg, neg, 1);
+  math_testOneArg("neg", cNeg, neg, -1);
 
   printf("\nIdentity Tests\n");
-  failed +=  math_testOneArg("id", cId, id, 0);
-  failed +=  math_testOneArg("id", cId, id, -1);
-  failed +=  math_testOneArg("id", cId, id, 15);
+   math_testOneArg("id", cId, id, 0);
+   math_testOneArg("id", cId, id, -1);
+   math_testOneArg("id", cId, id, 15);
 
   printf("\nMisc Tests\n");
-  failed += math_testOneArg("selfMinus", cSelfMinus, selfMinus, 5);
-  failed += math_testOneArg("selfMinus", cSelfMinus, selfMinus, 0);
-  failed += math_testOneArg("selfMinus", cSelfMinus, selfMinus, 100);
-  failed += math_testOneArg("selfMinus", cSelfMinus, selfMinus, -50);
-
-  return failed;
+  math_testOneArg("selfMinus", cSelfMinus, selfMinus, 5);
+  math_testOneArg("selfMinus", cSelfMinus, selfMinus, 0);
+  math_testOneArg("selfMinus", cSelfMinus, selfMinus, 100);
+  math_testOneArg("selfMinus", cSelfMinus, selfMinus, -50);
 }

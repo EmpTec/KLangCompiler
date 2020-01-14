@@ -14,8 +14,6 @@ int recursiveTest(char* name, int x, int expected, int result) {
 
 int runRecursiveTests() {
   printf("\nRecursive Tests \n");
-  int failed = 0;
-  failed += recursiveTest("fac", 5, 120, fac(5));
 
-  return failed;
+  recursiveTest("fac", 5, 120, fac(5));
 }
