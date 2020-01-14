@@ -9,7 +9,7 @@ import java.util.TreeSet;
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
-import de.hsrm.compiler.Klang.nodes.loops.whileLoop;
+import de.hsrm.compiler.Klang.nodes.loops.WhileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
 public class GenASM implements Visitor<Void> {
@@ -293,7 +293,7 @@ public class GenASM implements Visitor<Void> {
   }
   
   @Override
-  public Void visit(whileLoop e) {
+  public Void visit(WhileLoop e) {
     int lblCond = ++lCount;
     int lblEnd = ++lCount;
     this.ex.write(".L" + lblCond + ":\n");

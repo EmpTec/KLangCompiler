@@ -23,7 +23,7 @@ public interface Visitor<R> {
     R visit(ModuloExpression e);
     R visit(NegateExpression e);
     R visit(IfStatement e);
-    R visit(whileLoop e);
+    R visit(WhileLoop e);
     R visit(DoWhileLoop e);
     R visit(PrintStatement e);
     R visit(VariableDeclaration e);
