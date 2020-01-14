@@ -20,11 +20,14 @@ braced_block
   : OBRK statement+ CBRK
   ;
 
+
+// Only the first child of a rule alternative will be visited!
+// i.e. SCOL won't be visited, but thats unneccesary anyway
 statement
   : print
   | if_statement
-  | variable_declaration
-  | variable_assignment
+  | variable_declaration SCOL
+  | variable_assignment SCOL
   | return_statement
   | whileLoop
   | doWhileLoop
@@ -39,11 +42,11 @@ if_statement
   ; 
 
 variable_declaration
-  : LET IDENT (EQUAL expression)? SCOL
+  : LET IDENT (EQUAL expression)?
   ;
 
 variable_assignment
-  : IDENT EQUAL expression SCOL
+  : IDENT EQUAL expression
   ;
 
 return_statement

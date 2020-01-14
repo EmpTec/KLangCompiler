@@ -24,11 +24,19 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitStatement(KlangParser.StatementContext ctx) {
+    // The first child is the proper context we need to visit
+    // The second child is either null or just a SCOL!
+    return this.visit(ctx.getChild(0));
+  }
+
+  @Override
   public Node visitBraced_block(KlangParser.Braced_blockContext ctx) {
     Statement[] statements = new Statement[ctx.statement().size()];
-
+    
     for (int i = 0; i < ctx.statement().size(); i++) {
-      Node currentStatement = this.visit(ctx.statement(i));
+      var stmtCtx = ctx.statement(i);
+      Node currentStatement = this.visit(stmtCtx);
       statements[i] = (Statement) currentStatement;
     }
 
