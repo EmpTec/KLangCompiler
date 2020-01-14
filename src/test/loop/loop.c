@@ -15,6 +15,9 @@ int loopTest(char* name, int x, int expected, int result) {
 int runLoopTests() {
   printf("\nLoop Tests \n");
 
+  loopTest("while", 1, 1, myWhile(1));
+  loopTest("while", 0, 0, myWhile(0));
+  loopTest("while", 10, 10, myWhile(10));
   loopTest("while", 5, 5, myWhile(5));
   loopTest("doWhile", 0, 1, myDoWhile(0));
   loopTest("doWhile", 1, 1, myDoWhile(1));
