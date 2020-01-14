@@ -1,4 +1,5 @@
 .PHONY: clean
+.PHONY: cleanTests
 
 run: code.k target/klang-1.0-jar-with-dependencies.jar
 	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang < code.k > code.s
@@ -29,3 +30,7 @@ clean:
 	rm -f code.s
 	rm -f target/klang-1.0-jar-with-dependencies.jar
 	rm -f target/klang-1.0.jar
+
+cleanTests:
+	rm -f ./src/test/test.s
+	rm -f ./src/test/test
