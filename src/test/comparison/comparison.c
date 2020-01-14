@@ -1,20 +1,13 @@
 #include <stdio.h>
 #include "comparison.h"
-
-void printSuccessComp(char* name, int x, int y, int expected, int result) {
-  printf("SUCCESS:\t%d %s %d\tGOT: %d\tExpected: %d\n", x, name, y, result, expected);
-}
-
-void printErrorComp(char* name, int x, int y, int expected, int result) {
-  printf("ERROR:\t\t%d %s %d\tGOT: %d\tExpected: %d\n", x, name, y, result, expected);
-}
+#include "../print/print.h"
 
 int comparisonTest(char* name, int x, int y, int expected, int result) {
   if (expected == result) {
-    printSuccessComp(name, x, y, expected, result);
+    succInfixTwo(name, x, y, expected, result);
     return 0;
   } else {
-    printErrorComp(name, x, y, expected, result);
+    errInfixTwo(name, x, y, expected, result);
     return 1;
   }
 }

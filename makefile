@@ -14,17 +14,17 @@ build: clean target/klang-1.0-jar-with-dependencies.jar
 target/klang-1.0-jar-with-dependencies.jar:
 	mvn package
 
-runTest: ./src/test/test
+test: ./src/test/test
 	./src/test/test
 	
-./src/test/test: ./src/test/tests.s
-	gcc -o ./src/test/test ./src/test/tests.s ./src/test/functionCall/functionCall.c ./src/test/loop/loop.c ./src/test/recursive/recursive.c ./src/test/comparison/comparison.c ./src/test/testCode.c
+./src/test/test: ./src/test/test.s
+	gcc -o ./src/test/test ./src/test/test.s ./src/test/**/*.c ./src/test/test.c
 
-./src/test/tests.s: target/klang-1.0-jar-with-dependencies.jar
-	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang < ./src/test/tests.k > ./src/test/tests.s
+./src/test/test.s: target/klang-1.0-jar-with-dependencies.jar
+	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang < ./src/test/test.k > ./src/test/test.s
 
 clean:
-	rm -f ./src/test/tests.s
+	rm -f ./src/test/test.s
 	rm -f ./src/test/test
 	rm -f code.s
 	rm -f target/klang-1.0-jar-with-dependencies.jar

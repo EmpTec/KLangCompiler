@@ -1,20 +1,13 @@
 #include <stdio.h>
 #include "loop.h"
-
-void printLoopSuccess(char* name, int x,  int expected, int result) {
-  printf("\033[0;32mSUCCESS:\t%s(%d)\tGOT: %d\tExpected: %d\033[0;0m\n", name, x, result, expected);
-}
-
-void printLoopError(char* name, int x, int expected, int result) {
-  printf("\033[0;31mERROR:\t\t%s(%d)\tGOT: %d\tExpected: %d\033[0;0m\n", name, x, result, expected);
-}
+#include "../print/print.h"
 
 int loopTest(char* name, int x, int expected, int result) {
   if (expected == result) {
-    printLoopSuccess(name, x, expected, result);
+    succPrefixOne(name, x, expected, result);
     return 0;
   } else {
-    printLoopError(name, x, expected, result);
+    errPrefixOne(name, x, expected, result);
     return 1;
   }
 }

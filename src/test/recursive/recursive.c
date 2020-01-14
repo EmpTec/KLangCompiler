@@ -1,20 +1,13 @@
 #include <stdio.h>
 #include "recursive.h"
-
-void printRecSuccess(char* name, int x,  int expected, int result) {
-  printf("SUCCESS:\t%s(%d)\tGOT: %d\tExpected: %d\n", name, x, result, expected);
-}
-
-void printRecError(char* name, int x, int expected, int result) {
-  printf("ERROR:\t\t%s(%d)\tGOT: %d\tExpected: %d\n", name, x, result, expected);
-}
+#include "../print/print.h"
 
 int recursiveTest(char* name, int x, int expected, int result) {
   if (expected == result) {
-    printRecSuccess(name, x, expected, result);
+    succPrefixOne(name, x, expected, result);
     return 0;
   } else {
-    printRecError(name, x, expected, result);
+    errPrefixOne(name, x, expected, result);
     return 1;
   }
 }

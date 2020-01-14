@@ -6,3 +6,4 @@ int runFunctionCallTests();
 int runRecursiveTests();
 int runComparisonTests();
 int runLoopTests();
+int runMathTests();
