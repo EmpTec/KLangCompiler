@@ -5,13 +5,13 @@ import de.hsrm.compiler.Klang.nodes.statements.Statement;;
 import de.hsrm.compiler.Klang.nodes.expressions.Expression;
 import de.hsrm.compiler.Klang.visitors.Visitor;
 
-public class doWhileLoop extends Statement {
+public class DoWhileLoop extends Statement {
 
     public Expression cond;
     public Block block;
     public Block alt;
 
-    public doWhileLoop(Expression cond, Block block) {
+    public DoWhileLoop(Expression cond, Block block) {
         this.cond = cond;
         this.block = block;
     }

@@ -215,7 +215,7 @@ public class PrettyPrintVisitor implements Visitor<Void> {
   }
 
   @Override
-  public Void visit(doWhileLoop e) {
+  public Void visit(DoWhileLoop e) {
     ex.write("do ");
     e.block.welcome(this);
     ex.write(" while (");
