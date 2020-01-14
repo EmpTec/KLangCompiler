@@ -17,6 +17,7 @@ public class Klang {
     boolean evaluate = false;
     boolean prettyPrint = false;
     boolean compile = true;
+    String mainName = "main";
 
     List<String> arguments = Arrays.asList(args);
     if (arguments.contains("-h") || arguments.contains("--help") || arguments.contains("?")) {
@@ -29,6 +30,7 @@ public class Klang {
       System.out.println("--evaluate:\t Evaluates the given source code");
       System.out.println("--pretty:\t Pretty print the given source code");
       System.out.println("--no-compile:\t Do not compile the source code");
+      System.out.println("--no-main:\t Do not generate main function, will be generated as 'start'. Useful for testing");
       return;
     }
     if (arguments.contains("--evaluate")) {
@@ -39,6 +41,9 @@ public class Klang {
     }
     if (arguments.contains("--no-compile")) {
       compile = false;
+    }
+    if (arguments.contains("--no-main")) {
+      mainName = "start";
     }
 
     // create a CharStream that reads from standard input
@@ -71,7 +76,7 @@ public class Klang {
       // System.out.println("\nPrinting the assembler code");
       StringWriter wAsm = new StringWriter();
       GenASM.ExWriter exAsm = new GenASM.ExWriter(wAsm);
-      GenASM genasm = new GenASM(exAsm);
+      GenASM genasm = new GenASM(exAsm, mainName);
       node.welcome(genasm);
       System.out.println(wAsm.toString());
     }

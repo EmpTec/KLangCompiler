@@ -56,13 +56,20 @@ public class GenASM implements Visitor<Void> {
   }
 
   public ExWriter ex;
+  private String mainName;
   Map<String, Integer> env = new HashMap<>();
   Set<String> vars;
   String[] rs = { "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9" };
   private int lCount = 0; // Invariante: lCount ist benutzt
 
+  public GenASM(ExWriter ex, String mainName) {
+    this.ex = ex;
+    this.mainName = mainName;
+  }
+
   public GenASM(ExWriter ex) {
     this.ex = ex;
+    this.mainName = "main";
   }
 
   @Override
@@ -445,9 +452,9 @@ public class GenASM implements Visitor<Void> {
       func.welcome(this);
       this.ex.write("\n");
     }
-    this.ex.write(".globl start\n");
-    this.ex.write(".type start, @function\n");
-    this.ex.write("start:\n");
+    this.ex.write(".globl " + mainName + "\n");
+    this.ex.write(".type " +mainName + ", @function\n");
+    this.ex.write(mainName + ":\n");
     this.ex.write("    pushq %rbp\n");
     this.ex.write("    movq %rsp, %rbp\n");
     e.expression.welcome(this);
