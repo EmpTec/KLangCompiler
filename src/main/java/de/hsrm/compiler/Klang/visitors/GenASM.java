@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
+import de.hsrm.compiler.Klang.nodes.loops.ForLoop;
 import de.hsrm.compiler.Klang.nodes.loops.WhileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
@@ -291,7 +292,7 @@ public class GenASM implements Visitor<Void> {
     this.ex.write(".L" + lblEnd + ":\n");
     return null;
   }
-  
+
   @Override
   public Void visit(WhileLoop e) {
     int lblCond = ++lCount;
@@ -306,7 +307,6 @@ public class GenASM implements Visitor<Void> {
     return null;
   }
 
-
   @Override
   public Void visit(DoWhileLoop e) {
     int lblStart = ++lCount;
@@ -315,6 +315,23 @@ public class GenASM implements Visitor<Void> {
     e.cond.welcome(this);
     this.ex.write("    cmp $0, %rax\n");
     this.ex.write("    jnz .L" + lblStart + "\n");
+    return null;
+  }
+  
+  @Override
+  public Void visit(ForLoop e) {
+    int lblStart = ++lCount;
+    int lblEnd = ++lCount;
+    e.init.welcome(this);
+    this.ex.write(".L" + lblStart + ":\n");
+    e.condition.welcome(this);
+    this.ex.write("    cmp $0, %rax\n");
+    this.ex.write("    jz .L" + lblEnd + "\n");
+    e.block.welcome(this);
+    e.step.welcome(this);
+    this.ex.write("    jmp .L" + lblStart + "\n");
+    this.ex.write(".L" + lblEnd + ":\n");
+        
     return null;
   }
 

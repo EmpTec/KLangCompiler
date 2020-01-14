@@ -6,6 +6,7 @@ import java.util.HashSet;
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
+import de.hsrm.compiler.Klang.nodes.loops.ForLoop;
 import de.hsrm.compiler.Klang.nodes.loops.WhileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 import de.hsrm.compiler.Klang.types.Type;
@@ -81,6 +82,14 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     return new DoWhileLoop((Expression) condition, (Block) block);
   }
 
+  @Override
+  public Node visitForLoop(KlangParser.ForLoopContext ctx) {
+    Node init = this.visit(ctx.init);
+    Node condition = this.visit(ctx.cond);
+    Node step = this.visit(ctx.step);
+    Node block = this.visit(ctx.braced_block());
+    return new ForLoop((Statement) init, (Expression) condition, (VariableAssignment) step, (Block) block);
+  }
 
   @Override
   public Node visitVariable_declaration(KlangParser.Variable_declarationContext ctx) {

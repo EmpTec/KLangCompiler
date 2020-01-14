@@ -25,6 +25,7 @@ public interface Visitor<R> {
     R visit(IfStatement e);
     R visit(WhileLoop e);
     R visit(DoWhileLoop e);
+    R visit(ForLoop e);
     R visit(PrintStatement e);
     R visit(VariableDeclaration e);
     R visit(VariableAssignment e);

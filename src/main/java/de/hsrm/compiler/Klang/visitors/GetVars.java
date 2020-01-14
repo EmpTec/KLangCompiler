@@ -5,6 +5,7 @@ import java.util.Set;
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
+import de.hsrm.compiler.Klang.nodes.loops.ForLoop;
 import de.hsrm.compiler.Klang.nodes.loops.WhileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
@@ -131,6 +132,15 @@ class GetVars implements Visitor<Void> {
   @Override
   public Void visit(DoWhileLoop e) {
     e.cond.welcome(this);
+    e.block.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(ForLoop e) {
+    e.init.welcome(this);
+    e.condition.welcome(this);
+    e.step.welcome(this);
     e.block.welcome(this);
     return null;
   }

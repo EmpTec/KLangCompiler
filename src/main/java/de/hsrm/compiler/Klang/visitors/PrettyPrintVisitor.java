@@ -225,6 +225,19 @@ public class PrettyPrintVisitor implements Visitor<Void> {
   }
 
   @Override
+  public Void visit(ForLoop e) {
+    ex.write("for (");
+    e.init.welcome(this);
+    ex.write(" ");
+    e.condition.welcome(this);
+    ex.write("; ");
+    e.step.welcome(this);
+    ex.write(") ");
+    e.block.welcome(this);
+    return null;
+  }
+
+  @Override
   public Void visit(PrintStatement e) {
     ex.write("print ");
     e.expression.welcome(this);
@@ -241,7 +254,6 @@ public class PrettyPrintVisitor implements Visitor<Void> {
       e.expression.welcome(this);
     }
 
-    ex.write(";");
     return null;
   }
 
@@ -249,7 +261,6 @@ public class PrettyPrintVisitor implements Visitor<Void> {
   public Void visit(VariableAssignment e) {
     ex.write(e.name + " = ");
     e.expression.welcome(this);
-    ex.write(";");
     return null;
   }
 
@@ -268,6 +279,9 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     for (Statement stmt : e.statements) {
       ex.nl();
       stmt.welcome(this);
+      if (stmt.getClass() == VariableAssignment.class || stmt.getClass() == VariableDeclaration.class) {
+        ex.write(";");
+      }
     }
     ex.subIndent();
     ex.nl();

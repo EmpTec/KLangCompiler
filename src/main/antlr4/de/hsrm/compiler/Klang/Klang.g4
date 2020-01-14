@@ -31,6 +31,7 @@ statement
   | return_statement
   | whileLoop
   | doWhileLoop
+  | forLoop
   ;
 
 print
@@ -40,6 +41,11 @@ print
 if_statement
   : IF OPAR cond = expression CPAR then = braced_block (ELSE (alt = braced_block | elif = if_statement) )?
   ; 
+
+variableDeclarationOrAssignment
+  : variable_assignment
+  | variable_declaration
+  ;
 
 variable_declaration
   : LET IDENT (EQUAL expression)?
@@ -66,7 +72,6 @@ expression
   | OPAR lhs=expression GT rhs=expression CPAR #greaterThanExpression
   | OPAR lhs=expression LTE rhs=expression CPAR #lessThanOrEqualToExpression
   | OPAR lhs=expression GTE rhs=expression CPAR #GreaterThanOrEqualToExpression
-  
   | SUB expression #negateExpression
   | functionCall #functionCallExpression
   ;
@@ -92,6 +97,12 @@ doWhileLoop
   : DO braced_block WHILE OPAR cond = expression CPAR SCOL
   ;
 
+forLoop
+  : FOR OPAR init = variableDeclarationOrAssignment SCOL
+             cond = expression SCOL 
+             step = variable_assignment CPAR braced_block
+  ;
+
 PRINT: 'print';
 IF: 'if';
 ELSE: 'else';
@@ -100,6 +111,7 @@ RETURN: 'return';
 LET: 'let';
 WHILE: 'while';
 DO: 'do';
+FOR: 'for';
 
 SCOL: ';';
 OBRK: '{';

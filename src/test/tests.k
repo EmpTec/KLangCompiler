@@ -154,4 +154,12 @@ function myDoWhile(end) {
   return cond;
 }
 
+function myFor(end) {
+  let x = 0;
+  for (let i = 0; (i < end); i = (i + 1)) {
+    x = (x + 1);
+  }
+  return x;
+}
+
 add(1, 1); 
