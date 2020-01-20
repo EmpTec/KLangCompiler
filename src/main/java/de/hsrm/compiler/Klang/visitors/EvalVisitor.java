@@ -130,6 +130,26 @@ public class EvalVisitor implements Visitor<Value> {
   }
 
   @Override
+  public Value visit(OrExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    return new Value(lhs.asBoolean() || rhs.asBoolean());
+  }
+
+  @Override
+  public Value visit(AndExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    Value rhs = e.rhs.welcome(this);
+    return new Value(lhs.asBoolean() && rhs.asBoolean());
+  }
+
+  @Override
+  public Value visit(NotExpression e) {
+    Value lhs = e.lhs.welcome(this);
+    return new Value(!lhs.asBoolean());
+  }
+
+  @Override
   public Value visit(Variable e) {
     Value result = this.env.get(e.name);
 

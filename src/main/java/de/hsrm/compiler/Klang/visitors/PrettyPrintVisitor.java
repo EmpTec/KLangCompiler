@@ -196,6 +196,33 @@ public class PrettyPrintVisitor implements Visitor<Void> {
   }
 
   @Override
+  public Void visit(OrExpression e) {
+    ex.write("(");
+    e.lhs.welcome(this);
+    ex.write(" || ");
+    e.rhs.welcome(this);
+    ex.write(")");
+    return null;
+  }
+
+  @Override
+  public Void visit(AndExpression e) {
+    ex.write("(");
+    e.lhs.welcome(this);
+    ex.write(" && ");
+    e.rhs.welcome(this);
+    ex.write(")");
+    return null;
+  }
+
+  @Override
+  public Void visit(NotExpression e) {
+    ex.write("!");
+    e.lhs.welcome(this);
+    return null;
+  }
+
+  @Override
   public Void visit(IfStatement e) {
     ex.write("if (");
     e.cond.welcome(this);

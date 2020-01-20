@@ -279,6 +279,103 @@ public class GenASM implements Visitor<Void> {
   }
 
   @Override
+  public Void visit(OrExpression e) {
+    int lblTrue = ++lCount;
+    int lblFalse = ++lCount;
+    int lblEnd = ++lCount;
+
+    // Werte LHS aus
+    // Wenn LHS != 0 bedeutet das true
+    // also können wir direkt sagen dass das Ergebnis true ist
+    e.lhs.welcome(this);
+    this.ex.write("    cmpq $0, %rax\n");
+    this.ex.write("    jne .L" + lblTrue + "\n");
+
+    // LHS war false, also werte RHS aus
+    // Wenn RHS == 0 bedeutet das false,
+    // also ist das Gesamtergebnis false
+    e.rhs.welcome(this);
+    this.ex.write("    cmpq $0, %rax\n");
+    this.ex.write("    je .L" + lblFalse + "\n");
+
+    // Die Expression wertet zu true aus
+    // Springe am false Teil vorbei
+    this.ex.write(".L" + lblTrue + ":\n");
+    this.ex.write("    movq $1, %rax\n");
+    this.ex.write("    jmp .L" + lblEnd + "\n");
+
+    // Die Expressoin wertet zu false aus
+    this.ex.write(".L" + lblFalse + ":\n");
+    this.ex.write("    movq $0, %rax\n");
+
+    // Das hier ist das ende
+    this.ex.write(".L" + lblEnd + ":\n");
+    return null;
+  }
+
+  @Override
+  public Void visit(AndExpression e) {
+    int lblTrue = ++lCount;
+    int lblFalse = ++lCount;
+    int lblEnd = ++lCount;
+
+    // Werte LHS aus
+    // Wenn LHS == 0, bedeutet das false
+    // also können wir direkt sagen dass das Ergebnis false ist
+    e.lhs.welcome(this);
+    this.ex.write("    cmpq $0, %rax\n");
+    this.ex.write("    je .L" + lblFalse + "\n");
+
+    // LHS war true, also werte RHS aus.
+    // Wenn RHS == 0, bedeutet das false
+    // also ist das Gesamtergebnis false
+    e.rhs.welcome(this);
+    this.ex.write("    cmpq $0, %rax\n");
+    this.ex.write("    je .L" + lblFalse +"\n");
+
+    // Die Expression wertet zu true aus
+    // Springe am false Teil vorbei
+    this.ex.write(".L" + lblTrue +":\n");
+    this.ex.write("    movq $1, %rax\n");
+    this.ex.write("    jmp .L" + lblEnd + "\n");
+
+    // Die Expressoin wertet zu false aus
+    this.ex.write(".L" + lblFalse +":\n");
+    this.ex.write("    movq $0, %rax\n");
+
+    // Das hier ist das ende
+    this.ex.write(".L" + lblEnd +":\n");
+    return null;
+  }
+
+  @Override
+  public Void visit(NotExpression e) {
+    int lblFalse = ++lCount;
+    int lblEnd = ++lCount;
+    
+    // Werte LHS aus
+    // Wenn LHS != 0 bedeutet das true, also jumpe zum false Teil
+    // Wenn nicht, falle durch zum true Teil
+    e.lhs.welcome(this);
+    this.ex.write("    cmpq $0, %rax\n");
+    this.ex.write("    jne .L" +lblFalse +"\n");
+
+    // Hier ist das Ergebnis true
+    // Springe am false Teil vorbei
+    this.ex.write("    movq $1, %rax\n");
+    this.ex.write("    jmp .L" +lblEnd +"\n");
+
+    // Hier ist das Ergebnis false
+    // Falle zum Ende durch
+    this.ex.write(".L" +lblFalse + ":\n");
+    this.ex.write("movq $0, %rax\n");
+
+    // Hier ist das Ende
+    this.ex.write(".L" +lblEnd + ":\n");
+    return null;
+  }
+
+  @Override
   public Void visit(IfStatement e) {
     int lblElse = ++lCount;
     int lblEnd = ++lCount;
