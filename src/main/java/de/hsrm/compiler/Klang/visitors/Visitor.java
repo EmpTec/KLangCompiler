@@ -8,7 +8,11 @@ import de.hsrm.compiler.Klang.nodes.loops.*;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 
 public interface Visitor<R> {
+    R visit(OrExpression e);
+    R visit(AndExpression e);
+    R visit (NotExpression e);
     R visit(IntegerExpression e);
+    R visit(BooleanExpression e);
     R visit(Variable e);
     R visit(AdditionExpression e);
     R visit(EqualityExpression e);

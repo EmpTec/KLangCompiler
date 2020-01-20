@@ -10,4 +10,8 @@ public class Value {
     public int asInteger() {
         return (int) this.value;
     }
+
+    public boolean asBoolean() {
+        return (boolean) this.value;
+    }
 }

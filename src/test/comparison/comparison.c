@@ -12,6 +12,26 @@ int comparisonTest(char* name, int x, int y, int expected, int result) {
   }
 }
 
+int boolTestOne(char* name, bool x, bool expected, bool result) {
+  if (expected == result) {
+    bool_succPrefixOne(name, x, expected, result);
+    return 0;
+  } else {
+    bool_errPrefixOne(name, x, expected, result);
+    return 1;
+  }
+}
+
+int boolTestTwo(char* name, bool a, bool b, bool expected, bool result) {
+  if (expected == result) {
+    bool_succInfixTwo(name, a, b, expected, result);
+    return 0;
+  } else {
+    bool_errInfixTwo(name, a, b, expected, result);
+    return 1;
+  }
+}
+
 void runComparisonTests() {
   printf("\nComparison Tests \n");
   comparisonTest("==", 1, 1, 1, eq(1, 1));
@@ -43,4 +63,17 @@ void runComparisonTests() {
   comparisonTest(">=", 1, 0, 1, gte(1, 0));
   comparisonTest(">=", 0, 1, 0, gte(0, 1));
   comparisonTest(">=", 0, 0, 1, gte(0, 0));
+
+  boolTestTwo("&&", true, true, true, and(true, true));
+  boolTestTwo("&&", true, false, false, and(true, false));
+  boolTestTwo("&&", false, true, false, and(false, true));
+  boolTestTwo("&&", false, false, false, and(false, false));
+
+  boolTestTwo("||", true, true, true, or(true, true));
+  boolTestTwo("||", true, false, true, or(true, false));
+  boolTestTwo("||", false, true, true, or(false, true));
+  boolTestTwo("||", false, false, false, or(false, false));
+
+  boolTestOne("!", true, false, not(true));
+  boolTestOne("!", false, true, not(false));
 }

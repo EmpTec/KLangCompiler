@@ -10,4 +10,8 @@ public abstract class PrimitiveType extends Type {
   public boolean isIntegerType() {
     return false;
   };
+
+  public boolean isBooleanType() {
+    return false;
+  };
 }

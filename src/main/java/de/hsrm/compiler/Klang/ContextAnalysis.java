@@ -127,6 +127,16 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitOrExpression(KlangParser.OrExpressionContext ctx) {
+    return new OrExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
+  @Override
+  public Node visitAndExpression(KlangParser.AndExpressionContext ctx) {
+    return new AndExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
+  @Override
   public Node visitAdditionExpression(KlangParser.AdditionExpressionContext ctx) {
     return new AdditionExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
   }
@@ -187,6 +197,11 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitNotExpression(KlangParser.NotExpressionContext ctx) {
+    return new NotExpression((Expression) this.visit(ctx.expression()));
+  }
+
+  @Override
   public Node visitVariable(KlangParser.VariableContext ctx) {
     String name = ctx.IDENT().getText();
 
@@ -206,6 +221,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitIntAtom(KlangParser.IntAtomContext ctx) {
     Node n = new IntegerExpression(Integer.parseInt(ctx.getText()));
     n.type = Type.getIntegerType();
+    return n;
+  }
+
+  @Override
+  public Node visitBoolAtom(KlangParser.BoolAtomContext ctx) {
+    Node n = new BooleanExpression(ctx.getText().equals("true") ? true : false);
+    n.type = Type.getBooleanType();
     return n;
   }
 

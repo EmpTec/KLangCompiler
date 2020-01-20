@@ -23,6 +23,11 @@ class GetVars implements Visitor<Void> {
   }
 
   @Override
+  public Void visit(BooleanExpression e) {
+    return null;
+  }
+
+  @Override
   public Void visit(Variable e) {
     return null;
   }
@@ -106,6 +111,26 @@ class GetVars implements Visitor<Void> {
 
   @Override
   public Void visit(NegateExpression e) {
+    e.lhs.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(OrExpression e) {
+    e.lhs.welcome(this);
+    e.rhs.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(AndExpression e) {
+    e.lhs.welcome(this);
+    e.rhs.welcome(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(NotExpression e) {
     e.lhs.welcome(this);
     return null;
   }

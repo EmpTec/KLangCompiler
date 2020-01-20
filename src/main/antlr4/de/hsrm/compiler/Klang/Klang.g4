@@ -72,13 +72,17 @@ expression
   | OPAR lhs=expression GT rhs=expression CPAR #greaterThanExpression
   | OPAR lhs=expression LTE rhs=expression CPAR #lessThanOrEqualToExpression
   | OPAR lhs=expression GTE rhs=expression CPAR #GreaterThanOrEqualToExpression
+  | OPAR lhs=expression OR rhs=expression CPAR #OrExpression
+  | OPAR lhs=expression AND rhs=expression CPAR #AndExpression
   | SUB expression #negateExpression
+  | NOT expression #NotExpression
   | functionCall #functionCallExpression
   ;
 
 atom
   : INTEGER_LITERAL #intAtom
-  | IDENT # variable
+  | BOOLEAN_LITERAL #boolAtom
+  | IDENT #variable
   ;
 
 functionCall
@@ -126,6 +130,9 @@ LT: '<';
 GT: '>';
 LTE: '<=';
 GTE: '>=';
+OR: '||';
+AND: '&&';
+NOT: '!';
 
 MUL: '*';
 ADD: '+';
@@ -135,6 +142,11 @@ DIV: '/';
 
 INTEGER_LITERAL
   : [0-9]+
+  ;
+
+BOOLEAN_LITERAL
+  : 'true'
+  | 'false'
   ;
 
 IDENT

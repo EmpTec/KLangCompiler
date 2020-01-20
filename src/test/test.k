@@ -162,4 +162,16 @@ function myFor(end) {
   return x;
 }
 
+function and(a, b) {
+  return (a && b);
+}
+
+function or(a, b) {
+  return (a || b);
+}
+
+function not(a) {
+  return !a;
+}
+
 add(1, 1); 
