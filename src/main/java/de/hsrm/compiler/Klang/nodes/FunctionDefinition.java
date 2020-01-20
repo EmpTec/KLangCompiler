@@ -5,15 +5,14 @@ import de.hsrm.compiler.Klang.visitors.Visitor;
 public class FunctionDefinition extends Node {
 
   public String name;
-  public String[] parameters;
+  public Parameter[] parameters;
   public Block block;
 
-  public FunctionDefinition(String name, String[] parameters, Block block) {
+  public FunctionDefinition(String name, Parameter[] parameters, Block block) {
     this.name = name;
     this.parameters = parameters;
     this.block = block;
   }
-
 
   @Override
   public <R> R welcome(Visitor<R> v) {

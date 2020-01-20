@@ -6,6 +6,7 @@ import java.util.Map;
 import de.hsrm.compiler.Klang.Value;
 import de.hsrm.compiler.Klang.nodes.Block;
 import de.hsrm.compiler.Klang.nodes.FunctionDefinition;
+import de.hsrm.compiler.Klang.nodes.Parameter;
 import de.hsrm.compiler.Klang.nodes.Program;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
@@ -211,7 +212,7 @@ public class EvalVisitor implements Visitor<Value> {
       e.step.welcome(this);
       cond = e.condition.welcome(this);
     }
-    
+
     return result;
   }
 
@@ -278,7 +279,7 @@ public class EvalVisitor implements Visitor<Value> {
     // Baue ein neues environment
     Map<String, Value> newEnv = new HashMap<>();
     for (int i = 0; i < func.parameters.length; i++) {
-      newEnv.put(func.parameters[i], e.arguments[i].welcome(this));
+      newEnv.put(func.parameters[i].name, e.arguments[i].welcome(this));
     }
     var oldEnv = this.env;
     this.env = newEnv;
@@ -301,6 +302,11 @@ public class EvalVisitor implements Visitor<Value> {
     }
 
     return e.expression.welcome(this);
+  }
+
+  @Override
+  public Value visit(Parameter e) {
+    return null;
   }
 
 }

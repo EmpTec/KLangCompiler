@@ -12,5 +12,15 @@ public abstract class Type {
     return BooleanType.getType();
   }
 
+  public static Type getByName(String name) {
+    switch (name) {
+      case "bool": return getBooleanType();
+      case "int": return getIntegerType();
+      default: throw new RuntimeException("Unknown type " + name);
+    }
+  }
+
+  public abstract String getName();
+  public abstract Type combine(Type that);
   public abstract boolean isPrimitiveType();
 }

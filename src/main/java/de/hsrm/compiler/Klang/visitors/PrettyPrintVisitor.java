@@ -328,13 +328,15 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     ex.write(e.name);
     ex.write("(");
     boolean first = true;
-    for (String param : e.parameters) {
+    for (Parameter param : e.parameters) {
       if (!first) {
         ex.write(", ");
       } else {
         first = false;
       }
-      ex.write(param);
+      ex.write(param.name);
+      ex.write(":");
+      ex.write(param.type.getName());
     }
     ex.write(") ");
     e.block.welcome(this);
@@ -361,6 +363,12 @@ public class PrettyPrintVisitor implements Visitor<Void> {
   @Override
   public Void visit(Variable e) {
     ex.write(e.name);
+    return null;
+  }
+
+  @Override
+  public Void visit(Parameter e) {
+    // The work is already done in the function definition visitor
     return null;
   }
 
