@@ -10,7 +10,6 @@ import de.hsrm.compiler.Klang.nodes.loops.ForLoop;
 import de.hsrm.compiler.Klang.nodes.loops.WhileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 import de.hsrm.compiler.Klang.types.Type;
-import sun.tools.tree.OrExpression;
 
 public class ContextAnalysis extends KlangBaseVisitor<Node> {
   Set<String> vars = new HashSet<>();
