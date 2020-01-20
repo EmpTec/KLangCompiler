@@ -72,7 +72,10 @@ expression
   | OPAR lhs=expression GT rhs=expression CPAR #greaterThanExpression
   | OPAR lhs=expression LTE rhs=expression CPAR #lessThanOrEqualToExpression
   | OPAR lhs=expression GTE rhs=expression CPAR #GreaterThanOrEqualToExpression
+  | OPAR lhs=expression OR rhs=expression CPAR #OrExpression
+  | OPAR lhs=expression AND rhs=expression CPAR #AndExpression
   | SUB expression #negateExpression
+  | NOT expression #NotExpression
   | functionCall #functionCallExpression
   ;
 
@@ -127,6 +130,9 @@ LT: '<';
 GT: '>';
 LTE: '<=';
 GTE: '>=';
+OR: '||';
+AND: '&&';
+NOT: '!';
 
 MUL: '*';
 ADD: '+';

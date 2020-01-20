@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include "print.h"
 
@@ -39,4 +40,22 @@ void succPrefixTwo(char* name, int x, int y, int expected, int result) {
 void errPrefixTwo(char* name, int x, int y,  int expected, int result) {
   incFailure();
   printf("\033[0;31mERROR:\t\t%s(%d, %d)\tGOT: %d\tExpected: %d\033[0;0m\n", name, x, y, result, expected);
+}
+
+void bool_succPrefixTwo(char* name, bool a, bool b, bool expected, bool result) {
+  incSuccess();
+  printf("\033[0;32mSUCCESS:\t%s(%s, %s)\tGOT: %s\tExpected: %s\033[0;0m\n", name, printBool(a), printBool(b), printBool(result), printBool(expected));
+}
+
+void bool_errPrefixTwo(char* name, bool a, bool b,  bool expected, bool result) {
+  incFailure();
+  printf("\033[0;32mSUCCESS:\t%s(%s, %s)\tGOT: %s\tExpected: %s\033[0;0m\n", name, printBool(a), printBool(b), printBool(result), printBool(expected));
+
+}
+
+char* printBool(bool a) {
+  if (a == true) {
+    return "true";
+  }
+  return "false";
 }

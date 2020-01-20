@@ -10,6 +10,7 @@ import de.hsrm.compiler.Klang.nodes.loops.ForLoop;
 import de.hsrm.compiler.Klang.nodes.loops.WhileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
 import de.hsrm.compiler.Klang.types.Type;
+import sun.tools.tree.OrExpression;
 
 public class ContextAnalysis extends KlangBaseVisitor<Node> {
   Set<String> vars = new HashSet<>();
@@ -127,6 +128,16 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitOrExpression(KlangParser.OrExpressionContext ctx) {
+    return new OrExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
+  @Override
+  public Node visitAndExpression(KlangParser.AndExpressionContext ctx) {
+    return new AndExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
+  }
+
+  @Override
   public Node visitAdditionExpression(KlangParser.AdditionExpressionContext ctx) {
     return new AdditionExpression((Expression) this.visit(ctx.lhs), (Expression) this.visit(ctx.rhs));
   }
@@ -184,6 +195,11 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   @Override
   public Node visitNegateExpression(KlangParser.NegateExpressionContext ctx) {
     return new NegateExpression((Expression) this.visit(ctx.expression()));
+  }
+
+  @Override
+  public Node visitNotExpression(KlangParser.NotExpressionContext ctx) {
+    return new NotExpression((Expression) this.visit(ctx.expression()));
   }
 
   @Override
