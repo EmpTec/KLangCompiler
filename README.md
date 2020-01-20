@@ -7,7 +7,7 @@ This code was in equal parts developed by `Dennis Kaiser` and `Marvin Kaiser` at
 # Usage
 Pass source code via stdin
 
-example call to print help `java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang`
+example call to print help `java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang -h`
 
 Arguments:
 - -h               Print this help
@@ -17,9 +17,9 @@ Arguments:
 - --no-main:       Do not generate main function, will be generated as 'start'. Useful for testing
 
 The makefile can be used to perform various functions more easily:
-- `make build` simply buildy the compiler
+- `make build` simply builds the compiler
 - `make clean` cleans up all generated output
-- `make` generated code.s from code.k in root folder
+- `make` generates code.s from code.k in root folder
 - `make pretty` prettifies code.k and writes to pretty.k
 - `make eval` evaluates code.k
 - `make test` runs tests from src/test/
