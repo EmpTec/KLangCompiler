@@ -73,6 +73,12 @@ public class PrettyPrintVisitor implements Visitor<Void> {
   }
 
   @Override
+  public Void visit(BooleanExpression e) {
+    ex.write(e.value);
+    return null;
+  }
+
+  @Override
   public Void visit(EqualityExpression e) {
     ex.write("(");
     e.lhs.welcome(this);

@@ -8,5 +8,9 @@ public abstract class Type {
     return IntegerType.getType();
   }
 
+  public static BooleanType getBooleanType() {
+    return BooleanType.getType();
+  }
+
   public abstract boolean isPrimitiveType();
 }

@@ -79,6 +79,12 @@ public class GenASM implements Visitor<Void> {
   }
 
   @Override
+  public Void visit(BooleanExpression e) {
+    this.ex.write("    movq $" + (e.value ? 1 : 0) + ", %rax\n");
+    return null;
+  }
+
+  @Override
   public Void visit(Variable e) {
     this.ex.write("    movq " + this.env.get(e.name) + "(%rbp), %rax\n");
     return null;
@@ -324,7 +330,7 @@ public class GenASM implements Visitor<Void> {
     this.ex.write("    jnz .L" + lblStart + "\n");
     return null;
   }
-  
+
   @Override
   public Void visit(ForLoop e) {
     int lblStart = ++lCount;
@@ -338,7 +344,7 @@ public class GenASM implements Visitor<Void> {
     e.step.welcome(this);
     this.ex.write("    jmp .L" + lblStart + "\n");
     this.ex.write(".L" + lblEnd + ":\n");
-        
+
     return null;
   }
 
@@ -453,7 +459,7 @@ public class GenASM implements Visitor<Void> {
       this.ex.write("\n");
     }
     this.ex.write(".globl " + mainName + "\n");
-    this.ex.write(".type " +mainName + ", @function\n");
+    this.ex.write(".type " + mainName + ", @function\n");
     this.ex.write(mainName + ":\n");
     this.ex.write("    pushq %rbp\n");
     this.ex.write("    movq %rsp, %rbp\n");

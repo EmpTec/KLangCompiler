@@ -210,6 +210,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitBoolAtom(KlangParser.BoolAtomContext ctx) {
+    Node n = new BooleanExpression(ctx.getText().equals("true") ? true : false);
+    n.type = Type.getBooleanType();
+    return n;
+  }
+
+  @Override
   public Node visitFunctionDef(KlangParser.FunctionDefContext ctx) {
     String name = ctx.funcName.getText();
 

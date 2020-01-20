@@ -24,6 +24,11 @@ public class EvalVisitor implements Visitor<Value> {
   }
 
   @Override
+  public Value visit(BooleanExpression e) {
+    return new Value(e.value);
+  }
+
+  @Override
   public Value visit(EqualityExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);

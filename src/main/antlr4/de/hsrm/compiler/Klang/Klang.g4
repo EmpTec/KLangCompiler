@@ -78,7 +78,8 @@ expression
 
 atom
   : INTEGER_LITERAL #intAtom
-  | IDENT # variable
+  | BOOLEAN_LITERAL #boolAtom
+  | IDENT #variable
   ;
 
 functionCall
@@ -135,6 +136,11 @@ DIV: '/';
 
 INTEGER_LITERAL
   : [0-9]+
+  ;
+
+BOOLEAN_LITERAL
+  : 'true'
+  | 'false'
   ;
 
 IDENT

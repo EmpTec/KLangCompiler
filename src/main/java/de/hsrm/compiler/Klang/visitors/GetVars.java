@@ -23,6 +23,11 @@ class GetVars implements Visitor<Void> {
   }
 
   @Override
+  public Void visit(BooleanExpression e) {
+    return null;
+  }
+
+  @Override
   public Void visit(Variable e) {
     return null;
   }
