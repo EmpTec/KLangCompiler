@@ -171,7 +171,7 @@ function or(a, b) {
 }
 
 function not(a) {
-  return (!a);
+  return !a;
 }
 
 add(1, 1); 
