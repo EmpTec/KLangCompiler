@@ -38,7 +38,7 @@ public class GetFunctions extends KlangBaseVisitor<Void> {
     int paramCount = ctx.params.parameter().size();
     Type[] signature = new Type[paramCount];
     for (int i = 0; i < paramCount; i++) {
-      Type paramType = Type.getByName(ctx.params.parameter(i).type_annotation().getText());
+      Type paramType = Type.getByName(ctx.params.parameter(i).type_annotation().type().getText());
       String paramName = ctx.params.parameter(i).IDENT().getText();
       parameters.put(paramName, paramType);
       signature[i] = paramType;
