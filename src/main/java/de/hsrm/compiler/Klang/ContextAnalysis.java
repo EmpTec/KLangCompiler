@@ -3,6 +3,7 @@ package de.hsrm.compiler.Klang;
 import java.util.Map;
 import java.util.HashMap;
 
+import de.hsrm.compiler.Klang.helper.FunctionInformation;
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
@@ -13,8 +14,12 @@ import de.hsrm.compiler.Klang.types.Type;
 
 public class ContextAnalysis extends KlangBaseVisitor<Node> {
   Map<String, VariableDeclaration> vars = new HashMap<>();
-  Map<String, FunctionDefinition> funcs = new HashMap<>();
+  Map<String, FunctionInformation> funcs;
   Type currentDeclaredReturnType;
+
+  public ContextAnalysis(Map<String, FunctionInformation> funcs) {
+    this.funcs = funcs;
+  }
 
   @Override
   public Node visitProgram(KlangParser.ProgramContext ctx) {
@@ -383,14 +388,6 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     FunctionDefinition result = new FunctionDefinition(name, params, (Block) block);
     result.type = returnType;
 
-    // Add this function to our environment
-    
-    // TODO
-    // Geht nicht weil das bei ner Rekursion um die ohren fliegt,
-    // der funktionsprototyp muss in die funcs geschrieben werden,
-    // bevor der block gevisited wird
-    this.funcs.put(name, result);
-
     return result;
   }
 
@@ -407,15 +404,14 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitFunctionCallExpression(KlangParser.FunctionCallExpressionContext ctx) {
     String name = ctx.functionCall().IDENT().getText();
 
-    // Make sure the function that is called is defined
-    FunctionDefinition func = this.funcs.get(name);
+    FunctionInformation func = this.funcs.get(name);
     if (func == null) {
       throw new RuntimeException("Function with name \"" + name + "\" not defined.");
     }
 
     // Make sure the number of arguments matches the number of parameters
     int argCount = ctx.functionCall().arguments().expression().size();
-    int paramCount = func.parameters.length;
+    int paramCount = func.parameters.size();
     if (argCount != paramCount) {
       throw new RuntimeException("Function \"" + name + "\" expects " + paramCount + " parameters, but got " + argCount + ".");
     }
@@ -424,12 +420,12 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Expression[] args = new Expression[argCount];
     for (int i = 0; i < argCount; i++) {
       Expression expression = (Expression) this.visit(ctx.functionCall().arguments().expression(i)); 
-      expression.type.combine(func.parameters[i].type); // Make sure the types are matching
+      expression.type.combine(func.signature[i]); // Make sure the types are matching
       args[i] = expression;
     }
 
     FunctionCall result = new FunctionCall(name, args);
-    result.type = func.type;
+    result.type = func.returnType;
     return result;
   }
 }
