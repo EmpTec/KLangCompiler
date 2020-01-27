@@ -88,7 +88,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitPrint(KlangParser.PrintContext ctx) {
     Node expression = this.visit(ctx.expression());
     PrintStatement result = new PrintStatement((Expression) expression); 
-    result.type = expression.type;
+    result.type = null;
     return result;
   }
 
