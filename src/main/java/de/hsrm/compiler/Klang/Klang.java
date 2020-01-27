@@ -7,9 +7,11 @@ import org.antlr.v4.runtime.tree.*;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.HashMap;
 
 import de.hsrm.compiler.Klang.nodes.Node;
 import de.hsrm.compiler.Klang.visitors.*;
+import de.hsrm.compiler.Klang.helper.*;
 
 public class Klang {
 
@@ -58,8 +60,15 @@ public class Klang {
     // create a parser that feeds off the tokens buffer
     KlangParser parser = new KlangParser(tokens);
 
+    // Parse tokens to AST
     ParseTree tree = parser.parse(); // begin parsing at init rule
-    ContextAnalysis ctxAnal = new ContextAnalysis();
+
+    // Extract information about all functions
+    var functionDefinitions = new HashMap<String, FunctionInformation>();
+    new GetFunctions(functionDefinitions).visit(tree);
+
+    // Context Analysis and DAST generation
+    ContextAnalysis ctxAnal = new ContextAnalysis(functionDefinitions);
     Node node = ctxAnal.visit(tree); // this gets us the DAST
 
     if (prettyPrint) {

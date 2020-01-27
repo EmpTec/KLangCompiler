@@ -9,7 +9,6 @@ public class DoWhileLoop extends Statement {
 
     public Expression cond;
     public Block block;
-    public Block alt;
 
     public DoWhileLoop(Expression cond, Block block) {
         this.cond = cond;

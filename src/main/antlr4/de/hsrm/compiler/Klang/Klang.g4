@@ -9,11 +9,15 @@ program
   ;
 
 functionDef
-  : FUNC funcName=IDENT OPAR parameters CPAR braced_block
+  : FUNC funcName=IDENT params=parameter_list returnType=type_annotation braced_block
   ;
 
-parameters
-  : (IDENT (COMMA IDENT)*)?
+parameter_list
+  : OPAR (parameter (COMMA parameter)*)? CPAR
+  ;
+
+parameter
+  : IDENT type_annotation
   ;
 
 braced_block
@@ -48,7 +52,7 @@ variableDeclarationOrAssignment
   ;
 
 variable_declaration
-  : LET IDENT (EQUAL expression)?
+  : LET IDENT type_annotation (EQUAL expression)?
   ;
 
 variable_assignment
@@ -85,6 +89,15 @@ atom
   | IDENT #variable
   ;
 
+type_annotation
+  : COL type
+  ;
+
+type
+  : INTEGER
+  | BOOLEAN
+  ;
+
 functionCall
   : IDENT OPAR arguments CPAR
   ;
@@ -117,6 +130,7 @@ WHILE: 'while';
 DO: 'do';
 FOR: 'for';
 
+COL: ':';
 SCOL: ';';
 OBRK: '{';
 CBRK: '}';
@@ -139,6 +153,9 @@ ADD: '+';
 SUB: '-';
 MOD: '%';
 DIV: '/';
+
+BOOLEAN: 'bool';
+INTEGER: 'int';
 
 INTEGER_LITERAL
   : [0-9]+

@@ -17,4 +17,20 @@ public class BooleanType extends PrimitiveType {
     return true;
   }
 
+  @Override
+  public String getName() {
+    return "bool";
+  }
+
+  @Override
+  public Type combine(Type that) {
+    // Combining two equal types always works
+    if (that.equals(this)) {
+      return this;
+    }
+
+    // Every remaining type will throw a RuntimeException
+    throw new RuntimeException("Type missmatch: cannot combine " + this.getName() + " and " + that.getName());
+  }
+
 }

@@ -507,7 +507,7 @@ public class GenASM implements Visitor<Void> {
     int offset = 16; // Per Stack übergebene Parameter liegen über unserm BSP
     // Per stack übergebene variablen in env registrieren
     for (int i = this.rs.length; i < e.parameters.length; i++) {
-      env.put(e.parameters[i], offset);
+      env.put(e.parameters[i].name, offset);
       offset += 8;
     }
 
@@ -516,7 +516,7 @@ public class GenASM implements Visitor<Void> {
     for (int i = 0; i < Math.min(this.rs.length, e.parameters.length); i++) {
       this.ex.write("    pushq " + this.rs[i] + "\n");
       offset -= 8;
-      this.env.put(e.parameters[i], offset); // negative, liegt unter aktuellem BP
+      this.env.put(e.parameters[i].name, offset); // negative, liegt unter aktuellem BP
     }
 
     // Reserviere Platz auf dem Stack für jede lokale variable
@@ -565,6 +565,13 @@ public class GenASM implements Visitor<Void> {
     this.ex.write("    movq %rbp, %rsp\n");
     this.ex.write("    popq %rbp\n");
     this.ex.write("    ret\n");
+    return null;
+  }
+
+  @Override
+  public Void visit(Parameter e) {
+    // The work for a paremeter node is implement
+    // in the function definition visitor
     return null;
   }
 
