@@ -225,8 +225,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitEqualityExpression(KlangParser.EqualityExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+
+    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
+      throw new RuntimeException("Both operants of this expression have to be a number");
+    }
+
     EqualityExpression result = new EqualityExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    result.type = Type.getBooleanType();
     return result;
   }
 
@@ -234,8 +239,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitNotEqualityExpression(KlangParser.NotEqualityExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+
+    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
+      throw new RuntimeException("Both operants of this expression have to be a number");
+    }
+
     NotEqualityExpression result = new NotEqualityExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    result.type = Type.getBooleanType();
     return result;
   }
 
@@ -243,8 +253,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitLessThanExpression(KlangParser.LessThanExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+
+    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
+      throw new RuntimeException("Both operants of this expression have to be a number");
+    }
+
     LTExpression result = new LTExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    result.type = Type.getBooleanType();
     return result;
   }
 
@@ -252,8 +267,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitGreaterThanExpression(KlangParser.GreaterThanExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+
+    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
+      throw new RuntimeException("Both operants of this expression have to be a number");
+    }
+
     GTExpression result = new GTExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    result.type = Type.getBooleanType();
     return result;
   }
 
@@ -261,8 +281,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitLessThanOrEqualToExpression(KlangParser.LessThanOrEqualToExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+
+    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
+      throw new RuntimeException("Both operants of this expression have to be a number");
+    }
+
     LTEExpression result = new LTEExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    result.type = Type.getBooleanType();
     return result;
   }
 
@@ -270,8 +295,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitGreaterThanOrEqualToExpression(KlangParser.GreaterThanOrEqualToExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+
+    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
+      throw new RuntimeException("Both operants of this expression have to be a number");
+    }
+
     GTEExpression result = new GTEExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    result.type = Type.getBooleanType();
     return result;
   }
 

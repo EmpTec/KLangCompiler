@@ -109,27 +109,27 @@ function fac(x: int): int {
   return 1;
 }
 
-function eq(x: int, y: int): int {
+function eq(x: int, y: int): bool {
   return (x == y);
 }
 
-function neq(x: int, y: int): int {
+function neq(x: int, y: int): bool {
   return (x != y);
 }
 
-function lt(x: int, y: int): int {
+function lt(x: int, y: int): bool {
   return (x < y);
 }
 
-function lte(x: int, y: int): int {
+function lte(x: int, y: int): bool {
   return (x <= y);
 }
 
-function gt(x: int, y: int): int {
+function gt(x: int, y: int): bool {
   return (x > y);
 }
 
-function gte(x: int, y: int): int {
+function gte(x: int, y: int): bool {
   return (x >= y);
 }
 
