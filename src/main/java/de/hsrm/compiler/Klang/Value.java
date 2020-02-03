@@ -7,6 +7,10 @@ public class Value {
         this.value = value;
     }
 
+    public Object asObject() {
+        return this.value;
+    }
+
     public int asInteger() {
         return (int) this.value;
     }
