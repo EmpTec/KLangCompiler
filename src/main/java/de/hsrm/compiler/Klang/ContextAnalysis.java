@@ -295,9 +295,10 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
 
-    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number.";
-      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    try {
+      lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
 
     EqualityExpression result = new EqualityExpression((Expression) lhs, (Expression) rhs);
