@@ -222,6 +222,11 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitParenthesisExpression(KlangParser.ParenthesisExpressionContext ctx) {
+    return this.visit(ctx.expression());
+  }
+
+  @Override
   public Node visitEqualityExpression(KlangParser.EqualityExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);

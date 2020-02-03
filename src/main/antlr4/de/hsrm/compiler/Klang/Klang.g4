@@ -65,19 +65,20 @@ return_statement
 
 expression
   : atom #atomExpression
-  | OPAR lhs=expression ADD rhs=expression CPAR #additionExpression
-  | OPAR lhs=expression SUB rhs=expression CPAR #substractionExpression
-  | OPAR lhs=expression MUL rhs=expression CPAR #multiplicationExpression
-  | OPAR lhs=expression DIV rhs=expression CPAR #divisionExpression
-  | OPAR lhs=expression MOD rhs=expression CPAR #moduloExpression
-  | OPAR lhs=expression EQEQ rhs=expression CPAR #equalityExpression
-  | OPAR lhs=expression NEQ rhs=expression CPAR #NotEqualityExpression
-  | OPAR lhs=expression LT rhs=expression CPAR #lessThanExpression
-  | OPAR lhs=expression GT rhs=expression CPAR #greaterThanExpression
-  | OPAR lhs=expression LTE rhs=expression CPAR #lessThanOrEqualToExpression
-  | OPAR lhs=expression GTE rhs=expression CPAR #GreaterThanOrEqualToExpression
-  | OPAR lhs=expression OR rhs=expression CPAR #OrExpression
-  | OPAR lhs=expression AND rhs=expression CPAR #AndExpression
+  | OPAR expression CPAR #parenthesisExpression
+  | lhs=expression MUL rhs=expression #multiplicationExpression
+  | lhs=expression DIV rhs=expression #divisionExpression
+  | lhs=expression MOD rhs=expression #moduloExpression
+  | lhs=expression ADD rhs=expression #additionExpression
+  | lhs=expression SUB rhs=expression #substractionExpression
+  | lhs=expression EQEQ rhs=expression #equalityExpression
+  | lhs=expression NEQ rhs=expression #NotEqualityExpression
+  | lhs=expression LT rhs=expression #lessThanExpression
+  | lhs=expression GT rhs=expression #greaterThanExpression
+  | lhs=expression LTE rhs=expression #lessThanOrEqualToExpression
+  | lhs=expression GTE rhs=expression #GreaterThanOrEqualToExpression
+  | lhs=expression OR rhs=expression #OrExpression
+  | lhs=expression AND rhs=expression #AndExpression
   | SUB expression #negateExpression
   | NOT expression #NotExpression
   | functionCall #functionCallExpression
