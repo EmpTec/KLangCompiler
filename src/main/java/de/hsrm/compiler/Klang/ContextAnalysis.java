@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import de.hsrm.compiler.Klang.helper.FunctionInformation;
+import de.hsrm.compiler.Klang.helper.Helper;
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
@@ -28,8 +29,10 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       funcs[i] = (FunctionDefinition) this.visit(ctx.functionDef(i));
     }
     Expression expression = (Expression) this.visit(ctx.expression());
-    Program result = new Program(funcs, expression); 
+    Program result = new Program(funcs, expression);
     result.type = expression.type;
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
@@ -52,13 +55,19 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       statements[i] = (Statement) currentStatement;
       actualStatementCount += 1;
 
-      // We use the existance of a type to indicate that this statement returns something
-      // for which the VariableDeclaration is an exception
+      // We use the existance of a type to indicate that this statement returns
+      // something for which the VariableDeclaration is an exception
       if (currentStatement.type != null && !(currentStatement instanceof VariableDeclaration)) {
         // check whether the type matches
-        this.currentDeclaredReturnType.combine(currentStatement.type);
+        try {
+          this.currentDeclaredReturnType.combine(currentStatement.type);
+        } catch (Exception e) {
+          throw new RuntimeException(
+              Helper.getErrorPrefix(currentStatement.line, currentStatement.col) + e.getMessage());
+        }
 
-        // since we have a return guaranteed, every statement after this one is unreachable code
+        // since we have a return guaranteed, every statement
+        // after this one is unreachable code
         hasReturn = true;
         break;
       }
@@ -81,14 +90,20 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       result.type = this.currentDeclaredReturnType;
     }
 
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
   @Override
   public Node visitPrint(KlangParser.PrintContext ctx) {
+    ctx.start.getLine();
+    ctx.start.getCharPositionInLine();
     Node expression = this.visit(ctx.expression());
-    PrintStatement result = new PrintStatement((Expression) expression); 
+    PrintStatement result = new PrintStatement((Expression) expression);
     result.type = null;
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
@@ -112,9 +127,14 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     }
 
     if (thenBlock.type != null && type != null) {
-      result.type = thenBlock.type.combine(type);
+      // Since a block verifies that it can combine with the return type of the
+      // function it is defined in, we do not have check whether the then and
+      // alt block return types match
+      result.type = thenBlock.type;
     }
 
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
@@ -122,14 +142,20 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitWhileLoop(KlangParser.WhileLoopContext ctx) {
     Node condition = this.visit(ctx.cond);
     Node block = this.visit(ctx.braced_block());
-    return new WhileLoop((Expression) condition, (Block) block);
+    Node result = new WhileLoop((Expression) condition, (Block) block);
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
+    return result;
   }
 
   @Override
   public Node visitDoWhileLoop(KlangParser.DoWhileLoopContext ctx) {
     Node condition = this.visit(ctx.cond);
     Node block = this.visit(ctx.braced_block());
-    return new DoWhileLoop((Expression) condition, (Block) block);
+    Node result = new DoWhileLoop((Expression) condition, (Block) block);
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
+    return result;
   }
 
   @Override
@@ -138,23 +164,33 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Node condition = this.visit(ctx.cond);
     Node step = this.visit(ctx.step);
     Node block = this.visit(ctx.braced_block());
-    return new ForLoop((Statement) init, (Expression) condition, (VariableAssignment) step, (Block) block);
+    Node result = new ForLoop((Statement) init, (Expression) condition, (VariableAssignment) step, (Block) block);
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
+    return result;
   }
 
   @Override
   public Node visitVariable_declaration(KlangParser.Variable_declarationContext ctx) {
     String name = ctx.IDENT().getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
     Type declaredType = Type.getByName(ctx.type_annotation().type().getText());
 
     if (this.vars.get(name) != null) {
-      throw new RuntimeException("Redeclaration of variable with name \"" + name + "\".");
+      String error = "Redeclaration of variable with name \"" + name + "\".";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
     // Create the appropriate instance
     VariableDeclaration result;
     if (ctx.expression() != null) {
       Node expression = this.visit(ctx.expression());
-      declaredType = declaredType.combine(expression.type);
+      try {
+        declaredType = declaredType.combine(expression.type);
+      } catch (Exception e) {
+        throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+      }
       result = new VariableDeclaration(name, (Expression) expression);
       result.type = declaredType; // add the type only if there is an expression
     } else {
@@ -164,26 +200,38 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     // Add it to the global map of variable declarations
     this.vars.put(name, result);
 
+    result.line = line;
+    result.col = col;
     return result;
   }
 
   @Override
   public Node visitVariable_assignment(KlangParser.Variable_assignmentContext ctx) {
     String name = ctx.IDENT().getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
 
     VariableDeclaration var = this.vars.get(name);
     if (var == null) {
-      throw new RuntimeException("Variable with name \"" + name + "\" not defined.");
+      String error = "Variable with name \"" + name + "\" not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
     // Evaluate the expression
     Expression expression = (Expression) this.visit(ctx.expression());
 
     // Make sure expression can be assigned to the variable
-    expression.type.combine(var.type);
+    try {
+      expression.type.combine(var.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
 
     // Create a new node and add the type of the expression to it
-    return new VariableAssignment(name, expression);
+    Node result = new VariableAssignment(name, expression);
+    result.line = line;
+    result.col = col;
+    return result;
   }
 
   @Override
@@ -191,6 +239,8 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Expression expression = (Expression) this.visit(ctx.expression());
     ReturnStatement result = new ReturnStatement(expression);
     result.type = expression.type;
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
@@ -199,7 +249,9 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
     OrExpression result = new OrExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    result.type = Type.getBooleanType();
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
@@ -208,7 +260,9 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
     AndExpression result = new AndExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    result.type = Type.getBooleanType();
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
@@ -216,8 +270,16 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitAdditionExpression(KlangParser.AdditionExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
     AdditionExpression result = new AdditionExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    try {
+      result.type = lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
@@ -230,13 +292,19 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitEqualityExpression(KlangParser.EqualityExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
 
-    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      throw new RuntimeException("Both operants of this expression have to be a number");
+    try {
+      lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
 
     EqualityExpression result = new EqualityExpression((Expression) lhs, (Expression) rhs);
     result.type = Type.getBooleanType();
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -244,13 +312,18 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitNotEqualityExpression(KlangParser.NotEqualityExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
 
     if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      throw new RuntimeException("Both operants of this expression have to be a number");
+      String error = "Both operants of this expression have to be a number.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
     NotEqualityExpression result = new NotEqualityExpression((Expression) lhs, (Expression) rhs);
     result.type = Type.getBooleanType();
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -258,13 +331,18 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitLessThanExpression(KlangParser.LessThanExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
 
     if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      throw new RuntimeException("Both operants of this expression have to be a number");
+      String error = "Both operants of this expression have to be a number.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
     LTExpression result = new LTExpression((Expression) lhs, (Expression) rhs);
     result.type = Type.getBooleanType();
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -272,13 +350,18 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitGreaterThanExpression(KlangParser.GreaterThanExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
 
     if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      throw new RuntimeException("Both operants of this expression have to be a number");
+      String error = "Both operants of this expression have to be a number.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
     GTExpression result = new GTExpression((Expression) lhs, (Expression) rhs);
     result.type = Type.getBooleanType();
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -286,13 +369,18 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitLessThanOrEqualToExpression(KlangParser.LessThanOrEqualToExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
 
     if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      throw new RuntimeException("Both operants of this expression have to be a number");
+      String error = "Both operants of this expression have to be a number.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
     LTEExpression result = new LTEExpression((Expression) lhs, (Expression) rhs);
     result.type = Type.getBooleanType();
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -300,13 +388,18 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitGreaterThanOrEqualToExpression(KlangParser.GreaterThanOrEqualToExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
 
     if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      throw new RuntimeException("Both operants of this expression have to be a number");
+      String error = "Both operants of this expression have to be a number.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
     GTEExpression result = new GTEExpression((Expression) lhs, (Expression) rhs);
     result.type = Type.getBooleanType();
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -314,8 +407,16 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitSubstractionExpression(KlangParser.SubstractionExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
     SubstractionExpression result = new SubstractionExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    try {
+      result.type = lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -323,8 +424,16 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitMultiplicationExpression(KlangParser.MultiplicationExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
     MultiplicationExpression result = new MultiplicationExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    try {
+      result.type = lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -332,8 +441,16 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitDivisionExpression(KlangParser.DivisionExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
     DivisionExpression result = new DivisionExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    try {
+      result.type = lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -341,8 +458,16 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitModuloExpression(KlangParser.ModuloExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
     ModuloExpression result = new ModuloExpression((Expression) lhs, (Expression) rhs);
-    result.type = lhs.type.combine(rhs.type);
+    try {
+      result.type = lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -351,6 +476,8 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Node expression = this.visit(ctx.expression());
     NegateExpression result = new NegateExpression((Expression) expression);
     result.type = expression.type;
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
@@ -359,20 +486,27 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Node expression = this.visit(ctx.expression());
     NotExpression result = new NotExpression((Expression) expression);
     result.type = expression.type;
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
   @Override
   public Node visitVariable(KlangParser.VariableContext ctx) {
     String name = ctx.IDENT().getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
 
     VariableDeclaration var = this.vars.get(name);
     if (var == null) {
-      throw new RuntimeException("Variable with name \"" + name + "\" not defined.");
+      String error = "Variable with name \"" + name + "\" not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
     Variable result = new Variable(ctx.IDENT().getText());
     result.type = var.type;
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -385,6 +519,8 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitIntAtom(KlangParser.IntAtomContext ctx) {
     Node n = new IntegerExpression(Integer.parseInt(ctx.getText()));
     n.type = Type.getIntegerType();
+    n.line = ctx.start.getLine();
+    n.col = ctx.start.getCharPositionInLine();
     return n;
   }
 
@@ -392,12 +528,16 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitBoolAtom(KlangParser.BoolAtomContext ctx) {
     Node n = new BooleanExpression(ctx.getText().equals("true") ? true : false);
     n.type = Type.getBooleanType();
+    n.line = ctx.start.getLine();
+    n.col = ctx.start.getCharPositionInLine();
     return n;
   }
 
   @Override
   public Node visitFunctionDef(KlangParser.FunctionDefContext ctx) {
     String name = ctx.funcName.getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
     Type returnType = Type.getByName(ctx.returnType.type().getText());
     this.currentDeclaredReturnType = returnType;
 
@@ -419,13 +559,18 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       this.vars.put(param.name, var);
     }
 
-    // Visit the block, make sure the types are matching
+    // Visit the block, make sure that a return value is guaranteed
     Node block = this.visit(ctx.braced_block());
-    block.type.combine(returnType);
+    if (block.type == null) {
+      String error = "Function " + name + " has to return something of type " + returnType.getName() + ".";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
 
     FunctionDefinition result = new FunctionDefinition(name, params, (Block) block);
     result.type = returnType;
 
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
@@ -435,35 +580,47 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Type type = Type.getByName(ctx.type_annotation().type().getText());
     Parameter result = new Parameter(name);
     result.type = type;
+    result.line = ctx.start.getLine();
+    result.col = ctx.start.getCharPositionInLine();
     return result;
   }
 
   @Override
   public Node visitFunctionCallExpression(KlangParser.FunctionCallExpressionContext ctx) {
     String name = ctx.functionCall().IDENT().getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
 
     FunctionInformation func = this.funcs.get(name);
     if (func == null) {
-      throw new RuntimeException("Function with name \"" + name + "\" not defined.");
+      String error = "Function with name \"" + name + "\" not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
     // Make sure the number of arguments matches the number of parameters
     int argCount = ctx.functionCall().arguments().expression().size();
     int paramCount = func.parameters.size();
     if (argCount != paramCount) {
-      throw new RuntimeException("Function \"" + name + "\" expects " + paramCount + " parameters, but got " + argCount + ".");
+      String error = "Function \"" + name + "\" expects " + paramCount + " parameters, but got " + argCount + ".";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
     // Evaluate every argument
     Expression[] args = new Expression[argCount];
     for (int i = 0; i < argCount; i++) {
-      Expression expression = (Expression) this.visit(ctx.functionCall().arguments().expression(i)); 
-      expression.type.combine(func.signature[i]); // Make sure the types are matching
+      Expression expression = (Expression) this.visit(ctx.functionCall().arguments().expression(i));
+      try {
+        expression.type.combine(func.signature[i]); // Make sure the types are matching
+      } catch (Exception e) {
+        throw new RuntimeException(Helper.getErrorPrefix(line, col) + "argument " + i + " " + e.getMessage());
+      }
       args[i] = expression;
     }
 
     FunctionCall result = new FunctionCall(name, args);
     result.type = func.returnType;
+    result.line = line;
+    result.col = col;
     return result;
   }
 }

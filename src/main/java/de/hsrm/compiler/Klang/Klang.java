@@ -83,29 +83,35 @@ public class Klang {
     // Parse tokens to AST
     ParseTree tree = parser.parse(); // begin parsing at init rule
 
-    // Extract information about all functions
-    var functionDefinitions = new HashMap<String, FunctionInformation>();
-    new GetFunctions(functionDefinitions).visit(tree);
-
     // Context Analysis and DAST generation
-    ContextAnalysis ctxAnal = new ContextAnalysis(functionDefinitions);
-    Node node = ctxAnal.visit(tree); // this gets us the DAST
+    Node root;
+    try {
+      // Extract information about all functions
+      var functionDefinitions = new HashMap<String, FunctionInformation>();
+      new GetFunctions(functionDefinitions).visit(tree);
+
+      // Create the DAST
+      ContextAnalysis ctxAnal = new ContextAnalysis(functionDefinitions);
+      root = ctxAnal.visit(tree);
+    } catch (Exception e) {
+      System.err.println(e.getMessage());
+      return;
+    }
 
     if (prettyPrint) {
       // Pretty Print the sourcecode
       StringWriter w = new StringWriter();
       PrettyPrintVisitor.ExWriter ex = new PrettyPrintVisitor.ExWriter(w);
       PrettyPrintVisitor printVisitor = new PrettyPrintVisitor(ex);
-      node.welcome(printVisitor);
-      generateOutput(out, w.toString());
-      return;
+      root.welcome(printVisitor);
+      System.out.println(w.toString());
     }
 
     if (evaluate) {
       // Evaluate the sourcecode and print the result
       System.out.println("\nEvaluating the source code:");
       EvalVisitor evalVisitor = new EvalVisitor();
-      Value result = node.welcome(evalVisitor);
+      Value result = root.welcome(evalVisitor);
       if (result != null) {
         generateOutput(out, "Result was: TODO");
       } else {
@@ -119,7 +125,7 @@ public class Klang {
     StringWriter wAsm = new StringWriter();
     GenASM.ExWriter exAsm = new GenASM.ExWriter(wAsm);
     GenASM genasm = new GenASM(exAsm, mainName);
-    node.welcome(genasm);
+    root.welcome(genasm);
     generateOutput(out, wAsm.toString());
   }
 }
