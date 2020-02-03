@@ -112,11 +112,7 @@ public class Klang {
       System.out.println("\nEvaluating the source code:");
       EvalVisitor evalVisitor = new EvalVisitor();
       Value result = root.welcome(evalVisitor);
-      if (result != null) {
-        generateOutput(out, "Result was: TODO");
-      } else {
-        System.out.println("result was null");
-      }
+      generateOutput(out, "Result was: " + result.asObject().toString());
       return;
     }
 
