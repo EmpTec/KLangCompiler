@@ -174,4 +174,38 @@ function not(a: bool): bool {
   return !a;
 }
 
+function t1(): int {
+  return ((5 * 3) + 1);
+}
+
+function t2(): int {
+  return (1 + (5 * 3));
+}
+
+function t3(): int {
+  return 5 * 3 + 1;
+}
+
+function t4(): int {
+  return 1 + 5 * 3;
+}
+
+function t5(): int {
+  return (5 * 3 + 1);
+}
+
+function t6(): int {
+  return (1 + 5 * 3);
+}
+
+function t7(): int {
+  return 1 + (5 * 3);
+}
+
+function t8(): int {
+  return (1 + 5) * 3;
+}
+
+
+
 add(1, 1); 
