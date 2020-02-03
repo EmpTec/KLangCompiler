@@ -152,13 +152,7 @@ public class EvalVisitor implements Visitor<Value> {
 
   @Override
   public Value visit(Variable e) {
-    Value result = this.env.get(e.name);
-
-    if (result == null) {
-      throw new RuntimeException("Variable with name " + e.name + " not found.");
-    }
-
-    return result;
+    return this.env.get(e.name);
   }
 
   @Override
@@ -270,11 +264,6 @@ public class EvalVisitor implements Visitor<Value> {
   public Value visit(FunctionCall e) {
     // Die funktionsdefinition speichern
     FunctionDefinition func = this.funcs.get(e.name);
-
-    // Stelle sicher, dass die Länge der argumente und parameter übereinstimmen
-    if (e.arguments.length != func.parameters.length) {
-      throw new RuntimeException("Error with function call " + e.name + ": Number of parameters wrong");
-    }
 
     // Baue ein neues environment
     Map<String, Value> newEnv = new HashMap<>();
