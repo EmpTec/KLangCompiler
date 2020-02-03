@@ -1,7 +1,5 @@
 package de.hsrm.compiler.Klang;
 
-import de.hsrm.compiler.Klang.types.Type;
-
 public class Value {
     private Object value;
 
