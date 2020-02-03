@@ -29,7 +29,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       funcs[i] = (FunctionDefinition) this.visit(ctx.functionDef(i));
     }
     Expression expression = (Expression) this.visit(ctx.expression());
-    Program result = new Program(funcs, expression); 
+    Program result = new Program(funcs, expression);
     result.type = expression.type;
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
@@ -55,17 +55,19 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       statements[i] = (Statement) currentStatement;
       actualStatementCount += 1;
 
-      // We use the existance of a type to indicate that this statement returns something
-      // for which the VariableDeclaration is an exception
+      // We use the existance of a type to indicate that this statement returns
+      // something for which the VariableDeclaration is an exception
       if (currentStatement.type != null && !(currentStatement instanceof VariableDeclaration)) {
         // check whether the type matches
         try {
           this.currentDeclaredReturnType.combine(currentStatement.type);
         } catch (Exception e) {
-          throw new RuntimeException(Helper.getErrorPrefix(currentStatement.line, currentStatement.col) + e.getMessage());
+          throw new RuntimeException(
+              Helper.getErrorPrefix(currentStatement.line, currentStatement.col) + e.getMessage());
         }
 
-        // since we have a return guaranteed, every statement after this one is unreachable code
+        // since we have a return guaranteed, every statement
+        // after this one is unreachable code
         hasReturn = true;
         break;
       }
@@ -98,7 +100,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     ctx.start.getLine();
     ctx.start.getCharPositionInLine();
     Node expression = this.visit(ctx.expression());
-    PrintStatement result = new PrintStatement((Expression) expression); 
+    PrintStatement result = new PrintStatement((Expression) expression);
     result.type = null;
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
@@ -125,8 +127,9 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     }
 
     if (thenBlock.type != null && type != null) {
-      // Since a block verifies that it can combine with the return type of the function
-      // it is defined in, we do not have check whether the then and alt block return types match
+      // Since a block verifies that it can combine with the return type of the
+      // function it is defined in, we do not have check whether the then and
+      // alt block return types match
       result.type = thenBlock.type;
     }
 
@@ -176,7 +179,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
 
     if (this.vars.get(name) != null) {
       String error = "Redeclaration of variable with name \"" + name + "\".";
-      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error); 
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
     // Create the appropriate instance
@@ -558,7 +561,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     // Visit the block, make sure that a return value is guaranteed
     Node block = this.visit(ctx.braced_block());
     if (block.type == null) {
-      String error = "Function " + name +" has to return something of type " + returnType.getName() +".";
+      String error = "Function " + name + " has to return something of type " + returnType.getName() + ".";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
@@ -604,11 +607,11 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     // Evaluate every argument
     Expression[] args = new Expression[argCount];
     for (int i = 0; i < argCount; i++) {
-      Expression expression = (Expression) this.visit(ctx.functionCall().arguments().expression(i)); 
+      Expression expression = (Expression) this.visit(ctx.functionCall().arguments().expression(i));
       try {
         expression.type.combine(func.signature[i]); // Make sure the types are matching
       } catch (Exception e) {
-        throw new RuntimeException(Helper.getErrorPrefix(line, col) + "argument " + i +" " + e.getMessage());
+        throw new RuntimeException(Helper.getErrorPrefix(line, col) + "argument " + i + " " + e.getMessage());
       }
       args[i] = expression;
     }
