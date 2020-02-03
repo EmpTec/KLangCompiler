@@ -273,7 +273,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int col = ctx.start.getCharPositionInLine();
 
     if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number";
+      String error = "Both operants of this expression have to be a number.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
@@ -292,7 +292,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int col = ctx.start.getCharPositionInLine();
 
     if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number";
+      String error = "Both operants of this expression have to be a number.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
@@ -311,7 +311,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int col = ctx.start.getCharPositionInLine();
 
     if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number";
+      String error = "Both operants of this expression have to be a number.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
@@ -330,7 +330,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int col = ctx.start.getCharPositionInLine();
 
     if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number";
+      String error = "Both operants of this expression have to be a number.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
@@ -349,7 +349,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int col = ctx.start.getCharPositionInLine();
 
     if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number";
+      String error = "Both operants of this expression have to be a number.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
@@ -368,7 +368,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int col = ctx.start.getCharPositionInLine();
 
     if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number";
+      String error = "Both operants of this expression have to be a number.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
