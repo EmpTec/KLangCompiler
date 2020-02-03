@@ -33,60 +33,42 @@ public class EvalVisitor implements Visitor<Value> {
   public Value visit(EqualityExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    if (lhs.asInteger() == rhs.asInteger()) {
-      return new Value(1);
-    }
-    return new Value(0);
+    return new Value(lhs.asObject() == rhs.asObject());
   }
 
   @Override
   public Value visit(NotEqualityExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    if (lhs.asInteger() != rhs.asInteger()) {
-      return new Value(1);
-    }
-    return new Value(0);
+    return new Value(lhs.asObject() != rhs.asObject());
   }
 
   @Override
   public Value visit(GTExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    if (lhs.asInteger() > rhs.asInteger()) {
-      return new Value(1);
-    }
-    return new Value(0);
+    return new Value(lhs.asInteger() > rhs.asInteger());
   }
 
   @Override
   public Value visit(GTEExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    if (lhs.asInteger() >= rhs.asInteger()) {
-      return new Value(1);
-    }
-    return new Value(0);
+    return new Value(lhs.asInteger() >= rhs.asInteger());
   }
 
   @Override
   public Value visit(LTExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    if (lhs.asInteger() < rhs.asInteger()) {
-      return new Value(1);
-    }
-    return new Value(0);
+    return new Value(lhs.asInteger() < rhs.asInteger());
   }
 
   @Override
   public Value visit(LTEExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    if (lhs.asInteger() <= rhs.asInteger()) {
-      return new Value(1);
-    }
-    return new Value(0);
+    return new Value(lhs.asInteger() <= rhs.asInteger());
   }
 
   @Override
@@ -163,7 +145,7 @@ public class EvalVisitor implements Visitor<Value> {
 
     Value result = null;
 
-    if (condition.asInteger() != 0) {
+    if (condition.asBoolean()) {
       result = e.then.welcome(this);
     } else if (e.alt != null) {
       result = e.alt.welcome(this);
@@ -176,9 +158,8 @@ public class EvalVisitor implements Visitor<Value> {
 
   @Override
   public Value visit(WhileLoop e) {
-    Value condition = e.cond.welcome(this);
     Value result = null;
-    while (condition.asInteger() != 0) {
+    while (e.cond.welcome(this).asBoolean()) {
       result = e.block.welcome(this);
     }
 
@@ -187,11 +168,10 @@ public class EvalVisitor implements Visitor<Value> {
 
   @Override
   public Value visit(DoWhileLoop e) {
-    Value condition = e.cond.welcome(this);
     Value result = null;
     do {
       result = e.block.welcome(this);
-    } while (condition.asInteger() != 0);
+    } while (e.cond.welcome(this).asBoolean());
 
     return result;
   }
@@ -201,7 +181,7 @@ public class EvalVisitor implements Visitor<Value> {
     e.init.welcome(this);
     Value cond = e.condition.welcome(this);
     Value result = null;
-    while (cond.asInteger() != 0) {
+    while (cond.asBoolean()) {
       result = e.block.welcome(this);
       e.step.welcome(this);
       cond = e.condition.welcome(this);
@@ -213,10 +193,7 @@ public class EvalVisitor implements Visitor<Value> {
   @Override
   public Value visit(PrintStatement e) {
     Value value = e.expression.welcome(this);
-
-    // In the future we have to determine of which type the value is
-    // before calling an "asX()" method
-    System.out.println(value.asInteger());
+    System.out.println(value.asObject());
     return null;
   }
 
