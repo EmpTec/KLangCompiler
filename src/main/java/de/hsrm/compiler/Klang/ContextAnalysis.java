@@ -488,6 +488,8 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   @Override
   public Node visitFunctionDef(KlangParser.FunctionDefContext ctx) {
     String name = ctx.funcName.getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
     Type returnType = Type.getByName(ctx.returnType.type().getText());
     this.currentDeclaredReturnType = returnType;
 
@@ -509,9 +511,12 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       this.vars.put(param.name, var);
     }
 
-    // Visit the block, make sure the types are matching
+    // Visit the block, make sure that a return value is guaranteed
     Node block = this.visit(ctx.braced_block());
-    block.type.combine(returnType);
+    if (block.type == null) {
+      String error = "Function " + name +" has to return something of type " + returnType.getName() +".";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
 
     FunctionDefinition result = new FunctionDefinition(name, params, (Block) block);
     result.type = returnType;
