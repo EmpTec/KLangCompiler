@@ -280,7 +280,7 @@ public class PrettyPrintVisitor implements Visitor<Void> {
 
   @Override
   public Void visit(VariableDeclaration e) {
-    ex.write("let " + e.name);
+    ex.write("let " + e.name + ": " + e.type.getName());
 
     if (e.expression != null) {
       ex.write(" = ");
@@ -338,7 +338,7 @@ public class PrettyPrintVisitor implements Visitor<Void> {
       ex.write(":");
       ex.write(param.type.getName());
     }
-    ex.write(") ");
+    ex.write("): " + e.type.getName() + " ");
     e.block.welcome(this);
     return null;
   }
