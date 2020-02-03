@@ -2,13 +2,13 @@
 .PHONY: cleanTests
 
 run: code.k target/klang-1.0-jar-with-dependencies.jar
-	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang < code.k > code.s
+	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang -o code.s code.k
 
 pretty: code.k target/klang-1.0-jar-with-dependencies.jar
-	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang --pretty --no-compile < code.k > pretty.k
+	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang --pretty -o pretty.k code.k
 
 eval: code.k target/klang-1.0-jar-with-dependencies.jar
-	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang --evaluate --no-compile < code.k
+	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang --evaluate code.k
 
 build: clean target/klang-1.0-jar-with-dependencies.jar
 
@@ -22,7 +22,7 @@ test: ./src/test/test
 	gcc -o ./src/test/test ./src/test/test.s ./src/test/**/*.c ./src/test/test.c
 
 ./src/test/test.s: target/klang-1.0-jar-with-dependencies.jar
-	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang --no-main < ./src/test/test.k > ./src/test/test.s
+	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang --no-main -o ./src/test/test.s ./src/test/test.k
 
 clean:
 	rm -f ./src/test/test.s
