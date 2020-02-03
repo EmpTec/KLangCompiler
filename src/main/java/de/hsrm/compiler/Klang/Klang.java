@@ -15,24 +15,40 @@ import de.hsrm.compiler.Klang.helper.*;
 
 public class Klang {
 
+  private static void generateOutput(String file, String output) {
+    if (file != null) {
+      try {
+        var outFile = new FileWriter(file);
+        outFile.write(output);
+        outFile.close();
+      } catch (Exception e) {
+        System.err.println("Cannot write output to file");
+        e.printStackTrace();
+      }
+      return;
+    }
+    System.out.println(output);
+  }
+
   public static void main(String[] args) throws Exception {
     boolean evaluate = false;
     boolean prettyPrint = false;
-    boolean compile = true;
     String mainName = "main";
+    String out = null;
 
     List<String> arguments = Arrays.asList(args);
-    if (arguments.contains("-h") || arguments.contains("--help") || arguments.contains("?")) {
+    if (arguments.size() <= 0 || arguments.contains("-h") || arguments.contains("--help") || arguments.contains("?")) {
       System.out.println("\nKaiser Lang Compiler");
       System.out.println("Authors: Dennis Kaiser and Marvin Kaiser");
       System.out.println("");
-      System.out.println("Pass source code via stdin");
+      System.out.println("Last argument must be file");
       System.out.println("");
       System.out.println("Arguments:");
+      System.out.println("--out <file>:\t File to write to");
       System.out.println("--evaluate:\t Evaluates the given source code");
       System.out.println("--pretty:\t Pretty print the given source code");
-      System.out.println("--no-compile:\t Do not compile the source code");
-      System.out.println("--no-main:\t Do not generate main function, will be generated as 'start'. Useful for testing");
+      System.out
+          .println("--no-main:\t Do not generate main function, will be generated as 'start'. Useful for testing");
       return;
     }
     if (arguments.contains("--evaluate")) {
@@ -41,15 +57,19 @@ public class Klang {
     if (arguments.contains("--pretty")) {
       prettyPrint = true;
     }
-    if (arguments.contains("--no-compile")) {
-      compile = false;
-    }
     if (arguments.contains("--no-main")) {
       mainName = "start";
     }
+    if (arguments.contains("-o")) {
+      if (arguments.size() <= 1) {
+        System.out.println("Must specify file name with -o");
+        return;
+      }
+      out = arguments.get(arguments.indexOf("-o") + 1);
+    }
 
     // create a CharStream that reads from standard input
-    CharStream input = CharStreams.fromStream(System.in);
+    CharStream input = CharStreams.fromFileName(arguments.get(arguments.size() - 1));
 
     // create a lexer that feeds off of input CharStream
     KlangLexer lexer = new KlangLexer(input);
@@ -77,17 +97,8 @@ public class Klang {
       PrettyPrintVisitor.ExWriter ex = new PrettyPrintVisitor.ExWriter(w);
       PrettyPrintVisitor printVisitor = new PrettyPrintVisitor(ex);
       node.welcome(printVisitor);
-      System.out.println(w.toString());
-    }
-
-    if (compile) {
-      // Generate assembler code
-      // System.out.println("\nPrinting the assembler code");
-      StringWriter wAsm = new StringWriter();
-      GenASM.ExWriter exAsm = new GenASM.ExWriter(wAsm);
-      GenASM genasm = new GenASM(exAsm, mainName);
-      node.welcome(genasm);
-      System.out.println(wAsm.toString());
+      generateOutput(out, w.toString());
+      return;
     }
 
     if (evaluate) {
@@ -96,10 +107,19 @@ public class Klang {
       EvalVisitor evalVisitor = new EvalVisitor();
       Value result = node.welcome(evalVisitor);
       if (result != null) {
-        System.out.println("result: " + result.asInteger());
+        generateOutput(out, "Result was: TODO");
       } else {
         System.out.println("result was null");
       }
+      return;
     }
+
+    // Generate assembler code
+    // System.out.println("\nPrinting the assembler code");
+    StringWriter wAsm = new StringWriter();
+    GenASM.ExWriter exAsm = new GenASM.ExWriter(wAsm);
+    GenASM genasm = new GenASM(exAsm, mainName);
+    node.welcome(genasm);
+    generateOutput(out, wAsm.toString());
   }
 }
