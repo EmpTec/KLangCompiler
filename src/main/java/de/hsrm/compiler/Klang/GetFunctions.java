@@ -25,9 +25,12 @@ public class GetFunctions extends KlangBaseVisitor<Void> {
   @Override
   public Void visitFunctionDef(KlangParser.FunctionDefContext ctx) {
     String name = ctx.funcName.getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
 
     if (this.funcs.containsKey(name)) {
-      throw new Error("Function " + name + " defined multiple times");
+      String error = "Function " + name + " defined multiple times.";
+      throw new Error(Helper.getErrorPrefix(line, col) + error);
     }
     
     Type returnType = Type.getByName(ctx.returnType.type().getText());
