@@ -240,4 +240,14 @@ class GetVars implements Visitor<Void> {
     return null;
   }
 
+  @Override
+  public Void visit(StructDefinition e) {
+    return null;
+  }
+
+  @Override
+  public Void visit(StructField e) {
+    return null;
+  }
+
 }
