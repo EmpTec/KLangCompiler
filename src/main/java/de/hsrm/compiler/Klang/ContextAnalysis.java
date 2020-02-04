@@ -187,12 +187,11 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     if (ctx.expression() != null) {
       Node expression = this.visit(ctx.expression());
       try {
-        declaredType = declaredType.combine(expression.type);
+        declaredType.combine(expression.type);
       } catch (Exception e) {
         throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
       }
       result = new VariableDeclaration(name, (Expression) expression);
-      result.type = declaredType; // add the type only if there is an expression
     } else {
       result = new VariableDeclaration(name);
     }
@@ -202,6 +201,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
 
     result.line = line;
     result.col = col;
+    result.type = declaredType;
     return result;
   }
 
