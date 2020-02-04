@@ -407,7 +407,11 @@ public class PrettyPrintVisitor implements Visitor<Void> {
 
   @Override
   public Void visit(StructFieldAccessExpression e) {
-    // TODO Auto-generated method stub
+    ex.write(e.varName);
+    for (int i = 0; i < e.path.length; i++) {
+      ex.write(".");
+      ex.write(e.path[i]);
+    }
     return null;
   }
 
