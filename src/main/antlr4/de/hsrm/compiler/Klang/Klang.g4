@@ -171,6 +171,14 @@ IDENT
   : [a-zA-Z][a-zA-Z0-9]*
   ;
 
+BLOCK_COMMENT
+	: '/*' .*? '*/' -> skip
+	;
+
+LINE_COMMENT
+	: '//' ~[\r\n]* -> skip
+	;
+
 WS
  : [ \t\r\n] -> skip
  ;
