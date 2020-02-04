@@ -1,6 +1,7 @@
 package de.hsrm.compiler.Klang;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.HashMap;
 
 import de.hsrm.compiler.Klang.helper.FunctionInformation;
@@ -11,11 +12,13 @@ import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
 import de.hsrm.compiler.Klang.nodes.loops.ForLoop;
 import de.hsrm.compiler.Klang.nodes.loops.WhileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
+import de.hsrm.compiler.Klang.types.StructType;
 import de.hsrm.compiler.Klang.types.Type;
 
 public class ContextAnalysis extends KlangBaseVisitor<Node> {
   Map<String, VariableDeclaration> vars = new HashMap<>();
   Map<String, FunctionInformation> funcs;
+  Set<String> structs;
   Type currentDeclaredReturnType;
 
   private void checkNumeric(Node lhs, Node rhs, int line, int col) {
@@ -25,18 +28,26 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     }
   }
 
-  public ContextAnalysis(Map<String, FunctionInformation> funcs) {
+  public ContextAnalysis(Map<String, FunctionInformation> funcs, Set<String> structs) {
     this.funcs = funcs;
+    this.structs = structs;
   }
 
   @Override
   public Node visitProgram(KlangParser.ProgramContext ctx) {
     FunctionDefinition[] funcs = new FunctionDefinition[ctx.functionDef().size()];
+    StructDefinition[] structs = new StructDefinition[ctx.structDef().size()];
+
     for (int i = 0; i < ctx.functionDef().size(); i++) {
       funcs[i] = (FunctionDefinition) this.visit(ctx.functionDef(i));
     }
+
+    for (int i = 0; i < ctx.structDef().size(); i++) {
+      structs[i] = (StructDefinition) this.visit(ctx.structDef(i));
+    }
+
     Expression expression = (Expression) this.visit(ctx.expression());
-    Program result = new Program(funcs, expression);
+    Program result = new Program(funcs, structs, expression);
     result.type = expression.type;
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
@@ -183,6 +194,11 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
     Type declaredType = Type.getByName(ctx.type_annotation().type().getText());
+
+    if (!declaredType.isPrimitiveType()) {
+      String error = "Using a struct as a type for a variable is not yet implemented";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
 
     if (this.vars.get(name) != null) {
       String error = "Redeclaration of variable with name \"" + name + "\".";
@@ -621,12 +637,55 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitStructDef(KlangParser.StructDefContext ctx) {
+    String name = ctx.structName.getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
+    StructField[] fields = new StructField[ctx.structField().size()];
+
+    for (int i = 0; i < ctx.structField().size(); i++) {
+      StructField field = (StructField) this.visit(ctx.structField(i));
+      fields[i] = field;
+    }
+
+    Node result = new StructDefinition(name, fields);
+    result.line = line;
+    result.col = col;
+    result.type = new StructType(name);
+    return result;
+  }
+
+  @Override
+  public Node visitStructField(KlangParser.StructFieldContext ctx) {
+    String name = ctx.IDENT().getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
+    Type type = Type.getByName(ctx.type_annotation().type().getText());
+
+    if (!type.isPrimitiveType() && !this.structs.contains(type.getName())) {
+      String error = "Type " + type.getName() + " not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    Node result = new StructField(name);
+    result.type = type;
+    result.line = line;
+    result.col = col;
+    return result;
+  }
+
+  @Override
   public Node visitFunctionDef(KlangParser.FunctionDefContext ctx) {
     String name = ctx.funcName.getText();
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
     Type returnType = Type.getByName(ctx.returnType.type().getText());
     this.currentDeclaredReturnType = returnType;
+
+    if (!returnType.isPrimitiveType()) {
+      String error = "Using a struct as the return type of a function is not yet implemented";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
 
     // Create a new set for the variables of the current function
     // this will be filled in the variable declaration visitor aswell
@@ -665,11 +724,20 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   @Override
   public Node visitParameter(KlangParser.ParameterContext ctx) {
     String name = ctx.IDENT().getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
+
     Type type = Type.getByName(ctx.type_annotation().type().getText());
+
+    if (!type.isPrimitiveType()) {
+      String error = "Using a struct as a parameter is not yet implemented";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
     Parameter result = new Parameter(name);
     result.type = type;
-    result.line = ctx.start.getLine();
-    result.col = ctx.start.getCharPositionInLine();
+    result.line = line;
+    result.col = col;
     return result;
   }
 
