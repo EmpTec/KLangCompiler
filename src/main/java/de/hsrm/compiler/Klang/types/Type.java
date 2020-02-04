@@ -21,7 +21,7 @@ public abstract class Type {
       case "bool": return getBooleanType();
       case "int": return getIntegerType();
       case "float": return getFloatType();
-      default: throw new RuntimeException("Unknown type " + name);
+      default: return new StructType(name);
     }
   }
 
