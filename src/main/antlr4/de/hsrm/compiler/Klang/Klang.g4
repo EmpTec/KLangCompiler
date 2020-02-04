@@ -73,6 +73,7 @@ return_statement
 
 expression
   : atom #atomExpression
+  | IDENT (DOT IDENT)+ #structFieldAccessExpression
   | OPAR expression CPAR #parenthesisExpression
   | lhs=expression MUL rhs=expression #multiplicationExpression
   | lhs=expression DIV rhs=expression #divisionExpression
@@ -161,6 +162,7 @@ GTE: '>=';
 OR: '||';
 AND: '&&';
 NOT: '!';
+DOT: '.';
 
 MUL: '*';
 ADD: '+';
