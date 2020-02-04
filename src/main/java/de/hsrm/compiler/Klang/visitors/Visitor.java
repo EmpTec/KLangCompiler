@@ -45,4 +45,5 @@ public interface Visitor<R> {
     R visit(Parameter e);
     R visit(StructDefinition e);
     R visit(StructField e);
+    R visit(StructFieldAccessExpression e);
 }

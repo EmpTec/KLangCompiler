@@ -62,7 +62,7 @@ public class PrettyPrintVisitor implements Visitor<Void> {
       ex.nl();
     }
 
-    for (var structDef: e.structs) {
+    for (var structDef: e.structs.values()) {
       structDef.welcome(this);
       ex.nl();
       ex.nl();
@@ -402,6 +402,12 @@ public class PrettyPrintVisitor implements Visitor<Void> {
   @Override
   public Void visit(StructField e) {
     ex.write(e.name +": " + e.type.getName() + ";");
+    return null;
+  }
+
+  @Override
+  public Void visit(StructFieldAccessExpression e) {
+    // TODO Auto-generated method stub
     return null;
   }
 
