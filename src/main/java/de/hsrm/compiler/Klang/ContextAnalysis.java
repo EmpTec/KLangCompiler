@@ -265,6 +265,45 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitStructFieldAccessExpression(KlangParser.StructFieldAccessExpressionContext ctx) {
+    String varName = ctx.IDENT(0).getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
+    String[] path = new String[ctx.IDENT().size() - 1];
+
+    for (int i = 1; i < ctx.IDENT().size(); i++) {
+      path[i - 1] = ctx.IDENT(i).getText();
+    }
+
+    // Get the referenced variable, make sure it is defined
+    var variableDef = this.vars.get(varName);
+    if (variableDef == null) {
+      String error = "Variable with name " + varName + " not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    // Make sure it references a struct
+    if (variableDef.type.isPrimitiveType()) {
+      String error = "Variable must reference a struct but references " + variableDef.type.getName() + ".";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    // Get the type of the result of this expression
+    Type resultType;
+    try {
+      resultType = Helper.drillType(this.structs, variableDef.type.getName(), path, 0);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+
+    Node result = new StructFieldAccessExpression(varName, path);
+    result.type = resultType;
+    result.line = line;
+    result.col = col;
+    return result;
+  }
+
+  @Override
   public Node visitOrExpression(KlangParser.OrExpressionContext ctx) {
     Node lhs = this.visit(ctx.lhs);
     Node rhs = this.visit(ctx.rhs);
