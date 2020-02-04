@@ -8,6 +8,8 @@ import de.hsrm.compiler.Klang.nodes.Block;
 import de.hsrm.compiler.Klang.nodes.FunctionDefinition;
 import de.hsrm.compiler.Klang.nodes.Parameter;
 import de.hsrm.compiler.Klang.nodes.Program;
+import de.hsrm.compiler.Klang.nodes.StructDefinition;
+import de.hsrm.compiler.Klang.nodes.StructField;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
 import de.hsrm.compiler.Klang.nodes.loops.ForLoop;
@@ -467,6 +469,18 @@ public class EvalVisitor implements Visitor<Value> {
 
   @Override
   public Value visit(Parameter e) {
+    return null;
+  }
+
+  @Override
+  public Value visit(StructDefinition e) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Value visit(StructField e) {
+    // TODO Auto-generated method stub
     return null;
   }
 

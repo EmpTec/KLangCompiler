@@ -795,4 +795,16 @@ public class GenASM implements Visitor<Void> {
     return null;
   }
 
+  @Override
+  public Void visit(StructDefinition e) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Void visit(StructField e) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }
