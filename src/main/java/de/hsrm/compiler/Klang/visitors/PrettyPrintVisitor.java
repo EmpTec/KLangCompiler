@@ -61,6 +61,13 @@ public class PrettyPrintVisitor implements Visitor<Void> {
       ex.nl();
       ex.nl();
     }
+
+    for (var structDef: e.structs) {
+      structDef.welcome(this);
+      ex.nl();
+      ex.nl();
+    }
+
     e.expression.welcome(this);
     ex.write(";");
     return null;
@@ -375,6 +382,26 @@ public class PrettyPrintVisitor implements Visitor<Void> {
   @Override
   public Void visit(Parameter e) {
     // The work is already done in the function definition visitor
+    return null;
+  }
+
+  @Override
+  public Void visit(StructDefinition e) {
+    ex.write("struct " + e.name + " {");
+    ex.addIndent();
+    for(var field: e.fields) {
+      ex.nl();
+      field.welcome(this);
+    }
+    ex.subIndent();
+    ex.nl();
+    ex.write("}");
+    return null;
+  }
+
+  @Override
+  public Void visit(StructField e) {
+    ex.write(e.name +": " + e.type.getName() + ";");
     return null;
   }
 
