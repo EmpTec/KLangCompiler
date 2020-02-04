@@ -192,6 +192,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
         throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
       }
       result = new VariableDeclaration(name, (Expression) expression);
+      result.initialized = true;
     } else {
       result = new VariableDeclaration(name);
     }
@@ -226,6 +227,9 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     } catch (Exception e) {
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
+
+    // Since we assigned a value to this variable, we can consider it initialized
+    var.initialized = true;
 
     // Create a new node and add the type of the expression to it
     Node result = new VariableAssignment(name, expression);
@@ -503,6 +507,12 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
+    // Make sure the variable has been initialized before it can be used
+    if (!var.initialized) {
+      String error = "Variable with name \"" + name + "\" has not been initialized.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
     Variable result = new Variable(ctx.IDENT().getText());
     result.type = var.type;
     result.line = line;
@@ -555,6 +565,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
 
       // add the param as a variable
       VariableDeclaration var = new VariableDeclaration(param.name);
+      var.initialized = true; // parameters can always be considered initialized
       var.type = param.type;
       this.vars.put(param.name, var);
     }
