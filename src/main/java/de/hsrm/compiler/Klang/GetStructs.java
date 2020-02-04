@@ -2,7 +2,6 @@ package de.hsrm.compiler.Klang;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 
 import de.hsrm.compiler.Klang.helper.Helper;
 import de.hsrm.compiler.Klang.nodes.Node;
@@ -16,9 +15,9 @@ public class GetStructs extends KlangBaseVisitor<Node> {
     private Set<String> structNames;
     private Map<String, StructDefinition> structs;
 
-    public GetStructs(Map<String, StructDefinition> structs) {
+    public GetStructs(Set<String> structNames, Map<String, StructDefinition> structs) {
         this.structs = structs;
-        this.structNames = new HashSet<>();
+        this.structNames = structNames;
     }
 
     @Override
@@ -36,13 +35,6 @@ public class GetStructs extends KlangBaseVisitor<Node> {
         int line = ctx.start.getLine();
         int col = ctx.start.getCharPositionInLine();
         StructField[] fields = new StructField[ctx.structField().size()];
-
-        if (this.structNames.contains(name)) {
-            String error = "Struct " + name + " defined multiple times.";
-            throw new Error(Helper.getErrorPrefix(line, col) + error);
-        }
-
-        this.structNames.add(name);
     
         for (int i = 0; i < ctx.structField().size(); i++) {
           StructField field = (StructField) this.visit(ctx.structField(i));

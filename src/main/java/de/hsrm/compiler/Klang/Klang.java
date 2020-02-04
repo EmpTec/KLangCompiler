@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import de.hsrm.compiler.Klang.nodes.Node;
 import de.hsrm.compiler.Klang.nodes.StructDefinition;
@@ -91,9 +92,13 @@ public class Klang {
       var functionDefinitions = new HashMap<String, FunctionInformation>();
       new GetFunctions(functionDefinitions).visit(tree);
 
+      // Extract names of all structs
+      var structNames = new HashSet<String>();
+      new GetStructNames(structNames).visit(tree);
+
       // Extract information about all structs
       var structs = new HashMap<String, StructDefinition>();
-      new GetStructs(structs).visit(tree);
+      new GetStructs(structNames, structs).visit(tree);
 
       // Create the DAST
       ContextAnalysis ctxAnal = new ContextAnalysis(functionDefinitions, structs);
