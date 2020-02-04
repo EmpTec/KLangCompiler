@@ -195,8 +195,8 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int col = ctx.start.getCharPositionInLine();
     Type declaredType = Type.getByName(ctx.type_annotation().type().getText());
 
-    if (!declaredType.isPrimitiveType()) {
-      String error = "Using a struct as a type for a variable is not yet implemented";
+    if (!declaredType.isPrimitiveType() && !this.structs.contains(declaredType.getName())) {
+      String error = "Type " + declaredType.getName() + " not defined.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
@@ -682,8 +682,8 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Type returnType = Type.getByName(ctx.returnType.type().getText());
     this.currentDeclaredReturnType = returnType;
 
-    if (!returnType.isPrimitiveType()) {
-      String error = "Using a struct as the return type of a function is not yet implemented";
+    if (!returnType.isPrimitiveType() && !this.structs.contains(returnType.getName())) {
+      String error = "Type " + returnType.getName() + " not defined.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
@@ -726,11 +726,10 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     String name = ctx.IDENT().getText();
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
-
     Type type = Type.getByName(ctx.type_annotation().type().getText());
 
-    if (!type.isPrimitiveType()) {
-      String error = "Using a struct as a parameter is not yet implemented";
+    if (!type.isPrimitiveType() && !this.structs.contains(type.getName())) {
+      String error = "Type " + type.getName() + " not defined.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
