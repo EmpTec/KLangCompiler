@@ -26,10 +26,7 @@ The makefile can be used to perform various functions more easily:
 - `make cleanTests` cleans files generated from tests
 
 # Functionality
-The KLang compiler supports generation of AMD64 assembly code, as well as prettifying and evaluating the KLang code. 
-
-## Data Types
-- Integer
+The KLang compiler supports generation of AMD64 assembly code, as well as prettifying and evaluating the KLang code.
 
 ## Simple Expressions
 The following simple expressions are supported. Expressions need to be put in paranthesis. When using comparison operators, the expressions evaluate to 0 for false and 1 for true.
@@ -53,16 +50,17 @@ The following simple expressions are supported. Expressions need to be put in pa
 ```
 
 ## Functions
-Functions can be defined and called. A function call can be used like any other expression. Recusion is supported
+Functions can be defined and called. A function call can be used like any other expression. Recursion is supported
 
 ### Examples
 ```
-function fun(x, y, z) {
+function fun(x: int, y: int, z: bool): int {
   return x;
 }
 
 fun(1, 2, 3);
 ```
+
 ## Statements
 Several statements are supported:
 - if
@@ -75,12 +73,12 @@ Several statements are supported:
 
 ### Examples
 ```
-function example(x, y, z) {
-  let a;
-  let b = 0;
-  if ((x == y)) {
+function example(x: int, y: int, z: int): int {
+  let a: int;
+  let b: int = 0;
+  if (x == y) {
     a = y;
-  } else if ((x == z)) {
+  } else if (x == z) {
     a = z;
   } else {
     return b;
@@ -88,28 +86,79 @@ function example(x, y, z) {
   return a;
 }
 
-function whileExample(end) {
-  let x = 0;
-  while ((x < end)) {
-    x = (x + 1);
+function whileExample(end: int): int {
+  let x: int = 0;
+  while (x < end) {
+    x = x + 1;
   }
   return x;
 }
 
-function doWhileExample(end) {
-  let x = 0;
+function doWhileExample(end: int): int {
+  let x: int = 0;
   do {
-    x = (x + 1);
-  } while((x < end));
+    x = x + 1;
+  } while(x < end);
+  return x;
 }
 
-function forExample(end) {
-  let x = 0;
-  for (let i = 0; (i < end); i = (i + 1)) {
-    x = (x + 1);
+function forExample(end: int): int {
+  let x: int = 0;
+  for (let i: int = 0; i < end; i = i + 1) {
+    x = x + 1;
   }
   return x;
 }
 
 ```
 
+## Statically typed
+KLang statically verifies the integrity of your code. These checks include:
+- Type checking
+- Ensuring that variables and functions in use are declared
+- Ensuring that the arguments of a function call match the function definition
+- Ensuring that a function returns something
+- Ensuring that a function only returns data of the correct type
+
+### Data Types
+- Integer "int"
+- Boolean "bool"
+
+### Examples
+You can declare types for parameters, return values and variables
+```
+function foo(start: int): boolean {
+  let threshold: int = 10;
+  return threshold < start;
+}
+```
+
+Type annotations are required as per our parsing rules, so this will result in an error while parsing
+```
+function bar() {
+  return 0;
+}
+```
+
+This will throw an error since a boolean is returned, but int is declared as the return type
+```
+function baz(): int {
+  return false;
+}
+```
+
+This will throw an error since the function "bam" expects one argument but the call to this function provided none
+```
+function bam(a: int): int {
+  return a;
+}
+bam();
+```
+
+This will throw an error since the first parameter of function "boo" has to be of type bool
+```
+function boo(a: bool): bool {
+  return a;
+}
+boo(100);
+```
