@@ -5,7 +5,15 @@ parse
   ;
 
 program
-  : functionDef* expression SCOL
+  : (functionDef | structDef)* expression SCOL
+  ;
+
+structDef
+  : STRUCT structName=IDENT OBRK structField+ CBRK
+  ;
+
+structField
+  : IDENT type_annotation SCOL
   ;
 
 functionDef
@@ -99,6 +107,7 @@ type
   : INTEGER
   | BOOLEAN
   | FLOAT
+  | IDENT
   ;
 
 functionCall
@@ -127,6 +136,7 @@ PRINT: 'print';
 IF: 'if';
 ELSE: 'else';
 FUNC: 'function';
+STRUCT: 'struct';
 RETURN: 'return';
 LET: 'let';
 WHILE: 'while';
