@@ -6,10 +6,12 @@ import de.hsrm.compiler.Klang.visitors.Visitor;
 public class Program extends Node {
   
   public FunctionDefinition[] funcs;
+  public StructDefinition[] structs;
   public Expression expression;
 
-  public Program(FunctionDefinition[] funcs, Expression expression) {
+  public Program(FunctionDefinition[] funcs, StructDefinition[] structs, Expression expression) {
     this.funcs = funcs;
+    this.structs = structs;
     this.expression = expression;
   }
 
