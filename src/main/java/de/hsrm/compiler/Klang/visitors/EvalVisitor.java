@@ -490,4 +490,10 @@ public class EvalVisitor implements Visitor<Value> {
     return null;
   }
 
+  @Override
+  public Value visit(ConstructorCall e) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

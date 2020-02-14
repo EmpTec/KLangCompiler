@@ -415,4 +415,21 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     return null;
   }
 
+  @Override
+  public Void visit(ConstructorCall e) {
+    ex.write("create " + e.structName + "(");
+    boolean first = true;
+    for (Expression arg : e.args) {
+      if (!first) {
+        ex.write(", ");
+      } else {
+        first = false;
+      }
+      arg.welcome(this);
+    }
+    ex.write(")");
+
+    return null;
+  }
+
 }

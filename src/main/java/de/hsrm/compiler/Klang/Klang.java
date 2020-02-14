@@ -39,20 +39,20 @@ public class Klang {
     String out = null;
 
     List<String> arguments = Arrays.asList(args);
-    if (arguments.size() <= 0 || arguments.contains("-h") || arguments.contains("--help") || arguments.contains("?")) {
-      System.out.println("\nKaiser Lang Compiler");
-      System.out.println("Authors: Dennis Kaiser and Marvin Kaiser");
-      System.out.println("");
-      System.out.println("Last argument must be file");
-      System.out.println("");
-      System.out.println("Arguments:");
-      System.out.println("--out <file>:\t File to write to");
-      System.out.println("--evaluate:\t Evaluates the given source code");
-      System.out.println("--pretty:\t Pretty print the given source code");
-      System.out
-          .println("--no-main:\t Do not generate main function, will be generated as 'start'. Useful for testing");
-      return;
-    }
+    // if (arguments.size() <= 0 || arguments.contains("-h") || arguments.contains("--help") || arguments.contains("?")) {
+    //   System.out.println("\nKaiser Lang Compiler");
+    //   System.out.println("Authors: Dennis Kaiser and Marvin Kaiser");
+    //   System.out.println("");
+    //   System.out.println("Last argument must be file");
+    //   System.out.println("");
+    //   System.out.println("Arguments:");
+    //   System.out.println("--out <file>:\t File to write to");
+    //   System.out.println("--evaluate:\t Evaluates the given source code");
+    //   System.out.println("--pretty:\t Pretty print the given source code");
+    //   System.out
+    //       .println("--no-main:\t Do not generate main function, will be generated as 'start'. Useful for testing");
+    //   return;
+    // }
     if (arguments.contains("--evaluate")) {
       evaluate = true;
     }
@@ -71,7 +71,7 @@ public class Klang {
     }
 
     // create a CharStream that reads from standard input
-    CharStream input = CharStreams.fromFileName(arguments.get(arguments.size() - 1));
+    CharStream input = CharStreams.fromFileName("code.k");
 
     // create a lexer that feeds off of input CharStream
     KlangLexer lexer = new KlangLexer(input);

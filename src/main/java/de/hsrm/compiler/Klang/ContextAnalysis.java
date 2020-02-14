@@ -770,4 +770,44 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     result.col = col;
     return result;
   }
+
+  @Override
+  public Node visitConstructorCallExpression(KlangParser.ConstructorCallExpressionContext ctx) {
+    String name = ctx.IDENT().getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
+    
+    // Get the corresponding struct definition
+    var struct = this.structs.get(name);
+    if (struct == null) {
+      String error = "Struct with name \"" + name + "\" not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+    
+    // Make sure the number of arguments match the number of struct fields
+    int fieldCount = struct.fields.length;
+    int argCount = ctx.arguments().expression().size();
+    if (argCount != fieldCount) {
+      String error = "Struct \"" + name + "\" defined " + fieldCount + " fields, but got " + argCount + " constructor parameters.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    // Evaluate each expression
+    Expression[] args = new Expression[argCount];
+    for (int i = 0; i < argCount; i++) {
+      Expression expr = (Expression) this.visit(ctx.arguments().expression(i));
+      try {
+        expr.type.combine(struct.fields[i].type); // Make sure the types are matching
+      } catch (Exception e) {
+        throw new RuntimeException(Helper.getErrorPrefix(expr.line, expr.col) + "argument " + i + " " + e.getMessage());
+      }
+      args[i] = expr;
+    }
+
+    ConstructorCall result = new ConstructorCall(name, args);
+    result.type = struct.type;
+    result.line = line;
+    result.col = col;
+    return result;
+  }
 }
