@@ -91,6 +91,7 @@ expression
   | SUB expression #negateExpression
   | NOT expression #NotExpression
   | functionCall #functionCallExpression
+  | CREATE IDENT OPAR arguments CPAR # constructorCallExpression
   ;
 
 atom
@@ -143,6 +144,7 @@ LET: 'let';
 WHILE: 'while';
 DO: 'do';
 FOR: 'for';
+CREATE: 'create';
 
 PERIOD: '.';
 COL: ':';
