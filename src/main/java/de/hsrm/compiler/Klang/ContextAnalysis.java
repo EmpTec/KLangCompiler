@@ -669,6 +669,15 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitNullAtom(KlangParser.NullAtomContext ctx) {
+    Node n = new NullExpression();
+    n.type = Type.getNullType();
+    n.line = ctx.start.getLine();
+    n.col = ctx.start.getCharPositionInLine();
+    return n;
+  }
+
+  @Override
   public Node visitFunctionDef(KlangParser.FunctionDefContext ctx) {
     String name = ctx.funcName.getText();
     int line = ctx.start.getLine();

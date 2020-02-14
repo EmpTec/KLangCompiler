@@ -260,4 +260,9 @@ class GetVars implements Visitor<Void> {
     return null;
   }
 
+  @Override
+  public Void visit(NullExpression e) {
+    return null;
+  }
+
 }

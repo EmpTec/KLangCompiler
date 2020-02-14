@@ -432,4 +432,10 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     return null;
   }
 
+  @Override
+  public Void visit(NullExpression e) {
+    ex.write("null");
+    return null;
+  }
+
 }
