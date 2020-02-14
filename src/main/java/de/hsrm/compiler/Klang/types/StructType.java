@@ -19,6 +19,12 @@ public class StructType extends Type {
             return this;
         }
 
+        // If you combine a null type with a struct type, you
+        // always get the struct type back. 
+        if (that == NullType.getType()) {
+            return this;
+        }
+
         throw new RuntimeException("Type missmatch: cannot combine " + this.getName() + " and " + that.getName());
     }
 
