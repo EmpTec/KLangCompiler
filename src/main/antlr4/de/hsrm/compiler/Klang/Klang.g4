@@ -98,6 +98,7 @@ atom
   : INTEGER_LITERAL #intAtom
   | BOOLEAN_LITERAL #boolAtom
   | FLOAT_LITERAL #floatAtom
+  | NULL # nullAtom
   | IDENT #variable
   ;
 
@@ -145,6 +146,7 @@ WHILE: 'while';
 DO: 'do';
 FOR: 'for';
 CREATE: 'create';
+NULL: 'naught';
 
 PERIOD: '.';
 COL: ':';
