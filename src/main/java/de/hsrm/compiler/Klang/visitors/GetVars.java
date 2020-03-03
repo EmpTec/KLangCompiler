@@ -1,5 +1,6 @@
 package de.hsrm.compiler.Klang.visitors;
 
+import java.util.Map;
 import java.util.Set;
 
 import de.hsrm.compiler.Klang.nodes.*;
@@ -8,17 +9,25 @@ import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
 import de.hsrm.compiler.Klang.nodes.loops.ForLoop;
 import de.hsrm.compiler.Klang.nodes.loops.WhileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
+import de.hsrm.compiler.Klang.types.Type;
 
 class GetVars implements Visitor<Void> {
 
   public Set<String> vars;
+  public Map<String, Type> types;
 
-  public GetVars(Set<String> vars) {
+  public GetVars(Set<String> vars, Map<String, Type> types) {
     this.vars = vars;
+    this.types = types;
   }
 
   @Override
   public Void visit(IntegerExpression e) {
+    return null;
+  }
+
+  @Override
+  public Void visit(FloatExpression e) {
     return null;
   }
 
@@ -179,6 +188,7 @@ class GetVars implements Visitor<Void> {
   @Override
   public Void visit(VariableDeclaration e) {
     vars.add(e.name);
+    types.put(e.name, e.type);
     return null;
   }
 

@@ -87,6 +87,7 @@ expression
 atom
   : INTEGER_LITERAL #intAtom
   | BOOLEAN_LITERAL #boolAtom
+  | FLOAT_LITERAL #floatAtom
   | IDENT #variable
   ;
 
@@ -97,6 +98,7 @@ type_annotation
 type
   : INTEGER
   | BOOLEAN
+  | FLOAT
   ;
 
 functionCall
@@ -131,6 +133,7 @@ WHILE: 'while';
 DO: 'do';
 FOR: 'for';
 
+PERIOD: '.';
 COL: ':';
 SCOL: ';';
 OBRK: '{';
@@ -157,9 +160,14 @@ DIV: '/';
 
 BOOLEAN: 'bool';
 INTEGER: 'int';
+FLOAT: 'float';
 
 INTEGER_LITERAL
   : [0-9]+
+  ;
+
+FLOAT_LITERAL
+  : INTEGER_LITERAL PERIOD INTEGER_LITERAL
   ;
 
 BOOLEAN_LITERAL

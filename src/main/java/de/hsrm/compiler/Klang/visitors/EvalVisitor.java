@@ -13,6 +13,7 @@ import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
 import de.hsrm.compiler.Klang.nodes.loops.ForLoop;
 import de.hsrm.compiler.Klang.nodes.loops.WhileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
+import de.hsrm.compiler.Klang.types.Type;
 
 public class EvalVisitor implements Visitor<Value> {
 
@@ -21,115 +22,309 @@ public class EvalVisitor implements Visitor<Value> {
 
   @Override
   public Value visit(IntegerExpression e) {
-    return new Value(e.value);
+    Value result = new Value(e.value);
+    result.type = Type.getIntegerType();
+    return result;
+  }
+
+  @Override 
+  public Value visit(FloatExpression e) {
+    Value result = new Value(e.value);
+    result.type = Type.getFloatType();
+    return result;
   }
 
   @Override
   public Value visit(BooleanExpression e) {
-    return new Value(e.value);
+    Value result = new Value(e.value);
+    result.type = Type.getBooleanType();
+    return result;
   }
 
   @Override
   public Value visit(EqualityExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asObject() == rhs.asObject());
+    Type resultType = Type.getBooleanType();
+    Type combineType = lhs.type.combine(rhs.type);
+
+    switch(combineType.getName()) {
+      case "bool": {
+        return new Value(lhs.asBoolean() == rhs.asBoolean(), resultType);
+      }
+      case "int": {
+        return new Value(lhs.asInteger() == rhs.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(lhs.asFloat() == rhs.asFloat(), resultType);
+      }
+      default: {
+        return new Value(lhs.asObject() == rhs.asObject(), resultType);
+      }
+    }
   }
 
   @Override
   public Value visit(NotEqualityExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asObject() != rhs.asObject());
+    Type resultType = Type.getBooleanType();
+    Type combineType = lhs.type.combine(rhs.type);
+
+    switch(combineType.getName()) {
+      case "bool": {
+        return new Value(lhs.asBoolean() != rhs.asBoolean(), resultType);
+      }
+      case "int": {
+        return new Value(lhs.asInteger() != rhs.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(lhs.asFloat() != rhs.asFloat(), resultType);
+      }
+      default: {
+        return new Value(lhs.asObject() != rhs.asObject(), resultType);
+      }
+    }
   }
 
   @Override
   public Value visit(GTExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asInteger() > rhs.asInteger());
+    Type resultType = Type.getBooleanType();
+    Type combineType = lhs.type.combine(rhs.type);
+
+    switch(combineType.getName()) {
+      case "int": {
+        return new Value(lhs.asInteger() > rhs.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(lhs.asFloat() > rhs.asFloat(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(GTEExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asInteger() >= rhs.asInteger());
+    Type resultType = Type.getBooleanType();
+    Type combineType = lhs.type.combine(rhs.type);
+
+    switch(combineType.getName()) {
+      case "int": {
+        return new Value(lhs.asInteger() >= rhs.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(lhs.asFloat() >= rhs.asFloat(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(LTExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asInteger() < rhs.asInteger());
+    Type resultType = Type.getBooleanType();
+    Type combineType = lhs.type.combine(rhs.type);
+
+    switch(combineType.getName()) {
+      case "int": {
+        return new Value(lhs.asInteger() < rhs.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(lhs.asFloat() < rhs.asFloat(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(LTEExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asInteger() <= rhs.asInteger());
+    Type combineType = lhs.type.combine(rhs.type);
+    Type resultType = Type.getBooleanType();
+
+    switch(combineType.getName()) {
+      case "int": {
+        return new Value(lhs.asInteger() <= rhs.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(lhs.asFloat() <= rhs.asFloat(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(AdditionExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asInteger() + rhs.asInteger());
+    Type resultType = lhs.type.combine(rhs.type);
+
+    switch(resultType.getName()) {
+      case "int": {
+        return new Value(lhs.asInteger() + rhs.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(lhs.asFloat() + rhs.asFloat(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(SubstractionExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asInteger() - rhs.asInteger());
+    Type resultType = lhs.type.combine(rhs.type);
+
+    switch(resultType.getName()) {
+      case "int": {
+        return new Value(lhs.asInteger() - rhs.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(lhs.asFloat() - rhs.asFloat(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(MultiplicationExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asInteger() * rhs.asInteger());
+    Type resultType = lhs.type.combine(rhs.type);
+
+    switch(resultType.getName()) {
+      case "int": {
+        return new Value(lhs.asInteger() * rhs.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(lhs.asFloat() * rhs.asFloat(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(DivisionExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asInteger() / rhs.asInteger());
+    Type resultType = lhs.type.combine(rhs.type);
+
+    switch(resultType.getName()) {
+      case "int": {
+        return new Value(lhs.asInteger() / rhs.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(lhs.asFloat() / rhs.asFloat(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(ModuloExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asInteger() % rhs.asInteger());
+    Type resultType = lhs.type.combine(rhs.type);
+    
+    switch(resultType.getName()) {
+      case "int": {
+        return new Value(lhs.asInteger() % rhs.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(lhs.asFloat() % rhs.asFloat(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(NegateExpression e) {
     Value a = e.lhs.welcome(this);
-    return new Value(-a.asInteger());
+    Type resultType = a.type;
+    
+    switch(resultType.getName()) {
+      case "int": {
+        return new Value(-a.asInteger(), resultType);
+      }
+      case "float": {
+        return new Value(-a.asFloat(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(OrExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asBoolean() || rhs.asBoolean());
+    Type resultType = lhs.type.combine(rhs.type);
+    
+    switch(resultType.getName()) {
+      case "bool": {
+        return new Value(lhs.asBoolean() || rhs.asBoolean(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(AndExpression e) {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
-    return new Value(lhs.asBoolean() && rhs.asBoolean());
+    Type resultType = lhs.type.combine(rhs.type);
+    
+    switch(resultType.getName()) {
+      case "bool": {
+        return new Value(lhs.asBoolean() && rhs.asBoolean(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override
   public Value visit(NotExpression e) {
     Value lhs = e.lhs.welcome(this);
-    return new Value(!lhs.asBoolean());
+    Type resultType = lhs.type;
+    
+    switch(resultType.getName()) {
+      case "bool": {
+        return new Value(!lhs.asBoolean(), resultType);
+      }
+      default: {
+        throw new RuntimeException("Unknown Type encountered");
+      }
+    }
   }
 
   @Override

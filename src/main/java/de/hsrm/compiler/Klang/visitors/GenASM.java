@@ -12,6 +12,7 @@ import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
 import de.hsrm.compiler.Klang.nodes.loops.ForLoop;
 import de.hsrm.compiler.Klang.nodes.loops.WhileLoop;
 import de.hsrm.compiler.Klang.nodes.statements.*;
+import de.hsrm.compiler.Klang.types.Type;
 
 public class GenASM implements Visitor<Void> {
 
@@ -55,12 +56,82 @@ public class GenASM implements Visitor<Void> {
     }
   }
 
+  private class FloatWriter {
+    private StringBuilder sb = new StringBuilder();
+    private int id = -1;
+
+    public String getFloat(double d) {
+      String binary = Long.toBinaryString(Double.doubleToLongBits(d));
+      String upper = binary.substring(0, 30);
+      String lower = binary.substring(31, 61);
+      long first = Long.parseLong(lower, 2);
+      long second = Long.parseLong(upper, 2);
+      String lbl = ".FL" + ++id;
+      sb.append(lbl);
+      sb.append(":\n");
+      sb.append("\t.long ");
+      sb.append(first);
+      sb.append("\n");
+      sb.append("\t.long ");
+      sb.append(second);
+      sb.append("\n");
+      return lbl;
+    }
+
+    public String getNegateFloat() {
+      String lbl = ".FL" + ++id;
+      sb.append(lbl);
+      sb.append(":\n");
+      sb.append("\t.long ");
+      sb.append("0");
+      sb.append("\n");
+      sb.append("\t.long ");
+      sb.append("-2147483648");
+      sb.append("\n");
+      return lbl;
+    }
+
+    public String getFloatSection() {
+      return sb.toString();
+    }
+  }
+
   public ExWriter ex;
+  private FloatWriter fw = new FloatWriter();
   private String mainName;
   Map<String, Integer> env = new HashMap<>();
   Set<String> vars;
   String[] rs = { "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9" };
+  String[] frs = {"xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7"};
   private int lCount = 0; // Invariante: lCount ist benutzt
+
+  private void intToFloat(String src, String dst) {
+    this.ex.write("    cvtsi2sd " + src +", " + dst + "\n");
+  }
+
+  private boolean prepareRegisters(Expression lhs, Expression rhs) {
+    boolean lhsIsFloat = lhs.type.equals(Type.getFloatType());
+    boolean rhsIsFloat = rhs.type.equals(Type.getFloatType());
+    if (lhsIsFloat || rhsIsFloat) {
+      lhs.welcome(this);
+      if (!lhsIsFloat) {
+        this.intToFloat("%rax", "%xmm1");
+      } else {
+        this.ex.write("    movsd %xmm0, %xmm1\n");
+      }
+      rhs.welcome(this);
+      if (!rhsIsFloat) {
+        this.intToFloat("%rax", "%xmm1");
+      }
+      return true;
+    }
+    lhs.welcome(this);
+    this.ex.write("    pushq %rax\n");
+    rhs.welcome(this);
+    this.ex.write("    popq %rbx\n");
+    return false;
+  }
+
 
   public GenASM(ExWriter ex, String mainName) {
     this.ex = ex;
@@ -79,6 +150,13 @@ public class GenASM implements Visitor<Void> {
   }
 
   @Override
+  public Void visit(FloatExpression e) {
+    String floatLabel = fw.getFloat(e.value);
+    this.ex.write("    movsd " + floatLabel + "(%rip), %xmm0\n");
+    return null;
+  }
+
+  @Override
   public Void visit(BooleanExpression e) {
     this.ex.write("    movq $" + (e.value ? 1 : 0) + ", %rax\n");
     return null;
@@ -86,7 +164,11 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(Variable e) {
-    this.ex.write("    movq " + this.env.get(e.name) + "(%rbp), %rax\n");
+    if (e.type.equals(Type.getFloatType())) {
+      this.ex.write("    movsd " + this.env.get(e.name) + "(%rbp), %xmm0\n");
+    } else {
+      this.ex.write("    movq " + this.env.get(e.name) + "(%rbp), %rax\n");
+    }
     return null;
   }
 
@@ -95,19 +177,20 @@ public class GenASM implements Visitor<Void> {
     int lblTrue = ++lCount;
     int lblEnd = ++lCount;
 
-    e.lhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
-    e.rhs.welcome(this);
-    this.ex.write("    popq %rbx\n");
-    this.ex.write("    cmp %rax, %rbx\n");
-    this.ex.write("    je .L" + lblTrue + "\n");
-    // false
-    this.ex.write("    movq $0, %rax\n");
-    this.ex.write("    jmp .L" + lblEnd + "\n");
-    this.ex.write(".L" + lblTrue + ":\n");
-    // true
-    this.ex.write("   movq $1, %rax\n");
-    this.ex.write(".L" + lblEnd + ":\n");
+    boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
+    if (isFloatOperation) {
+      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+    } else {
+      this.ex.write("    cmp %rax, %rbx\n");
+    }
+      this.ex.write("    je .L" + lblTrue + "\n");
+      // false
+      this.ex.write("    movq $0, %rax\n");
+      this.ex.write("    jmp .L" + lblEnd + "\n");
+      this.ex.write(".L" + lblTrue + ":\n");
+      // true
+      this.ex.write("   movq $1, %rax\n");
+      this.ex.write(".L" + lblEnd + ":\n");
     return null;
   }
 
@@ -116,11 +199,12 @@ public class GenASM implements Visitor<Void> {
     int lblTrue = ++lCount;
     int lblEnd = ++lCount;
 
-    e.lhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
-    e.rhs.welcome(this);
-    this.ex.write("    popq %rbx\n");
-    this.ex.write("    cmp %rax, %rbx\n");
+    boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
+    if (isFloatOperation) {
+      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+    } else {
+      this.ex.write("    cmp %rax, %rbx\n");
+    }
     this.ex.write("    jne .L" + lblTrue + "\n");
     // false
     this.ex.write("    movq $0, %rax\n");
@@ -137,11 +221,12 @@ public class GenASM implements Visitor<Void> {
     int lblTrue = ++lCount;
     int lblEnd = ++lCount;
 
-    e.lhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
-    e.rhs.welcome(this);
-    this.ex.write("    popq %rbx\n");
-    this.ex.write("    cmp %rax, %rbx\n");
+    boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
+    if (isFloatOperation) {
+      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+    } else {
+      this.ex.write("    cmp %rax, %rbx\n");
+    }
     this.ex.write("    jg .L" + lblTrue + "\n");
     // false
     this.ex.write("    movq $0, %rax\n");
@@ -158,11 +243,13 @@ public class GenASM implements Visitor<Void> {
     int lblTrue = ++lCount;
     int lblEnd = ++lCount;
 
-    e.lhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
-    e.rhs.welcome(this);
-    this.ex.write("    popq %rbx\n");
-    this.ex.write("    cmp %rax, %rbx\n");
+    
+    boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
+    if (isFloatOperation) {
+      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+    } else {
+      this.ex.write("    cmp %rax, %rbx\n");
+    }
     this.ex.write("    jge .L" + lblTrue + "\n");
     // false
     this.ex.write("    movq $0, %rax\n");
@@ -179,11 +266,12 @@ public class GenASM implements Visitor<Void> {
     int lblTrue = ++lCount;
     int lblEnd = ++lCount;
 
-    e.lhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
-    e.rhs.welcome(this);
-    this.ex.write("    popq %rbx\n");
-    this.ex.write("    cmp %rax, %rbx\n");
+    boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
+    if (isFloatOperation) {
+      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+    } else {
+      this.ex.write("    cmp %rax, %rbx\n");
+    }
     this.ex.write("    jl .L" + lblTrue + "\n");
     // false
     this.ex.write("    movq $0, %rax\n");
@@ -200,11 +288,12 @@ public class GenASM implements Visitor<Void> {
     int lblTrue = ++lCount;
     int lblEnd = ++lCount;
 
-    e.lhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
-    e.rhs.welcome(this);
-    this.ex.write("    popq %rbx\n");
-    this.ex.write("    cmp %rax, %rbx\n");
+    boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
+    if (isFloatOperation) {
+      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+    } else {
+      this.ex.write("    cmp %rax, %rbx\n");
+    }
     this.ex.write("    jle .L" + lblTrue + "\n");
     // false
     this.ex.write("    movq $0, %rax\n");
@@ -218,43 +307,47 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(AdditionExpression e) {
-    e.lhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
-    e.rhs.welcome(this);
-    this.ex.write("    popq %rbx\n");
-    this.ex.write("    addq %rbx, %rax\n");
+    boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
+    if (isFloatOperation) {
+      this.ex.write("    addsd %xmm1, %xmm0\n");
+    } else {
+      this.ex.write("    addq %rbx, %rax\n");
+    }
     return null;
   }
 
   @Override
   public Void visit(SubstractionExpression e) {
-    e.rhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
-    e.lhs.welcome(this);
-    this.ex.write("    popq %rbx\n");
-    this.ex.write("    subq %rbx, %rax\n");
+    boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
+    if (isFloatOperation) {
+      this.ex.write("    subsd %xmm1, %xmm0\n");
+    } else {
+      this.ex.write("    subq %rax, %rbx\n");
+      this.ex.write("    movq %rbx, %rax\n");
+    }
     return null;
   }
 
   @Override
   public Void visit(MultiplicationExpression e) {
-    e.lhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
-    e.rhs.welcome(this);
-    this.ex.write("    popq %rbx\n");
-    this.ex.write("    imulq %rbx, %rax\n");
+    boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
+    if (isFloatOperation) {
+      this.ex.write("    mulsd %xmm1, %xmm0\n");
+    } else {
+      this.ex.write("    imulq %rbx, %rax\n");
+    }
     return null;
   }
 
   @Override
   public Void visit(DivisionExpression e) {
-    e.lhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
-    e.rhs.welcome(this);
-    this.ex.write("    movq %rax, %rbx\n");
-    this.ex.write("    popq %rax\n");
-    this.ex.write("    xor %rdx, %rdx\n"); // clear upper part of division
-    this.ex.write("    idiv %rbx\n"); // %rax/%rbx, quotient now in %rax
+    boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
+    if (isFloatOperation) {
+      this.ex.write("    divsd %xmm1, %xmm0\n");
+    } else {
+      this.ex.write("    xor %rdx, %rdx\n"); // clear upper part of division
+      this.ex.write("    idiv %rbx\n"); // %rax/%rbx, quotient now in %rax
+    }
     return null;
   }
 
@@ -274,7 +367,13 @@ public class GenASM implements Visitor<Void> {
   @Override
   public Void visit(NegateExpression e) {
     e.lhs.welcome(this);
-    this.ex.write("    neg %rax\n");
+    if (e.lhs.type.equals(Type.getFloatType())) {
+      String floatLabel = fw.getNegateFloat();
+      this.ex.write("    movsd " + floatLabel + "(%rip), %xmm1\n");
+      this.ex.write("    xorpd   %xmm1, %xmm0\n");
+    } else {
+      this.ex.write("    neg %rax\n");
+    }
     return null;
   }
 
@@ -497,7 +596,8 @@ public class GenASM implements Visitor<Void> {
 
     // hole die anzahl der lokalen variablen
     this.vars = new TreeSet<String>();
-    GetVars getvars = new GetVars(vars);
+    HashMap<String, Type> types = new HashMap<String, Type>();
+    GetVars getvars = new GetVars(vars, types);
     getvars.visit(e);
 
     // Erzeuge ein environment
@@ -532,6 +632,74 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(FunctionCall e) {
+    /*
+      Idee:
+      Über arguments iterieren, sich für jedes Argument merken an welche Position es kommt
+      Über e.arguments iterieren, jedes welcomen, ergebnis auf den stack pushen
+      Vom stack in die jeweiligen register / den richtigen Platz auf den Stack pushen
+    */
+    // // An xmmIdxy[i] steht ein index, der in e.arguments zeigt
+    // // this.frs[i] = register | xmmIdxs[i] = index in arguments das in dieses register gehört
+    // int[] xmmIdxs = new int[this.frs.length];
+    // int fi = 0;
+    // // Selbe Idee wie bei xmmIdxs
+    // int[] rIdxs = new int[this.rs.length];
+    // int ri = 0;
+    //// Selbe Idee wie bei xmmIdxs
+    // ArrayList<Integer> stackIdxs = new ArrayList<Integer>();
+    //
+    // // Go through arguments
+    // // sort them into the memory regions they go when being passed to function later on
+    // for (int i = 0; i < e.arguments.length; i++) {
+    //   var arg = e.arguments[i];
+    //   if (arg.type.equals(Type.getFloatType())) {
+    //     if (fi >= this.frs.length) {
+    //       // Float onto stack
+    //       stackIdxs.add(i);
+    //     } else {
+    //       // Float into float reg
+    //       xmmIdxs[fi] = i;
+    //       fi += 1;
+    //     }
+    //   } else {
+    //     if (ri >= this.rs.length) {
+    //       // bool/int onto stack
+    //       stackIdxs.add(i);
+    //     } else {
+    //       // bool/int into reg
+    //       rIdxs[ri] = i;
+    //       ri += 1;
+    //     }
+    //   }
+    // }
+
+    // // Welcome the arguments in order
+    // for (var arg : e.arguments) {
+    //   arg.welcome(this);
+    //   if (arg.type.equals(Type.getFloatType())) {
+    //     this.ex.write("  movq %xmm0, %rax\n");
+    //     this.ex.write("  pushq %rax\n");
+    //   } else {
+    //     this.ex.write("  pushq %rax\n");
+    //   }
+    // }
+    // // Move floats from stack to xmm registers
+    // TODO: Check if indexInArguments is valid
+    // for (int i = 0; i < xmmIdxs.length ; i++) {
+    //   int indexInArguments = xmmIdxs[i];
+    //   int rspOffset = (((e.arguments.length - indexInArguments) - 1) * 8) * -1;
+    //   this.ex.write("    movsd " + rspOffset + "(%rsp),  " + this.frs[i] + "\n");
+    // }
+
+    // // Move primitives from stack to all purpose registers
+    // TODO: Check if indexInArguments is valid
+    // for (int i = 0; i < rIdxs.length ; i++) {
+    //   int indexInArguments = rIdxs[i];
+    //   int rspOffset = (((e.arguments.length - indexInArguments) - 1) * 8) * -1;
+    //   this.ex.write("    movq " + rspOffset + "(%rsp),  " + this.rs[i] + "\n");
+    // }
+    // int stackStart = (e.arguments.length - 1) * 8 * -1;
+
     // Die ersten sechs params in die register schieben
     for (int i = 0; i < Math.min(this.rs.length, e.arguments.length); i++) {
       e.arguments[i].welcome(this);
@@ -565,6 +733,10 @@ public class GenASM implements Visitor<Void> {
     this.ex.write("    movq %rbp, %rsp\n");
     this.ex.write("    popq %rbp\n");
     this.ex.write("    ret\n");
+
+    // PRINT FLOATS HERE
+    this.ex.write("\n");
+    this.ex.write(fw.getFloatSection());
     return null;
   }
 
