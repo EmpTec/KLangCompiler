@@ -184,6 +184,31 @@ function fget10(): float {
   return farg10(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
 }
 
+function fadd(x: float, y: float): float {
+  return x + y;
+}
+
+function fsub(x: float, y: float): float {
+  return x - y;
+}
+
+function fmul(x: float, y: float): float {
+  return x * y;
+}
+
+function fneg(x: float): float {
+  return -x;
+}
+
+function fid(x: float): float {
+  return x;
+}
+
+function fselfMinus(x: float): float {
+   x = (x - 1);
+  return x;
+}
+
 // END FLOATS
 
 function fac(x: int): int {

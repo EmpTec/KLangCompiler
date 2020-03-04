@@ -32,6 +32,32 @@ int cSelfMinus(int x)
   return x;
 }
 
+double fcAdd(double x, double y)
+{
+  return x + y;
+}
+double fcSub(double x, double y)
+{
+  return x - y;
+}
+double fcMul(double x, double y)
+{
+  return x * y;
+}
+double fcNeg(double x)
+{
+  return -x;
+}
+double fcId(double x)
+{
+  return x;
+}
+double fcSelfMinus(double x)
+{
+  x = x - 1;
+  return x;
+}
+
 int math_testExpected(char *name, int x, int y, int expected, int result)
 {
   if (expected == result)
@@ -53,10 +79,32 @@ int math_test(char *name, int (*correctFunction)(int, int), int (*testFunction)(
   return math_testExpected(name, x, y, expected, result);
 }
 
+float math_test_f(char *name, float (*correctFunction)(float, float), float (*testFunction)(float, float), float x, float y) {
+  float expected = correctFunction(x, y);
+  float result = testFunction(x, y);
+  return math_testExpected(name, x, y, expected, result);
+}
+
 int math_testOneArg(char *name, int (*correctFunction)(int), int (*testFunction)(int), int x)
 {
   int expected = correctFunction(x);
   int result = testFunction(x);
+  if (expected == result)
+  {
+    succPrefixOne(name, x, expected, result);
+    return 0;
+  }
+  else
+  {
+    errPrefixOne(name, x, expected, result);
+    return 1;
+  }
+}
+
+float math_testOneArg_f(char *name, float (*correctFunction)(float), float (*testFunction)(float), float x)
+{
+  float expected = correctFunction(x);
+  float result = testFunction(x);
   if (expected == result)
   {
     succPrefixOne(name, x, expected, result);
@@ -115,6 +163,37 @@ int runMathTests()
   math_testOneArg("id", cId, id, 0);
   math_testOneArg("id", cId, id, -1);
   math_testOneArg("id", cId, id, 15);
+
+  printf("\nFloat Addition Tests \n");
+  math_test_f("fadd", fcAdd, fadd, 0.0, 0.0);
+  math_test_f("fadd", fcAdd, fadd, 1.0, 1.0);
+  math_test_f("fadd", fcAdd, fadd, 2.0, 0.0);
+  math_test_f("fadd", fcAdd, fadd, 1.0, 5.0);
+  math_test_f("fadd", fcAdd, fadd, -1.0, -1.0);
+
+  printf("\nFloat Subtraction Tests \n");
+  math_test_f("fsub", fcSub, fsub, 0.0, 0.0);
+  math_test_f("fsub", fcSub, fsub, 1.0, 1.0);
+  math_test_f("fsub", fcSub, fsub, 2.0, 0.0);
+  math_test_f("fsub", fcSub, fsub, 1.0, 5.0);
+  math_test_f("fsub", fcSub, fsub, -1.0, -1.0);
+
+  printf("\nFloat Multiplication Tests \n");
+  math_test_f("fmul", fcMul, fmul, 0.0, 0.0);
+  math_test_f("fmul", fcMul, fmul, 1.0, 1.0);
+  math_test_f("fmul", fcMul, fmul, 2.0, 0.0);
+  math_test_f("fmul", fcMul, fmul, 1.0, 5.0);
+  math_test_f("fmul", fcMul, fmul, -1.0, -1.0);
+
+  printf("\nFloat Negative Tests\n");
+  math_testOneArg_f("fneg", fcNeg, fneg, 0.0);
+  math_testOneArg_f("fneg", fcNeg, fneg, 1.0);
+  math_testOneArg_f("fneg", fcNeg, fneg, -1.0);
+
+  printf("\nFloat Identity Tests\n");
+  math_testOneArg_f("fid", fcId, fid, 0.0);
+  math_testOneArg_f("fid", fcId, fid, -1.0);
+  math_testOneArg_f("fid", fcId, fid, 15.0);
 
   printf("\nMisc Tests\n");
   math_testOneArg("selfMinus", cSelfMinus, selfMinus, 5);
