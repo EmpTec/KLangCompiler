@@ -6,6 +6,9 @@ void incFailure();
 void succ(char* name, int expected, int result);
 void err(char* name, int expected, int result);
 
+void succ_f(char* name, double expected, double result);
+void err_f(char* name, double expected, double result);
+
 void succPrefixOne(char* name, int x,  int expected, int result);
 void errPrefixOne(char* name, int x,  int expected, int result);
 

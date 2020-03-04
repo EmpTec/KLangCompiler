@@ -19,3 +19,25 @@ int get7();
 int get8();
 int get9();
 int get10();
+
+double farg1(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
+double farg2(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
+double farg3(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
+double farg4(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
+double farg5(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
+double farg6(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
+double farg7(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
+double farg8(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
+double farg9(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
+double farg10(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
+
+double fget1();
+double fget2();
+double fget3();
+double fget4();
+double fget5();
+double fget6();
+double fget7();
+double fget8();
+double fget9();
+double fget10();

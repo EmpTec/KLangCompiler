@@ -102,6 +102,90 @@ function get10(): int {
   return arg10(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
 
+// FLOATS
+
+function farg1(a: float, b: float, c: float, d: float, e: float, f: float, g: float, h: float, i: float ,j: float): float {
+  return a;
+}
+
+function fget1(): float {
+  return farg1(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
+}
+
+function farg2(a: float, b: float, c: float, d: float, e: float, f: float, g: float, h: float, i: float ,j: float): float {
+  return b;
+}
+
+function fget2(): float {
+  return farg2(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
+}
+
+function farg3(a: float, b: float, c: float, d: float, e: float, f: float, g: float, h: float, i: float ,j: float): float {
+  return c;
+}
+
+function fget3(): float {
+  return farg3(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
+}
+
+function farg4(a: float, b: float, c: float, d: float, e: float, f: float, g: float, h: float, i: float ,j: float): float {
+  return d;
+}
+
+function fget4(): float {
+  return farg4(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
+}
+
+function farg5(a: float, b: float, c: float, d: float, e: float, f: float, g: float, h: float, i: float ,j: float): float {
+  return e;
+}
+
+function fget5(): float {
+  return farg5(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
+}
+
+function farg6(a: float, b: float, c: float, d: float, e: float, f: float, g: float, h: float, i: float ,j: float): float {
+  return f;
+}
+
+function fget6(): float {
+  return farg6(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
+}
+
+function farg7(a: float, b: float, c: float, d: float, e: float, f: float, g: float, h: float, i: float ,j: float): float {
+  return g;
+}
+
+function fget7(): float {
+  return farg7(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
+}
+
+function farg8(a: float, b: float, c: float, d: float, e: float, f: float, g: float, h: float, i: float ,j: float): float {
+  return h;
+}
+
+function fget8(): float {
+  return farg8(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
+}
+
+function farg9(a: float, b: float, c: float, d: float, e: float, f: float, g: float, h: float, i: float ,j: float): float {
+  return i;
+}
+
+function fget9(): float {
+  return farg9(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
+}
+
+function farg10(a: float, b: float, c: float, d: float, e: float, f: float, g: float, h: float, i: float ,j: float): float {
+  return j;
+}
+
+function fget10(): float {
+  return farg10(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
+}
+
+// END FLOATS
+
 function fac(x: int): int {
   if (x) {
     return (x * fac((x - 1)));

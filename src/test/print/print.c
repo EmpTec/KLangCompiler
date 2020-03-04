@@ -28,6 +28,16 @@ void err(char* name, int expected, int result) {
   printf("\033[0;31mERROR:\t\t%s:\tGOT: %d\tExpected: %d\033[0;0m\n", name, result, expected);
 }
 
+void succ_f(char* name, double expected, double result) {
+  incSuccess();
+  printf("\033[0;32mSUCCESS:\t%s:\tGOT: %f\tExpected: %f\033[0;0m\n", name, result, expected);
+}
+
+void err_f(char* name, double expected, double result) {
+  incFailure();
+  printf("\033[0;31mERROR:\t\t%s:\tGOT: %f\tExpected: %f\033[0;0m\n", name, result, expected);
+}
+
 void succPrefixOne(char* name, int x,  int expected, int result) {
   incSuccess();
   printf("\033[0;32mSUCCESS:\t%s(%d)\tGOT: %d\tExpected: %d\033[0;0m\n", name, x, result, expected);

@@ -1,6 +1,7 @@
 package de.hsrm.compiler.Klang.visitors;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -61,9 +62,15 @@ public class GenASM implements Visitor<Void> {
     private int id = -1;
 
     public String getFloat(double d) {
-      String binary = Long.toBinaryString(Double.doubleToLongBits(d));
-      String upper = binary.substring(0, 30);
-      String lower = binary.substring(31, 61);
+      Long longBits = Double.doubleToRawLongBits(d);
+      String binary = Long.toBinaryString(longBits);
+      int padCount = 64 - binary.length();
+      while (padCount > 0) {
+        binary = "0" + binary;
+        padCount--;
+      }
+      String upper = binary.substring(0, 32);
+      String lower = binary.substring(32, 64);
       long first = Long.parseLong(lower, 2);
       long second = Long.parseLong(upper, 2);
       String lbl = ".FL" + ++id;
@@ -101,12 +108,12 @@ public class GenASM implements Visitor<Void> {
   private String mainName;
   Map<String, Integer> env = new HashMap<>();
   Set<String> vars;
-  String[] rs = { "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9" };
-  String[] frs = {"xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7"};
+  String[] registers = { "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9" };
+  String[] floatRegisters = { "%xmm0", "%xmm1", "%xmm2", "%xmm3", "%xmm4", "%xmm5", "%xmm6", "%xmm7" };
   private int lCount = 0; // Invariante: lCount ist benutzt
 
   private void intToFloat(String src, String dst) {
-    this.ex.write("    cvtsi2sd " + src +", " + dst + "\n");
+    this.ex.write("    cvtsi2sd " + src + ", " + dst + "\n");
   }
 
   private boolean prepareRegisters(Expression lhs, Expression rhs) {
@@ -131,8 +138,6 @@ public class GenASM implements Visitor<Void> {
     this.ex.write("    popq %rbx\n");
     return false;
   }
-
-
   public GenASM(ExWriter ex, String mainName) {
     this.ex = ex;
     this.mainName = mainName;
@@ -183,14 +188,14 @@ public class GenASM implements Visitor<Void> {
     } else {
       this.ex.write("    cmp %rax, %rbx\n");
     }
-      this.ex.write("    je .L" + lblTrue + "\n");
-      // false
-      this.ex.write("    movq $0, %rax\n");
-      this.ex.write("    jmp .L" + lblEnd + "\n");
-      this.ex.write(".L" + lblTrue + ":\n");
-      // true
-      this.ex.write("   movq $1, %rax\n");
-      this.ex.write(".L" + lblEnd + ":\n");
+    this.ex.write("    je .L" + lblTrue + "\n");
+    // false
+    this.ex.write("    movq $0, %rax\n");
+    this.ex.write("    jmp .L" + lblEnd + "\n");
+    this.ex.write(".L" + lblTrue + ":\n");
+    // true
+    this.ex.write("   movq $1, %rax\n");
+    this.ex.write(".L" + lblEnd + ":\n");
     return null;
   }
 
@@ -243,7 +248,6 @@ public class GenASM implements Visitor<Void> {
     int lblTrue = ++lCount;
     int lblEnd = ++lCount;
 
-    
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
       this.ex.write("    ucomisd %xmm0, %xmm1\n");
@@ -430,20 +434,20 @@ public class GenASM implements Visitor<Void> {
     // also ist das Gesamtergebnis false
     e.rhs.welcome(this);
     this.ex.write("    cmpq $0, %rax\n");
-    this.ex.write("    je .L" + lblFalse +"\n");
+    this.ex.write("    je .L" + lblFalse + "\n");
 
     // Die Expression wertet zu true aus
     // Springe am false Teil vorbei
-    this.ex.write(".L" + lblTrue +":\n");
+    this.ex.write(".L" + lblTrue + ":\n");
     this.ex.write("    movq $1, %rax\n");
     this.ex.write("    jmp .L" + lblEnd + "\n");
 
     // Die Expressoin wertet zu false aus
-    this.ex.write(".L" + lblFalse +":\n");
+    this.ex.write(".L" + lblFalse + ":\n");
     this.ex.write("    movq $0, %rax\n");
 
     // Das hier ist das ende
-    this.ex.write(".L" + lblEnd +":\n");
+    this.ex.write(".L" + lblEnd + ":\n");
     return null;
   }
 
@@ -451,26 +455,26 @@ public class GenASM implements Visitor<Void> {
   public Void visit(NotExpression e) {
     int lblFalse = ++lCount;
     int lblEnd = ++lCount;
-    
+
     // Werte LHS aus
     // Wenn LHS != 0 bedeutet das true, also jumpe zum false Teil
     // Wenn nicht, falle durch zum true Teil
     e.lhs.welcome(this);
     this.ex.write("    cmpq $0, %rax\n");
-    this.ex.write("    jne .L" +lblFalse +"\n");
+    this.ex.write("    jne .L" + lblFalse + "\n");
 
     // Hier ist das Ergebnis true
     // Springe am false Teil vorbei
     this.ex.write("    movq $1, %rax\n");
-    this.ex.write("    jmp .L" +lblEnd +"\n");
+    this.ex.write("    jmp .L" + lblEnd + "\n");
 
     // Hier ist das Ergebnis false
     // Falle zum Ende durch
-    this.ex.write(".L" +lblFalse + ":\n");
+    this.ex.write(".L" + lblFalse + ":\n");
     this.ex.write("movq $0, %rax\n");
 
     // Hier ist das Ende
-    this.ex.write(".L" +lblEnd + ":\n");
+    this.ex.write(".L" + lblEnd + ":\n");
     return null;
   }
 
@@ -604,19 +608,51 @@ public class GenASM implements Visitor<Void> {
     this.env = new HashMap<String, Integer>();
 
     // Merke dir die offsets der parameter, die direkt auf den stack gelegt wurden
-    int offset = 16; // Per Stack übergebene Parameter liegen über unserm BSP
+    int offset = 16; // Per Stack übergebene Parameter liegen über unserem BSP
+    int ri = 0;
+    int fi = 0;
     // Per stack übergebene variablen in env registrieren
-    for (int i = this.rs.length; i < e.parameters.length; i++) {
-      env.put(e.parameters[i].name, offset);
-      offset += 8;
+    var registerParameters = new ArrayList<Parameter>();
+    for (int i = 0; i < e.parameters.length; i++) {
+      if (e.parameters[i].type.equals(Type.getFloatType())) {
+        if (fi >= this.floatRegisters.length) {
+          // parameter is on stack already
+          env.put(e.parameters[i].name, offset);
+          offset += 8;
+        } else {
+          // parameter is in a xmm register
+          registerParameters.add(e.parameters[i]);
+          fi++;
+        }
+      } else {
+        if (ri >= this.registers.length) {
+          // parameter is on stack already
+          env.put(e.parameters[i].name, offset);
+          offset += 8;
+        } else {
+          // parameter is in a register
+          registerParameters.add(e.parameters[i]);
+          ri++;
+        }
+      }
     }
-
-    // pushe die aufrufparameter aus den Registern wieder auf den Stack
+    
     offset = 0;
-    for (int i = 0; i < Math.min(this.rs.length, e.parameters.length); i++) {
-      this.ex.write("    pushq " + this.rs[i] + "\n");
-      offset -= 8;
-      this.env.put(e.parameters[i].name, offset); // negative, liegt unter aktuellem BP
+    ri = 0;
+    fi = 0;
+    for (var param: registerParameters) {
+      if (param.type.equals(Type.getFloatType())) {
+        this.ex.write("    movq "+ this.floatRegisters[fi] + ", %rax\n");
+        this.ex.write("    pushq %rax\n");
+        offset -= 8;
+        this.env.put(param.name, offset); // negative, liegt unter aktuellem BP
+        fi++;
+      } else {
+        this.ex.write("    pushq " + this.registers[ri] + "\n");
+        offset -= 8;
+        this.env.put(param.name, offset); // negative, liegt unter aktuellem BP
+        ri++;
+      }
     }
 
     // Reserviere Platz auf dem Stack für jede lokale variable
@@ -632,84 +668,80 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(FunctionCall e) {
-    /*
-      Idee:
-      Über arguments iterieren, sich für jedes Argument merken an welche Position es kommt
-      Über e.arguments iterieren, jedes welcomen, ergebnis auf den stack pushen
-      Vom stack in die jeweiligen register / den richtigen Platz auf den Stack pushen
-    */
-    // // An xmmIdxy[i] steht ein index, der in e.arguments zeigt
-    // // this.frs[i] = register | xmmIdxs[i] = index in arguments das in dieses register gehört
-    // int[] xmmIdxs = new int[this.frs.length];
-    // int fi = 0;
-    // // Selbe Idee wie bei xmmIdxs
-    // int[] rIdxs = new int[this.rs.length];
-    // int ri = 0;
-    //// Selbe Idee wie bei xmmIdxs
-    // ArrayList<Integer> stackIdxs = new ArrayList<Integer>();
-    //
-    // // Go through arguments
-    // // sort them into the memory regions they go when being passed to function later on
-    // for (int i = 0; i < e.arguments.length; i++) {
-    //   var arg = e.arguments[i];
-    //   if (arg.type.equals(Type.getFloatType())) {
-    //     if (fi >= this.frs.length) {
-    //       // Float onto stack
-    //       stackIdxs.add(i);
-    //     } else {
-    //       // Float into float reg
-    //       xmmIdxs[fi] = i;
-    //       fi += 1;
-    //     }
-    //   } else {
-    //     if (ri >= this.rs.length) {
-    //       // bool/int onto stack
-    //       stackIdxs.add(i);
-    //     } else {
-    //       // bool/int into reg
-    //       rIdxs[ri] = i;
-    //       ri += 1;
-    //     }
-    //   }
-    // }
+    if (e.arguments.length > 0) {
+      // Mapping arguments index -> xmm registers index
+      int[] xmmIdxs = new int[this.floatRegisters.length];
+      int fi = -1;
 
-    // // Welcome the arguments in order
-    // for (var arg : e.arguments) {
-    //   arg.welcome(this);
-    //   if (arg.type.equals(Type.getFloatType())) {
-    //     this.ex.write("  movq %xmm0, %rax\n");
-    //     this.ex.write("  pushq %rax\n");
-    //   } else {
-    //     this.ex.write("  pushq %rax\n");
-    //   }
-    // }
-    // // Move floats from stack to xmm registers
-    // TODO: Check if indexInArguments is valid
-    // for (int i = 0; i < xmmIdxs.length ; i++) {
-    //   int indexInArguments = xmmIdxs[i];
-    //   int rspOffset = (((e.arguments.length - indexInArguments) - 1) * 8) * -1;
-    //   this.ex.write("    movsd " + rspOffset + "(%rsp),  " + this.frs[i] + "\n");
-    // }
+      // Mapping arguments index -> all purpose registers index
+      int[] rIdxs = new int[this.registers.length];
+      int ri = -1;
+      
+      // Mapping arguments index -> stack
+      ArrayList<Integer> stackIdxs = new ArrayList<Integer>();
 
-    // // Move primitives from stack to all purpose registers
-    // TODO: Check if indexInArguments is valid
-    // for (int i = 0; i < rIdxs.length ; i++) {
-    //   int indexInArguments = rIdxs[i];
-    //   int rspOffset = (((e.arguments.length - indexInArguments) - 1) * 8) * -1;
-    //   this.ex.write("    movq " + rspOffset + "(%rsp),  " + this.rs[i] + "\n");
-    // }
-    // int stackStart = (e.arguments.length - 1) * 8 * -1;
+      // Go through arguments
+      // sort them into the memory regions they go when being passed to functions 
+      for (int i = 0; i < e.arguments.length; i++) {
+        var arg = e.arguments[i];
+        if (arg.type.equals(Type.getFloatType())) {
+          if (fi < this.floatRegisters.length - 1) {
+            // Float into float reg
+            fi += 1;
+            xmmIdxs[fi] = i;
+          } else {
+            // Float onto stack
+            stackIdxs.add(i);
+          }
+        } else {
+          if (ri < this.registers.length - 1) {
+            // bool/int into reg
+            ri += 1;
+            rIdxs[ri] = i;
+          } else {
+            // bool/int onto stack
+            stackIdxs.add(i);
+          }
+        }
+      }
 
-    // Die ersten sechs params in die register schieben
-    for (int i = 0; i < Math.min(this.rs.length, e.arguments.length); i++) {
-      e.arguments[i].welcome(this);
-      this.ex.write("    movq %rax,  " + this.rs[i] + "\n");
-    }
+      // Welcome the arguments in order, push everything onto the stack
+      for (var arg : e.arguments) {
+        arg.welcome(this);
+        if (arg.type.equals(Type.getFloatType())) {
+          this.ex.write("    movq %xmm0, %rax\n");
+          this.ex.write("    pushq %rax\n");
+        } else {
+          this.ex.write("    pushq %rax\n");
+        }
+      }
 
-    // Den Rest auf den stack pushen
-    for (int i = e.arguments.length - 1; i >= this.rs.length; i--) {
-      e.arguments[i].welcome(this);
-      this.ex.write("  pushq %rax\n");
+      // Move floats from stack to xmm registers
+      for (int i = 0; i <= fi; i++) {
+        int indexInArguments = xmmIdxs[i];
+        int rspOffset = (((e.arguments.length - indexInArguments) - 1) * 8);
+        this.ex.write("    movsd " + rspOffset + "(%rsp),  " + this.floatRegisters[i] + "\n");
+      }
+
+      // Move primitives from stack to all purpose registers
+      for (int i = 0; i <= ri; i++) {
+        int indexInArguments = rIdxs[i];
+        int rspOffset = (((e.arguments.length - indexInArguments) - 1) * 8);
+        this.ex.write("    movq " + rspOffset + "(%rsp),  " + this.registers[i] + "\n");
+      }
+
+      // Move everything else from a higher stack position to our stack frame start
+      int stackStartOffset = ((e.arguments.length) * 8);
+      for (int i = stackIdxs.size() - 1; i >= 0; i--) {
+        stackStartOffset -= 8;
+        int indexInArguments = stackIdxs.get(i);
+        int rspOffset = (((e.arguments.length - indexInArguments) - 1) * 8);
+        this.ex.write("    movq " + rspOffset + "(%rsp), %rax\n");
+        this.ex.write("    movq %rax, " + stackStartOffset + "(%rsp)\n");
+      }
+
+      // Rescue RSP
+      this.ex.write("    addq  $" + stackStartOffset + ", %rsp\n");
     }
 
     this.ex.write("    call " + e.name + "\n");
