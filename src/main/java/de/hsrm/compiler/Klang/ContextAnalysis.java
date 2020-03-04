@@ -697,10 +697,8 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Expression[] args = new Expression[argCount];
     for (int i = 0; i < argCount; i++) {
       Expression expression = (Expression) this.visit(ctx.functionCall().arguments().expression(i));
-      try {
-        expression.type.combine(func.signature[i]); // Make sure the types are matching
-      } catch (Exception e) {
-        throw new RuntimeException(Helper.getErrorPrefix(line, col) + "argument " + i + " " + e.getMessage());
+      if (!expression.type.equals(func.signature[i])) {
+        throw new RuntimeException(Helper.getErrorPrefix(line, col) + "argument " + i + " Expected " + func.signature[i].getName() + " but got: " + expression.type.getName());
       }
       args[i] = expression;
     }
