@@ -69,4 +69,27 @@ int runFunctionCallTests () {
   argumentTest_f("fget8(...args)", 8.0, fget8());
   argumentTest_f("fget9(...args)", 9.0, fget9());
   argumentTest_f("fget10(...args)", 10.0, fget10());
+
+  printf("\nFunction Call Tests With Floats And Integers \n");
+  argumentTest_f("fargMix1(...args)", 1.0, fargMix1(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0));
+  argumentTest_f("fargMix2(...args)", 2, fargMix2(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0));
+  argumentTest_f("fargMix3(...args)", 3.0, fargMix3(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0));
+  argumentTest_f("fargMix4(...args)", 4, fargMix4(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0));
+  argumentTest_f("fargMix5(...args)", 5.0, fargMix5(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0));
+  argumentTest_f("fargMix6(...args)", 6, fargMix6(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0));
+  argumentTest_f("fargMix7(...args)", 7.0, fargMix7(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0));
+  argumentTest_f("fargMix8(...args)", 8, fargMix8(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0));
+  argumentTest_f("fargMix9(...args)", 9.0, fargMix9(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0));
+  argumentTest_f("fargMix10(...args)", 10, fargMix10(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0));
+  // Checks that parameters are correctly passed from klang to functions
+  argumentTest_f("fgetMix1(...args)", 1.0, fgetMix1());
+  argumentTest("fgetMix2(...args)", 2, fgetMix2());
+  argumentTest_f("fgetMix3(...args)", 3.0, fgetMix3());
+  argumentTest("fgetMix4(...args)", 4, fgetMix4());
+  argumentTest_f("fgetMix5(...args)", 5.0, fgetMix5());
+  argumentTest("fgetMix6(...args)", 6, fgetMix6());
+  argumentTest_f("fgetMix7(...args)", 7.0, fgetMix7());
+  argumentTest("fgetMix8(...args)", 8, fgetMix8());
+  argumentTest_f("fgetMix9(...args)", 9.0, fgetMix9());
+  argumentTest("fgetMix10(...args)", 10, fgetMix10());
 }

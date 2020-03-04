@@ -31,6 +31,17 @@ double farg8(double a, double b, double c, double d, double e, double f, double 
 double farg9(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
 double farg10(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
 
+double fargMix1(double a, int b, double c, int d, double e, int f, double g, int h, double i, int j);
+int fargMix2(double a, int b, double c, int d, double e, int f, double g, int h, double i, int j);
+double fargMix3(double a, int b, double c, int d, double e, int f, double g, int h, double i, int j);
+int fargMix4(double a, int b, double c, int d, double e, int f, double g, int h, double i, int j);
+double fargMix5(double a, int b, double c, int d, double e, int f, double g, int h, double i, int j);
+int fargMix6(double a, int b, double c, int d, double e, int f, double g, int h, double i, int j);
+double fargMix7(double a, int b, double c, int d, double e, int f, double g, int h, double i, int j);
+int fargMix8(double a, int b, double c, int d, double e, int f, double g, int h, double i, int j);
+double fargMix9(double a, int b, double c, int d, double e, int f, double g, int h, double i, int j);
+int fargMix10(double a, int b, double c, int d, double e, int f, double g, int h, double i, int j);
+
 double fget1();
 double fget2();
 double fget3();
@@ -41,3 +52,14 @@ double fget7();
 double fget8();
 double fget9();
 double fget10();
+
+double fgetMix1();
+int fgetMix2();
+double fgetMix3();
+int fgetMix4();
+double fgetMix5();
+int fgetMix6();
+double fgetMix7();
+int fgetMix8();
+double fgetMix9();
+int fgetMix10();
