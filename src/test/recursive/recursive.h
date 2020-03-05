@@ -1,1 +1,1 @@
-int fac(int x);
+long fac(long x);

@@ -8,52 +8,44 @@ char* printBool(bool a) {
   return "false";
 }
 
-void succInfixTwo(char* name, int x, int y, int expected, int result) {
+void succInfixTwo(char* name, long x, long y, long expected, long result) {
   incSuccess();
-  printf("\033[0;32mSUCCESS:\t%d %s %d\tGOT: %d\tExpected: %d\033[0;0m\n", x, name, y, result, expected);
+  printf("\033[0;32mSUCCESS:\t%ld %s %ld\tGOT: %ld\tExpected: %ld\033[0;0m\n", x, name, y, result, expected);
 }
 
-void errInfixTwo(char* name, int x, int y, int expected, int result) {
+void errInfixTwo(char* name, long x, long y, long expected, long result) {
   incFailure();
-  printf("\033[0;31mERROR:\t\t%d %s %d\tGOT: %d\tExpected: %d\033[0;0m\n", x, name, y, result, expected);
+  printf("\033[0;31mERROR:\t\t%ld %s %ld\tGOT: %ld\tExpected: %ld\033[0;0m\n", x, name, y, result, expected);
 }
 
-void succ(char* name, int expected, int result) {
+void succ(char* name, long expected, long result) {
   incSuccess();
-  printf("\033[0;32mSUCCESS:\t%s:\tGOT: %d\tExpected: %d\033[0;0m\n", name, result, expected);
+  printf("\033[0;32mSUCCESS:\t%s:\tGOT: %ld\tExpected: %ld\033[0;0m\n", name, result, expected);
 }
 
-void err(char* name, int expected, int result) {
+void err(char* name, long expected, long result) {
   incFailure();
-  printf("\033[0;31mERROR:\t\t%s:\tGOT: %d\tExpected: %d\033[0;0m\n", name, result, expected);
+  printf("\033[0;31mERROR:\t\t%s:\tGOT: %ld\tExpected: %ld\033[0;0m\n", name, result, expected);
 }
 
 void succ_f(char* name, double expected, double result) {
   incSuccess();
-  if (expected <= 0.000001 || result <= 0.000001) {
-    printf("\033[0;32mSUCCESS:\t%s:\tGOT: %.*e\tExpected: %.*e\033[0;0m\n", name, result, expected);
-  } else {
-    printf("\033[0;32mSUCCESS:\t%s:\tGOT: %f\tExpected: %f\033[0;0m\n", name, result, expected);
-  }
+  printf("\033[0;32mSUCCESS:\t%s:\tGOT: %f\tExpected: %f\033[0;0m\n", name, result, expected);
 }
 
 void err_f(char* name, double expected, double result) {
   incFailure();
-  if (expected <= 0.000001 || result <= 0.000001) {
-    printf("\033[0;31mERROR:\t\t%s:\tGOT: %.*e\tExpected: %.*e\033[0;0m\n", name, result, expected);
-  } else {
-    printf("\033[0;31mERROR:\t\t%s:\tGOT: %f\tExpected: %Df\033[0;0m\n", name, result, expected);
-  }
+  printf("\033[0;31mERROR:\t\t%s:\tGOT: %f\tExpected: %f\033[0;0m\n", name, result, expected);
 }
 
-void succPrefixOne(char* name, int x,  int expected, int result) {
+void succPrefixOne(char* name, long x,  long expected, long result) {
   incSuccess();
-  printf("\033[0;32mSUCCESS:\t%s(%d)\tGOT: %d\tExpected: %d\033[0;0m\n", name, x, result, expected);
+  printf("\033[0;32mSUCCESS:\t%s(%ld)\tGOT: %ld\tExpected: %ld\033[0;0m\n", name, x, result, expected);
 }
 
-void errPrefixOne(char* name, int x, int expected, int result) {
+void errPrefixOne(char* name, long x, long expected, long result) {
   incFailure();
-  printf("\033[0;31mERROR:\t\t%s(%d)\tGOT: %d\tExpected: %d\033[0;0m\n", name, x, result, expected);
+  printf("\033[0;31mERROR:\t\t%s(%ld)\tGOT: %ld\tExpected: %ld\033[0;0m\n", name, x, result, expected);
 }
 
 void float_succPrefixOne(char* name, double x,  double expected, double result) {
@@ -66,14 +58,14 @@ void float_errPrefixOne(char* name, double x, double expected, double result) {
   printf("\033[0;31mERROR:\t\t%s(%f)\tGOT: %f\tExpected: %f\033[0;0m\n", name, x, result, expected);
 }
 
-void succPrefixTwo(char* name, int x, int y, int expected, int result) {
+void succPrefixTwo(char* name, long x, long y, long expected, long result) {
   incSuccess();
-  printf("\033[0;32mSUCCESS:\t%s(%d, %d)\tGOT: %d\tExpected: %d\033[0;0m\n", name, x, y, result, expected);
+  printf("\033[0;32mSUCCESS:\t%s(%ld, %ld)\tGOT: %ld\tExpected: %ld\033[0;0m\n", name, x, y, result, expected);
 }
 
-void errPrefixTwo(char* name, int x, int y,  int expected, int result) {
+void errPrefixTwo(char* name, long x, long y,  long expected, long result) {
   incFailure();
-  printf("\033[0;31mERROR:\t\t%s(%d, %d)\tGOT: %d\tExpected: %d\033[0;0m\n", name, x, y, result, expected);
+  printf("\033[0;31mERROR:\t\t%s(%ld, %ld)\tGOT: %ld\tExpected: %ld\033[0;0m\n", name, x, y, result, expected);
 }
 
 void float_succPrefixTwo(char* name, double x, double y, double expected, double result) {

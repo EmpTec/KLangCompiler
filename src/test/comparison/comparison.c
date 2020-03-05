@@ -2,7 +2,7 @@
 #include "comparison.h"
 #include "../print/print.h"
 
-int comparisonTest(char* name, int x, int y, int expected, int result) {
+int comparisonTest(char* name, long x, long y, long expected, long result) {
   if (expected == result) {
     succInfixTwo(name, x, y, expected, result);
     return 0;

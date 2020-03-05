@@ -2,7 +2,7 @@
 #include "loop.h"
 #include "../print/print.h"
 
-int loopTest(char* name, int x, int expected, int result) {
+int loopTest(char* name, long x, long expected, long result) {
   if (expected == result) {
     succPrefixOne(name, x, expected, result);
     return 0;

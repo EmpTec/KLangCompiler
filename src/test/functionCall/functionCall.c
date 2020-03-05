@@ -2,7 +2,7 @@
 #include "functionCall.h"
 #include "../print/print.h"
 
-int argumentTest(char* name, int expected, int result) {
+int argumentTest(char* name, long expected, long result) {
   if (expected == result) {
     succ(name, expected, result);
     return 0;
@@ -12,7 +12,7 @@ int argumentTest(char* name, int expected, int result) {
   }
 }
 
-int argumentTest_f(char* name, int expected, int result) {
+int argumentTest_f(char* name, long expected, long result) {
   if (expected == result) {
     succ_f(name, expected, result);
     return 0;

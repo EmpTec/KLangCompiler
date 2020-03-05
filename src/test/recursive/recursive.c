@@ -2,7 +2,7 @@
 #include "recursive.h"
 #include "../print/print.h"
 
-int recursiveTest(char* name, int x, int expected, int result) {
+int recursiveTest(char* name, long x, long expected, long result) {
   if (expected == result) {
     succPrefixOne(name, x, expected, result);
     return 0;

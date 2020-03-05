@@ -577,6 +577,13 @@ public class GenASM implements Visitor<Void> {
   public Void visit(VariableAssignment e) {
     e.expression.welcome(this);
     int offset = this.env.get(e.name);
+    // TODO: Check why e.type is null
+    // x = (x - 1)
+    // if (e.type.equals(Type.getFloatType())) {
+    //   this.ex.write("    movq %xmm0, " + offset + "(%rbp)\n");
+    // } else {
+    //   this.ex.write("    movq %rax, " + offset + "(%rbp)\n");
+    // }
     this.ex.write("    movq %rax, " + offset + "(%rbp)\n");
     return null;
   }
