@@ -107,6 +107,7 @@ public class GenASM implements Visitor<Void> {
   private FloatWriter fw = new FloatWriter();
   private String mainName;
   Map<String, Integer> env = new HashMap<>();
+  Map<String, StructDefinition> structs;
   Set<String> vars;
   String[] registers = { "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9" };
   String[] floatRegisters = { "%xmm0", "%xmm1", "%xmm2", "%xmm3", "%xmm4", "%xmm5", "%xmm6", "%xmm7" };
@@ -147,14 +148,15 @@ public class GenASM implements Visitor<Void> {
       return false;
     }
   }
-  public GenASM(ExWriter ex, String mainName) {
+
+  public GenASM(ExWriter ex, String mainName, Map<String, StructDefinition> structs) {
     this.ex = ex;
     this.mainName = mainName;
+    this.structs = structs;
   }
 
-  public GenASM(ExWriter ex) {
-    this.ex = ex;
-    this.mainName = "main";
+  public GenASM(ExWriter ex, Map<String, StructDefinition> structs) {
+    this(ex, "main", structs);
   }
 
   @Override
