@@ -821,7 +821,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
-  public Node visitDestructorCallExpression(KlangParser.DestructorCallExpressionContext ctx) {
+  public Node visitDestroy_statement(KlangParser.Destroy_statementContext ctx) {
     String name = ctx.IDENT().getText();
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
