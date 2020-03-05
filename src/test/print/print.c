@@ -30,12 +30,20 @@ void err(char* name, int expected, int result) {
 
 void succ_f(char* name, double expected, double result) {
   incSuccess();
-  printf("\033[0;32mSUCCESS:\t%s:\tGOT: %f\tExpected: %f\033[0;0m\n", name, result, expected);
+  if (expected <= 0.000001 || result <= 0.000001) {
+    printf("\033[0;32mSUCCESS:\t%s:\tGOT: %.*e\tExpected: %.*e\033[0;0m\n", name, result, expected);
+  } else {
+    printf("\033[0;32mSUCCESS:\t%s:\tGOT: %f\tExpected: %f\033[0;0m\n", name, result, expected);
+  }
 }
 
 void err_f(char* name, double expected, double result) {
   incFailure();
-  printf("\033[0;31mERROR:\t\t%s:\tGOT: %f\tExpected: %f\033[0;0m\n", name, result, expected);
+  if (expected <= 0.000001 || result <= 0.000001) {
+    printf("\033[0;31mERROR:\t\t%s:\tGOT: %.*e\tExpected: %.*e\033[0;0m\n", name, result, expected);
+  } else {
+    printf("\033[0;31mERROR:\t\t%s:\tGOT: %f\tExpected: %Df\033[0;0m\n", name, result, expected);
+  }
 }
 
 void succPrefixOne(char* name, int x,  int expected, int result) {
@@ -48,6 +56,16 @@ void errPrefixOne(char* name, int x, int expected, int result) {
   printf("\033[0;31mERROR:\t\t%s(%d)\tGOT: %d\tExpected: %d\033[0;0m\n", name, x, result, expected);
 }
 
+void float_succPrefixOne(char* name, double x,  double expected, double result) {
+  incSuccess();
+  printf("\033[0;32mSUCCESS:\t%s(%f)\tGOT: %f\tExpected: %f\033[0;0m\n", name, x, result, expected);
+}
+
+void float_errPrefixOne(char* name, double x, double expected, double result) {
+  incFailure();
+  printf("\033[0;31mERROR:\t\t%s(%f)\tGOT: %f\tExpected: %f\033[0;0m\n", name, x, result, expected);
+}
+
 void succPrefixTwo(char* name, int x, int y, int expected, int result) {
   incSuccess();
   printf("\033[0;32mSUCCESS:\t%s(%d, %d)\tGOT: %d\tExpected: %d\033[0;0m\n", name, x, y, result, expected);
@@ -56,6 +74,16 @@ void succPrefixTwo(char* name, int x, int y, int expected, int result) {
 void errPrefixTwo(char* name, int x, int y,  int expected, int result) {
   incFailure();
   printf("\033[0;31mERROR:\t\t%s(%d, %d)\tGOT: %d\tExpected: %d\033[0;0m\n", name, x, y, result, expected);
+}
+
+void float_succPrefixTwo(char* name, double x, double y, double expected, double result) {
+  incSuccess();
+  printf("\033[0;32mSUCCESS:\t%s(%f, %f)\tGOT: %f\tExpected: %f\033[0;0m\n", name, x, y, result, expected);
+}
+
+void float_errPrefixTwo(char* name, double x, double y,  double expected, double result) {
+  incFailure();
+  printf("\033[0;31mERROR:\t\t%s(%f, %f)\tGOT: %f\tExpected: %f\033[0;0m\n", name, x, y, result, expected);
 }
 
 void bool_succPrefixOne(char* name, bool x, bool expected, bool result) {

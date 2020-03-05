@@ -23,3 +23,7 @@ double fmul(double x, double y);
 double fneg(double x);
 double fid(double x);
 double fselfMinus(double x);
+double mixadd(double x, int y);
+double mixsub(double x, int y);
+double mixmul(double x, int y);
+double mixdiv(double x, int y);

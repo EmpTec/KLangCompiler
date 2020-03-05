@@ -395,6 +395,20 @@ function t8(): int {
   return (1 + 5) * 3;
 }
 
+function mixadd(x: float, y: int): float {
+  return x + y;
+}
 
+function mixsub(x: float, y: int): float {
+  return x - y;
+}
+
+function mixmul(x: float, y: int): float {
+  return x * y;
+}
+
+function mixdiv(x: float, y: int): float {
+  return x / y;
+}
 
 add(1, 1); 

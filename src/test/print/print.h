@@ -12,8 +12,14 @@ void err_f(char* name, double expected, double result);
 void succPrefixOne(char* name, int x,  int expected, int result);
 void errPrefixOne(char* name, int x,  int expected, int result);
 
+void float_succPrefixOne(char* name, double x,  double expected, double result);
+void float_errPrefixOne(char* name, double x,  double expected, double result);
+
 void succPrefixTwo(char* name, int x,  int y, int expected, int result);
 void errPrefixTwo(char* name, int x,  int y, int expected, int result);
+
+void float_succPrefixTwo(char* name, double x,  double y, double expected, double result);
+void float_errPrefixTwo(char* name, double x,  double y, double expected, double result);
 
 void succInfixTwo(char* name, int x, int y, int expected, int result);
 void errInfixTwo(char* name, int x, int y, int expected, int result);
