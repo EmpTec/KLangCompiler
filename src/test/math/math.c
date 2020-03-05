@@ -183,6 +183,7 @@ int runMathTests()
   math_testOneArg("neg", cNeg, neg, 0);
   math_testOneArg("neg", cNeg, neg, 1);
   math_testOneArg("neg", cNeg, neg, -1);
+  math_testOneArg("neg", cNeg, neg, -10);
 
   printf("\nIdentity Tests\n");
   math_testOneArg("id", cId, id, 0);

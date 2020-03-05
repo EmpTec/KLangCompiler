@@ -119,24 +119,33 @@ public class GenASM implements Visitor<Void> {
   private boolean prepareRegisters(Expression lhs, Expression rhs) {
     boolean lhsIsFloat = lhs.type.equals(Type.getFloatType());
     boolean rhsIsFloat = rhs.type.equals(Type.getFloatType());
-    if (lhsIsFloat || rhsIsFloat) {
+    if (lhsIsFloat && rhsIsFloat) {
       lhs.welcome(this);
-      if (!lhsIsFloat) {
-        this.intToFloat("%rax", "%xmm1");
-      } else {
-        this.ex.write("    movsd %xmm0, %xmm1\n");
-      }
+      this.ex.write("    movsd %xmm0, %xmm2\n");
       rhs.welcome(this);
-      if (!rhsIsFloat) {
-        this.intToFloat("%rax", "%xmm1");
-      }
+      this.ex.write("    movsd %xmm0, %xmm1\n");
+      this.ex.write("    movsd %xmm2, %xmm0\n");
       return true;
+    } else if (lhsIsFloat && !rhsIsFloat) {
+      lhs.welcome(this);
+      rhs.welcome(this);
+      this.intToFloat("%rax", "%xmm1");
+      return true;
+    } else if (!lhsIsFloat && rhsIsFloat) {
+      lhs.welcome(this);
+      this.intToFloat("%rax", "%xmm2");
+      rhs.welcome(this);
+      this.ex.write("    movsd %xmm0, %xmm1\n");
+      this.ex.write("    movsd %xmm2, %xmm0\n");
+      return true;
+    } else {
+      lhs.welcome(this);
+      this.ex.write("    pushq %rax\n");
+      rhs.welcome(this);
+      this.ex.write("    movq %rax, %rbx\n");
+      this.ex.write("    popq %rax\n");
+      return false;
     }
-    lhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
-    rhs.welcome(this);
-    this.ex.write("    popq %rbx\n");
-    return false;
   }
   public GenASM(ExWriter ex, String mainName) {
     this.ex = ex;
@@ -184,9 +193,9 @@ public class GenASM implements Visitor<Void> {
 
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+      this.ex.write("    ucomisd %xmm1, %xmm0\n");
     } else {
-      this.ex.write("    cmp %rax, %rbx\n");
+      this.ex.write("    cmp %rbx, %rax\n");
     }
     this.ex.write("    je .L" + lblTrue + "\n");
     // false
@@ -228,9 +237,9 @@ public class GenASM implements Visitor<Void> {
 
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+      this.ex.write("    ucomisd %xmm1, %xmm0\n");
     } else {
-      this.ex.write("    cmp %rax, %rbx\n");
+      this.ex.write("    cmp %rbx, %rax\n");
     }
     this.ex.write("    jg .L" + lblTrue + "\n");
     // false
@@ -250,9 +259,9 @@ public class GenASM implements Visitor<Void> {
 
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+      this.ex.write("    ucomisd %xmm1, %xmm0\n");
     } else {
-      this.ex.write("    cmp %rax, %rbx\n");
+      this.ex.write("    cmp %rbx, %rax\n");
     }
     this.ex.write("    jge .L" + lblTrue + "\n");
     // false
@@ -272,9 +281,9 @@ public class GenASM implements Visitor<Void> {
 
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+      this.ex.write("    ucomisd %xmm1, %xmm0\n");
     } else {
-      this.ex.write("    cmp %rax, %rbx\n");
+      this.ex.write("    cmp %rbx, %rax\n");
     }
     this.ex.write("    jl .L" + lblTrue + "\n");
     // false
@@ -294,9 +303,9 @@ public class GenASM implements Visitor<Void> {
 
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+      this.ex.write("    ucomisd %xmm1, %xmm0\n");
     } else {
-      this.ex.write("    cmp %rax, %rbx\n");
+      this.ex.write("    cmp %rbx, %rax\n");
     }
     this.ex.write("    jle .L" + lblTrue + "\n");
     // false
@@ -326,8 +335,7 @@ public class GenASM implements Visitor<Void> {
     if (isFloatOperation) {
       this.ex.write("    subsd %xmm1, %xmm0\n");
     } else {
-      this.ex.write("    subq %rax, %rbx\n");
-      this.ex.write("    movq %rbx, %rax\n");
+      this.ex.write("    subq %rbx, %rax\n");
     }
     return null;
   }
