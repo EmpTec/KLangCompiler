@@ -18,6 +18,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   Map<String, FunctionInformation> funcs;
   Type currentDeclaredReturnType;
 
+  private void checkNumeric(Node lhs, Node rhs, int line, int col) {
+    if (!lhs.type.isNumericType() || !rhs.type.isNumericType()) {
+      String error = "Only numeric types are allowed for this expression.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+  }
+
   public ContextAnalysis(Map<String, FunctionInformation> funcs) {
     this.funcs = funcs;
   }
@@ -256,6 +263,10 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     result.type = Type.getBooleanType();
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
+    if (!lhs.type.equals(Type.getBooleanType()) || !rhs.type.equals(Type.getBooleanType())) {
+      String error = "|| is only defined for bool.";
+      throw new RuntimeException(Helper.getErrorPrefix(result.line, result.col) + error);
+    }
     return result;
   }
 
@@ -267,6 +278,10 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     result.type = Type.getBooleanType();
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
+    if (!lhs.type.equals(Type.getBooleanType()) || !rhs.type.equals(Type.getBooleanType())) {
+      String error = "&& is only defined for bool.";
+      throw new RuntimeException(Helper.getErrorPrefix(result.line, result.col) + error);
+    }
     return result;
   }
 
@@ -277,11 +292,15 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
     AdditionExpression result = new AdditionExpression((Expression) lhs, (Expression) rhs);
+
     try {
       result.type = lhs.type.combine(rhs.type);
     } catch (Exception e) {
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
+
+    checkNumeric(lhs, rhs, line, col);
+
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
     return result;
@@ -319,9 +338,10 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
 
-    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number.";
-      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    try {
+      lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
 
     NotEqualityExpression result = new NotEqualityExpression((Expression) lhs, (Expression) rhs);
@@ -338,10 +358,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
 
-    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number.";
-      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    try {
+      lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
+
+    checkNumeric(lhs, rhs, line, col);
 
     LTExpression result = new LTExpression((Expression) lhs, (Expression) rhs);
     result.type = Type.getBooleanType();
@@ -357,8 +380,14 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
 
-    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number.";
+    try {
+      lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+
+    if (!lhs.type.isNumericType() || !rhs.type.isNumericType()) {
+      String error = "Only numeric types are allowed for this expression.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
 
@@ -376,10 +405,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
 
-    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number.";
-      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    try {
+      lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
+
+    checkNumeric(lhs, rhs, line, col);
 
     LTEExpression result = new LTEExpression((Expression) lhs, (Expression) rhs);
     result.type = Type.getBooleanType();
@@ -395,10 +427,13 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
 
-    if (lhs.type != Type.getIntegerType() || rhs.type != Type.getIntegerType()) {
-      String error = "Both operants of this expression have to be a number.";
-      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    try {
+      lhs.type.combine(rhs.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
+
+    checkNumeric(lhs, rhs, line, col);
 
     GTEExpression result = new GTEExpression((Expression) lhs, (Expression) rhs);
     result.type = Type.getBooleanType();
@@ -414,11 +449,15 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
     SubstractionExpression result = new SubstractionExpression((Expression) lhs, (Expression) rhs);
+
     try {
       result.type = lhs.type.combine(rhs.type);
     } catch (Exception e) {
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
+
+    checkNumeric(lhs, rhs, line, col);
+    
     result.line = line;
     result.col = col;
     return result;
@@ -431,11 +470,15 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
     MultiplicationExpression result = new MultiplicationExpression((Expression) lhs, (Expression) rhs);
+
     try {
       result.type = lhs.type.combine(rhs.type);
     } catch (Exception e) {
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
+
+    checkNumeric(lhs, rhs, line, col);
+
     result.line = line;
     result.col = col;
     return result;
@@ -448,11 +491,15 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
     DivisionExpression result = new DivisionExpression((Expression) lhs, (Expression) rhs);
+    
     try {
       result.type = lhs.type.combine(rhs.type);
     } catch (Exception e) {
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
+
+    checkNumeric(lhs, rhs, line, col);
+    
     result.line = line;
     result.col = col;
     return result;
@@ -465,11 +512,20 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
     ModuloExpression result = new ModuloExpression((Expression) lhs, (Expression) rhs);
+
     try {
       result.type = lhs.type.combine(rhs.type);
     } catch (Exception e) {
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
+
+    checkNumeric(lhs, rhs, line, col);
+
+    if (lhs.type.equals(Type.getFloatType()) || rhs.type.equals(Type.getFloatType())) {
+      String error = "Only integers are allowed for modulo.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+    
     result.line = line;
     result.col = col;
     return result;
@@ -482,6 +538,12 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     result.type = expression.type;
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
+    
+    if (!result.type.isNumericType()) {
+      String error = "Only numeric types are allowed for this expression.";
+      throw new RuntimeException(Helper.getErrorPrefix(result.line, result.col) + error);
+    }
+
     return result;
   }
 
@@ -492,6 +554,12 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     result.type = expression.type;
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
+
+    if (!result.type.equals(Type.getBooleanType())) {
+      String error = "Only boolean type is allowed for this expression.";
+      throw new RuntimeException(Helper.getErrorPrefix(result.line, result.col) + error);
+    }
+
     return result;
   }
 
@@ -529,6 +597,15 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitIntAtom(KlangParser.IntAtomContext ctx) {
     Node n = new IntegerExpression(Integer.parseInt(ctx.getText()));
     n.type = Type.getIntegerType();
+    n.line = ctx.start.getLine();
+    n.col = ctx.start.getCharPositionInLine();
+    return n;
+  }
+
+  @Override
+  public Node visitFloatAtom(KlangParser.FloatAtomContext ctx) {
+    Node n = new FloatExpression(Double.parseDouble(ctx.getText()));
+    n.type = Type.getFloatType();
     n.line = ctx.start.getLine();
     n.col = ctx.start.getCharPositionInLine();
     return n;
@@ -620,10 +697,8 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Expression[] args = new Expression[argCount];
     for (int i = 0; i < argCount; i++) {
       Expression expression = (Expression) this.visit(ctx.functionCall().arguments().expression(i));
-      try {
-        expression.type.combine(func.signature[i]); // Make sure the types are matching
-      } catch (Exception e) {
-        throw new RuntimeException(Helper.getErrorPrefix(line, col) + "argument " + i + " " + e.getMessage());
+      if (!expression.type.equals(func.signature[i])) {
+        throw new RuntimeException(Helper.getErrorPrefix(line, col) + "argument " + i + " Expected " + func.signature[i].getName() + " but got: " + expression.type.getName());
       }
       args[i] = expression;
     }

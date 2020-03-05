@@ -1,3 +1,3 @@
-int myWhile(int x);
-int myDoWhile(int x);
-int myFor(int x);
+long myWhile(long x);
+long myDoWhile(long x);
+long myFor(long x);

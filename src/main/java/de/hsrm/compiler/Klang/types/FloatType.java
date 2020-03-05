@@ -1,25 +1,25 @@
 package de.hsrm.compiler.Klang.types;
 
-public class IntegerType extends NumericType {
+public class FloatType extends NumericType {
 
-  private static IntegerType instance = null;
+  private static FloatType instance = null;
 
-  public static IntegerType getType() {
+  public static FloatType getType() {
     if (instance != null) {
       return instance;
     }
-    instance = new IntegerType();
+    instance = new FloatType();
     return instance;
   }
 
   @Override
-  public boolean isIntegerType() {
+  public boolean isFloatType() {
     return true;
   }
 
   @Override
   public String getName() {
-    return "int";
+    return "float";
   }
 
   @Override
@@ -29,7 +29,7 @@ public class IntegerType extends NumericType {
       return this;
     }
 
-    if (that.equals(Type.getFloatType())) {
+    if (that.equals(Type.getIntegerType())) {
       return Type.getFloatType();
     }
 

@@ -14,4 +14,12 @@ public abstract class PrimitiveType extends Type {
   public boolean isBooleanType() {
     return false;
   };
+  
+  public boolean isFloatType() {
+    return false;
+  };
+
+  public boolean isNumericType() {
+    return false;
+  }
 }
