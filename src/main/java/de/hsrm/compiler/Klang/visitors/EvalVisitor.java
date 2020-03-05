@@ -20,7 +20,13 @@ import de.hsrm.compiler.Klang.types.Type;
 public class EvalVisitor implements Visitor<Value> {
 
   Map<String, FunctionDefinition> funcs = new HashMap<>();
+  Map<String, StructDefinition> structs;
   Map<String, Value> env = new HashMap<>();
+  Map<String, Map<String, Value>> heap = new HashMap<>();
+
+  public EvalVisitor(Map<String, StructDefinition> structs) {
+    this.structs = structs;
+  }
 
   @Override
   public Value visit(IntegerExpression e) {
@@ -474,37 +480,50 @@ public class EvalVisitor implements Visitor<Value> {
 
   @Override
   public Value visit(StructDefinition e) {
-    // TODO Auto-generated method stub
+    // We get these from a previous visitor
     return null;
   }
 
   @Override
   public Value visit(StructField e) {
-    // TODO Auto-generated method stub
+    // Nothing to do here...
     return null;
   }
 
   @Override
   public Value visit(StructFieldAccessExpression e) {
-    // TODO Auto-generated method stub
-    return null;
+    Value var = this.env.get(e.varName);
+    Map<String, Value> struct = var.asStruct();
+
+    Value currentValue = struct.get(e.path[0]);
+    for (int i = 1; i < e.path.length; i++) {
+      currentValue = currentValue.asStruct().get(e.path[i]);
+    }
+
+    return currentValue;
   }
 
   @Override
   public Value visit(ConstructorCall e) {
-    // TODO Auto-generated method stub
-    return null;
+    StructDefinition structDef = this.structs.get(e.structName);
+    Map<String, Value> struct = new HashMap<>();
+
+    for (int i = 0; i < e.args.length; i++) {
+      var arg = e.args[i].welcome(this);
+      struct.put(structDef.fields[i].name, arg);
+    }
+
+    return new Value(struct);
   }
 
   @Override
   public Value visit(NullExpression e) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public Value visit(DestructorCall e) {
-    // TODO Auto-generated method stub
+    this.env.remove(e.name);
     return null;
   }
 
