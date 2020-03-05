@@ -357,7 +357,7 @@ public class GenASM implements Visitor<Void> {
     if (isFloatOperation) {
       this.ex.write("    divsd %xmm1, %xmm0\n");
     } else {
-      this.ex.write("    xor %rdx, %rdx\n"); // clear upper part of division
+      this.ex.write("    cqto\n"); // sign extend rax into rdx since we're dealing with signed values
       this.ex.write("    idiv %rbx\n"); // %rax/%rbx, quotient now in %rax
     }
     return null;
@@ -370,7 +370,7 @@ public class GenASM implements Visitor<Void> {
     e.rhs.welcome(this);
     this.ex.write("    movq %rax, %rbx\n");
     this.ex.write("    popq %rax\n");
-    this.ex.write("    xor %rdx, %rdx\n"); // clear upper part of division
+    this.ex.write("    cqto\n"); // sign extend rax into rdx since we're dealing with signed values
     this.ex.write("    idiv %rbx\n"); // %rax/%rbx, remainder now in %rdx
     this.ex.write("    movq %rdx, %rax\n");
     return null;
