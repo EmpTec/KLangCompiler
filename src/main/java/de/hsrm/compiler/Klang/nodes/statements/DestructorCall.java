@@ -1,8 +1,8 @@
-package de.hsrm.compiler.Klang.nodes.expressions;
+package de.hsrm.compiler.Klang.nodes.statements;
 
 import de.hsrm.compiler.Klang.visitors.Visitor;
 
-public class DestructorCall extends Expression {
+public class DestructorCall extends Statement {
 
     public String name;
 
