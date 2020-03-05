@@ -176,7 +176,7 @@ int runMathTests()
   printf("\nModulo Tests \n");
   math_test("modulo", cModulo, modulo, 1, 1);
   math_test("modulo", cModulo, modulo, 1, 5);
-  // math_test("modulo", cModulo, modulo, -1, -1);
+  math_test("modulo", cModulo, modulo, -1, -1);
   math_test("modulo", cModulo, modulo, 1337, 42);
 
   printf("\nNegative Tests\n");
