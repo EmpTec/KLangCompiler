@@ -131,7 +131,7 @@ public class Klang {
     // System.out.println("\nPrinting the assembler code");
     StringWriter wAsm = new StringWriter();
     GenASM.ExWriter exAsm = new GenASM.ExWriter(wAsm);
-    GenASM genasm = new GenASM(exAsm, mainName);
+    GenASM genasm = new GenASM(exAsm, mainName, structs);
     root.welcome(genasm);
     generateOutput(out, wAsm.toString());
   }
