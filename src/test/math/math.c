@@ -283,6 +283,7 @@ int runMathTests()
   printf("\nFloat And Integer Division\n");
   math_argumentTest_f("mixdiv(10.0, 0)", INFINITY, mixdiv(10.0, 0));
   math_argumentTest_f("mixdiv(10.0, 1)", 10.0, mixdiv(10.0, 1));
+  math_argumentTest_f("mixdiv(-1.0, -1)", 1, mixdiv(-1.0, -1));
   math_argumentTest_f("mixdiv(0.0, 1)", 0.0, mixdiv(0.0, 1));
   math_argumentTest_f("mixdiv(-1.0, 1)", -1.0, mixdiv(-1.0, 1));
   math_argumentTest_f("mixdiv(1.5, 2)", 1.5 / 2, mixdiv(1.5, 2));
