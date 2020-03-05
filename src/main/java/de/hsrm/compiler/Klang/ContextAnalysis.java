@@ -819,4 +819,22 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     result.col = col;
     return result;
   }
+
+  @Override
+  public Node visitDestructorCallExpression(KlangParser.DestructorCallExpressionContext ctx) {
+    String name = ctx.IDENT().getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
+    
+    VariableDeclaration var = this.vars.get(name);
+    if (var == null) {
+      String error = "Variable with name \"" + name + "\" not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    Node result = new DestructorCall(name);
+    result.line = line;
+    result.col = col;
+    return result;
+  }
 }
