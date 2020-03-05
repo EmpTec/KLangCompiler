@@ -440,7 +440,7 @@ public class PrettyPrintVisitor implements Visitor<Void> {
 
   @Override
   public Void visit(DestructorCall e) {
-    ex.write("destroy " + e.name);
+    ex.write("destroy " + e.name + ";");
     return null;
   }
 
