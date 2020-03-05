@@ -289,14 +289,15 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     }
 
     // Get the type of the result of this expression
+    String structName = variableDef.type.getName();
     Type resultType;
     try {
-      resultType = Helper.drillType(this.structs, variableDef.type.getName(), path, 0);
+      resultType = Helper.drillType(this.structs, structName, path, 0);
     } catch (Exception e) {
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
     }
 
-    Node result = new StructFieldAccessExpression(varName, path);
+    Node result = new StructFieldAccessExpression(varName, structName, path);
     result.type = resultType;
     result.line = line;
     result.col = col;
