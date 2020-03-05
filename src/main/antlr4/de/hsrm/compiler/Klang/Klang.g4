@@ -92,6 +92,7 @@ expression
   | NOT expression #NotExpression
   | functionCall #functionCallExpression
   | CREATE IDENT OPAR arguments CPAR # constructorCallExpression
+  | DESTROY IDENT # destructorCallExpression
   ;
 
 atom
@@ -146,6 +147,7 @@ WHILE: 'while';
 DO: 'do';
 FOR: 'for';
 CREATE: 'create';
+DESTROY: 'destroy';
 NULL: 'naught';
 
 PERIOD: '.';
