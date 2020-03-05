@@ -87,6 +87,7 @@ public class Klang {
 
     // Context Analysis and DAST generation
     Node root;
+    HashMap<String, StructDefinition> structs;
     try {
       // Extract information about all functions
       var functionDefinitions = new HashMap<String, FunctionInformation>();
@@ -97,7 +98,7 @@ public class Klang {
       new GetStructNames(structNames).visit(tree);
 
       // Extract information about all structs
-      var structs = new HashMap<String, StructDefinition>();
+      structs = new HashMap<String, StructDefinition>();
       new GetStructs(structNames, structs).visit(tree);
 
       // Create the DAST
@@ -120,7 +121,7 @@ public class Klang {
     if (evaluate) {
       // Evaluate the sourcecode and print the result
       System.out.println("\nEvaluating the source code:");
-      EvalVisitor evalVisitor = new EvalVisitor();
+      EvalVisitor evalVisitor = new EvalVisitor(structs);
       Value result = root.welcome(evalVisitor);
       generateOutput(out, "Result was: " + result.asObject().toString());
       return;
