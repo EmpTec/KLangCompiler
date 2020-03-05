@@ -41,4 +41,22 @@ public class Helper {
 
     throw new RuntimeException("Struct " + structDef.name + " does not contain field " + path[pathIndex]);
   }
+
+  public static int getFieldOffset(StructDefinition structDef, int fieldIndex) {
+    return fieldIndex * 8;
+  }
+
+  public static int getFieldOffset(StructDefinition structDef, String fieldName)  {
+    for (int i = 0; i < structDef.fields.length; i++) {
+      if (structDef.fields[i].name.equals(fieldName)) {
+        return i * 8;
+      }
+    }
+
+    return -1;
+  }
+
+  public static int getFieldSizeBytes(StructDefinition structDef) {
+    return structDef.fields.length * 8;
+  }
 }
