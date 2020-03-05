@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import de.hsrm.compiler.Klang.helper.Helper;
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
@@ -799,37 +800,67 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(StructDefinition e) {
-    // TODO Auto-generated method stub
+    // We get these from a previous visitor
     return null;
   }
 
   @Override
   public Void visit(StructField e) {
-    // TODO Auto-generated method stub
+    // Nothing to do here...
     return null;
   }
 
   @Override
   public Void visit(StructFieldAccessExpression e) {
-    // TODO Auto-generated method stub
+    var structDef = this.structs.get(e.structName);
+    int offset = this.env.get(e.varName);
+
+    // move struct address into rax
+    this.ex.write("    movq " + offset + "(%rbp), %rax\n");
+
+    // "follow" the first path element by moving the referenced value into rax
+    this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[0]) + "(%rax), %rax\n");
+    for  (int i = 1; i < e.path.length; i++) {
+      // "follow" the current path element
+      this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[i]) + "(%rax), %rax\n");
+    }
+
+    // desired value now in rax
+
     return null;
   }
 
   @Override
   public Void visit(ConstructorCall e) {
-    // TODO Auto-generated method stub
+    // push arguments onto the stack
+    for (var arg: e.args) {
+      arg.welcome(this);
+      this.ex.write("    pushq %rax\n");
+    }
+
+    // allocate heap memory by calling malloc
+    var structDef = this.structs.get(e.structName);
+    this.ex.write("    movl $" + Helper.getFieldSizeBytes(structDef) + ", %edi\n");
+    this.ex.write("    call malloc@PLT\n"); // struct address now in rax
+
+    // push args into struct memory, last arg is ontop of the stack
+    for (int i = e.args.length - 1; i >= 0; i--) {
+      this.ex.write("    popq " + Helper.getFieldOffset(structDef, i) + "(%rax)\n");
+    }
+
     return null;
   }
 
   @Override
   public Void visit(NullExpression e) {
-    // TODO Auto-generated method stub
+    this.ex.write("    movq $0, %rax\n");
     return null;
   }
 
   @Override
   public Void visit(DestructorCall e) {
-    // TODO Auto-generated method stub
+    this.ex.write("    movq " +this.env.get(e.name) + "(%rbp), %rdi\n");
+    this.ex.write("    call free@PLT\n");
     return null;
   }
 
