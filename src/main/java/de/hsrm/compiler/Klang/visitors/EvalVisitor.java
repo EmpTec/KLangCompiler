@@ -502,4 +502,10 @@ public class EvalVisitor implements Visitor<Value> {
     return null;
   }
 
+  @Override
+  public Value visit(DestructorCall e) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

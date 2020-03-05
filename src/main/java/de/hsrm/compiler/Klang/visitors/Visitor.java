@@ -48,4 +48,5 @@ public interface Visitor<R> {
     R visit(StructFieldAccessExpression e);
     R visit(ConstructorCall e);
     R visit(NullExpression e);
+    R visit(DestructorCall e);
 }
