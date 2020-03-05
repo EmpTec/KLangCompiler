@@ -261,7 +261,7 @@ int runMathTests()
   printf("\nFloat And Integer Subtraction\n");
   math_argumentTest_f("mixsub(10.0, 10)", 0.0, mixsub(10.0, 10));
   math_argumentTest_f("mixsub(0.0, 0)", 0.0, mixsub(0.0, 0));
-  math_argumentTest_f("mixsub(-10.0, -10)", -20.0, mixsub(-10.0, -10));
+  math_argumentTest_f("mixsub(-10.0, 10)", -20.0, mixsub(-10.0, 10));
   math_argumentTest_f("mixsub(-1.0, 1)", -2.0, mixsub(-1.0, 1));
   math_argumentTest_f("mixsub(0.0, -1)", 1.0, mixsub(0.0, -1));
 
