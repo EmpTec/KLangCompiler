@@ -19,6 +19,10 @@ long cModulo(long x, long y)
 {
   return x % y;
 }
+long cDiv(long x, long y)
+{
+  return x / y;
+}
 long cNeg(long x)
 {
   return -x;
@@ -172,6 +176,15 @@ int runMathTests()
   math_test("mul", cMul, mul, 2, 0);
   math_test("mul", cMul, mul, 1, 5);
   math_test("mul", cMul, mul, -1, -1);
+
+  printf("\nDivision Tests\n");
+  math_test("div", cDiv, div, 10, 2);
+  math_test("div", cDiv, div, 8, 4);
+  math_test("div", cDiv, div, 6, -2);
+  math_test("div", cDiv, div, -9, 3);
+  math_test("div", cDiv, div, 9, 2);
+  math_test("div", cDiv, div, 9, -2);
+  math_test("div", cDiv, div, -9, 2);
 
   printf("\nModulo Tests \n");
   math_test("modulo", cModulo, modulo, 1, 1);
