@@ -1,6 +1,7 @@
 package de.hsrm.compiler.Klang;
 
 import de.hsrm.compiler.Klang.types.Type;
+import java.util.Map;
 
 public class Value {
     public Type type;
@@ -29,5 +30,10 @@ public class Value {
 
     public boolean asBoolean() {
         return (boolean) this.value;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Value> asStruct() {
+        return (Map<String, Value>) this.value;
     }
 }
