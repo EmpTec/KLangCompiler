@@ -44,6 +44,7 @@ statement
   | whileLoop
   | doWhileLoop
   | forLoop
+  | destroy_statement
   ;
 
 print
@@ -71,6 +72,10 @@ return_statement
   : RETURN expression SCOL
   ;
 
+destroy_statement
+  : DESTROY IDENT SCOL
+  ;
+
 expression
   : atom #atomExpression
   | IDENT (DOT IDENT)+ #structFieldAccessExpression
@@ -92,7 +97,6 @@ expression
   | NOT expression #NotExpression
   | functionCall #functionCallExpression
   | CREATE IDENT OPAR arguments CPAR # constructorCallExpression
-  | DESTROY IDENT # destructorCallExpression
   ;
 
 atom
