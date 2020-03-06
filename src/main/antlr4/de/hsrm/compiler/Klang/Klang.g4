@@ -40,6 +40,7 @@ statement
   | if_statement
   | variable_declaration SCOL
   | variable_assignment SCOL
+  | field_assignment SCOL
   | return_statement
   | whileLoop
   | doWhileLoop
@@ -66,6 +67,10 @@ variable_declaration
 
 variable_assignment
   : IDENT EQUAL expression
+  ;
+
+field_assignment
+  : IDENT (DOT IDENT)+ EQUAL expression
   ;
 
 return_statement
