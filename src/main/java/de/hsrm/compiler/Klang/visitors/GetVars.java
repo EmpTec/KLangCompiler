@@ -269,4 +269,9 @@ class GetVars implements Visitor<Void> {
   public Void visit(DestructorCall e) {
     return null;
   }
+
+  @Override
+  public Void visit(FieldAssignment e) {
+    return null;
+  }
 }

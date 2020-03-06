@@ -527,4 +527,21 @@ public class EvalVisitor implements Visitor<Value> {
     return null;
   }
 
+  @Override
+  public Value visit(FieldAssignment e) {
+    Value val = this.env.get(e.varName);
+    String fieldNameToUpdate = e.path[e.path.length - 1];
+    
+    // Find the struct that holds the field to be updated
+    Map<String, Value> struct = val.asStruct();
+    for (int i = 0; i < e.path.length - 1; i++) {
+      struct = struct.get(e.path[i]).asStruct();
+    }
+
+    // if we are here, struct contains a reference to the struct that holds the field to be updated
+    struct.put(fieldNameToUpdate, e.expression.welcome(this));
+
+    return null;
+  }
+
 }

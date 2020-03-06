@@ -444,4 +444,17 @@ public class PrettyPrintVisitor implements Visitor<Void> {
     return null;
   }
 
+  @Override
+  public Void visit(FieldAssignment e) {
+    ex.write(e.varName);
+    for (int i = 0; i < e.path.length; i++) {
+      ex.write(".");
+      ex.write(e.path[i]);
+    }
+    ex.write(" = ");
+    e.expression.welcome(this);
+    ex.write(";");
+    return null;
+  }
+
 }

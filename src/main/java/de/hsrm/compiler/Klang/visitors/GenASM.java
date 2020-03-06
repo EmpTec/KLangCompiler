@@ -865,4 +865,31 @@ public class GenASM implements Visitor<Void> {
     return null;
   }
 
+  @Override
+  public Void visit(FieldAssignment e) {
+    var structDef = this.structs.get(e.structName);
+    int offset = this.env.get(e.varName);
+    String fieldNameToUpdate = e.path[e.path.length - 1];
+
+    // Push the expression onto the stack
+    e.expression.welcome(this);
+    this.ex.write("    pushq %rax\n");
+
+    // move struct address into rax
+    this.ex.write("    movq " + offset + "(%rbp), %rax\n");
+
+    // If there are at least two elements in the path, 
+    // move the address of the next referenced struct into rax
+    for  (int i = 0; i < e.path.length - 1; i++) {
+      structDef = this.structs.get(structDef.fields[Helper.getFieldIndex(structDef, e.path[i])].type.getName());
+      this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[i]) + "(%rax), %rax\n");
+    }
+
+    // pop the expression that is ontop of the stack into the field of the struct that has to be updated
+    this.ex.write("    popq " + Helper.getFieldOffset(structDef, fieldNameToUpdate) + "(%rax)\n");
+    this.ex.write("    movq $0, %rax\n"); // clear rax sind an assignment has no result
+
+    return null;
+  }
+
 }

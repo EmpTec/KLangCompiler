@@ -49,4 +49,5 @@ public interface Visitor<R> {
     R visit(ConstructorCall e);
     R visit(NullExpression e);
     R visit(DestructorCall e);
+    R visit(FieldAssignment e);
 }
