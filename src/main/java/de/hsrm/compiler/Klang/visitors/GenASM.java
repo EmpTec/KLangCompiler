@@ -822,7 +822,7 @@ public class GenASM implements Visitor<Void> {
     this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[0]) + "(%rax), %rax\n");
     for  (int i = 1; i < e.path.length; i++) {
       // "follow" the current path element
-      structDef = this.structs.get(structDef.fields[Helper.getFieldIndex(structDef, e.path[i])].type.getName());
+      structDef = this.structs.get(structDef.fields[Helper.getFieldIndex(structDef, e.path[i - 1])].type.getName());
       this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[i]) + "(%rax), %rax\n");
     }
 
@@ -880,8 +880,8 @@ public class GenASM implements Visitor<Void> {
 
     // If there are at least two elements in the path, 
     // move the address of the next referenced struct into rax
-    for  (int i = 0; i < e.path.length - 1; i++) {
-      structDef = this.structs.get(structDef.fields[Helper.getFieldIndex(structDef, e.path[i])].type.getName());
+    for  (int i = 1; i < e.path.length - 1; i++) {
+      structDef = this.structs.get(structDef.fields[Helper.getFieldIndex(structDef, e.path[i - 1])].type.getName());
       this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[i]) + "(%rax), %rax\n");
     }
 
