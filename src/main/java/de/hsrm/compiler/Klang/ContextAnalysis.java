@@ -265,6 +265,53 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitField_assignment(KlangParser.Field_assignmentContext ctx) {
+    String varName = ctx.IDENT(0).getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
+    String[] path = new String[ctx.IDENT().size() - 1];
+
+    for (int i = 1; i < ctx.IDENT().size(); i++) {
+      path[i - 1] = ctx.IDENT(i).getText();
+    }
+
+    // Get the referenced variable, make sure it is defined
+    var variableDef = this.vars.get(varName);
+    if (variableDef == null) {
+      String error = "Variable with name " + varName + " not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    // Make sure it references a struct
+    if (variableDef.type.isPrimitiveType()) {
+      String error = "Variable must reference a struct but references " + variableDef.type.getName() + ".";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    // Get the type of the result of this expression
+    String structName = variableDef.type.getName();
+    Type fieldType;
+    try {
+      fieldType = Helper.drillType(this.structs, structName, path, 0);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+
+    // Get the expression and make sure the type combines properly
+    Expression expression = (Expression) this.visit(ctx.expression());
+    try {
+      fieldType.combine(expression.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+
+    Node result = new FieldAssignment(varName, structName, path, expression);
+    result.col = col;
+    result.line = line;
+    return result;
+  }
+
+  @Override
   public Node visitStructFieldAccessExpression(KlangParser.StructFieldAccessExpressionContext ctx) {
     String varName = ctx.IDENT(0).getText();
     int line = ctx.start.getLine();
