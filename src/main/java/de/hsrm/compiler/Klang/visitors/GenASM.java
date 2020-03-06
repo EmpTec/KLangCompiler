@@ -822,6 +822,7 @@ public class GenASM implements Visitor<Void> {
     this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[0]) + "(%rax), %rax\n");
     for  (int i = 1; i < e.path.length; i++) {
       // "follow" the current path element
+      structDef = this.structs.get(structDef.fields[Helper.getFieldIndex(structDef, e.path[i])].type.getName());
       this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[i]) + "(%rax), %rax\n");
     }
 
