@@ -18,6 +18,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   Map<String, FunctionInformation> funcs;
   Map<String, StructDefinition> structs;
   Type currentDeclaredReturnType;
+  String currentFunctionDefinitionName;
 
   private void checkNumeric(Node lhs, Node rhs, int line, int col) {
     if (!lhs.type.isNumericType() || !rhs.type.isNumericType()) {
@@ -246,6 +247,16 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   public Node visitReturn_statement(KlangParser.Return_statementContext ctx) {
     Expression expression = (Expression) this.visit(ctx.expression());
     ReturnStatement result = new ReturnStatement(expression);
+
+    // Check if this expression is a tail recursion
+    if (expression instanceof FunctionCall) {
+      var funCall = (FunctionCall) expression;
+      if (funCall.name.equals(this.currentFunctionDefinitionName)) {
+        // Flag this function call
+        funCall.isTailRecursive = true;
+      }
+    }
+
     result.type = expression.type;
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
@@ -720,6 +731,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int col = ctx.start.getCharPositionInLine();
     Type returnType = Type.getByName(ctx.returnType.type().getText());
     this.currentDeclaredReturnType = returnType;
+    this.currentFunctionDefinitionName = name;
 
     if (!returnType.isPrimitiveType() && this.structs.get(returnType.getName()) == null) {
       String error = "Type " + returnType.getName() + " not defined.";
