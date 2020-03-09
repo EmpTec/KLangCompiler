@@ -150,8 +150,8 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
 
   @Override
   public Node visitDoWhileLoop(KlangParser.DoWhileLoopContext ctx) {
-    Node condition = this.visit(ctx.cond);
     Node block = this.visit(ctx.braced_block());
+    Node condition = this.visit(ctx.cond);
     Node result = new DoWhileLoop((Expression) condition, (Block) block);
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
