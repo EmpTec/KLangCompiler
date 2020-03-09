@@ -85,7 +85,7 @@ int testStructCreation() {
 
   free(result);
 
-  printf("\n Recursive struct creation tests\n");
+  printf("\nRecursive struct creation tests\n");
   struct testStructRec* innerStruct = getTestStructRec(20, NULL);
   struct testStructRec* resultRec = getTestStructRec(10, innerStruct);
 
