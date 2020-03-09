@@ -15,7 +15,7 @@ test_parsing:
   tags:
     - docker
   before_script:
-    - apt upate
+    - apt update
     - apt install -y build-essential openjdk-13-jre-headless
   script:
      - make testJava
