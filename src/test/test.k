@@ -418,7 +418,7 @@ function mixdiv(x: float, y: int): float {
 struct testStruct {
     a: int;
     b: bool;
-    c: int;
+    c: float;
 }
 
 struct testStructRec {
@@ -426,7 +426,7 @@ struct testStructRec {
     b: testStructRec;
 }
 
-function getTestStruct(a: int, b: bool, c: int): testStruct {
+function getTestStruct(a: int, b: bool, c: float): testStruct {
   return create testStruct(a, b, c);
 }
 
@@ -442,7 +442,7 @@ function getStructFieldB(t: testStruct): bool {
   return t.b;
 }
 
-function getStructFieldC(t: testStruct): int {
+function getStructFieldC(t: testStruct): float {
   return t.c;
 }
 
@@ -456,7 +456,7 @@ function setStructFieldB(t: testStruct, b: bool): testStruct {
   return t;
 }
 
-function setStructFieldC(t: testStruct, c: int): testStruct {
+function setStructFieldC(t: testStruct, c: float): testStruct {
   t.c = c;
   return t;
 }

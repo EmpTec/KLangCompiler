@@ -35,11 +35,11 @@ int struct_testExpected(char *name, long expected, long result)
 
 int testStructCreation() {
   printf("\nStruct creation tests\n");
-  struct testStruct* result = getTestStruct(1, false, 20);
+  struct testStruct* result = getTestStruct(1, false, 23.3);
 
   struct_testExpected("init field a", 1, result->a);
   struct_testExpected("init field b", false, result->b);
-  struct_testExpected("init field c", 20, result->c);
+  struct_testExpected("init field c", 23.3, result->c);
 
   free(result);
 
@@ -58,11 +58,11 @@ int testStructCreation() {
 
 int testStructGet() {
   printf("\nStruct getter tests\n");
-  struct testStruct* result = getTestStruct(1, false, 20);
+  struct testStruct* result = getTestStruct(1, false, 23.3);
 
   struct_testExpected("get field a", 1, getStructFieldA(result));
   struct_testExpected("get field b", false, getStructFieldB(result));
-  struct_testExpected("get field c", 20, getStructFieldC(result));
+  struct_testExpected("get field c", 23.3, getStructFieldC(result));
 
   free(result);
 
