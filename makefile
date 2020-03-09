@@ -13,10 +13,13 @@ eval: code.k target/klang-1.0-jar-with-dependencies.jar
 build: clean target/klang-1.0-jar-with-dependencies.jar
 
 target/klang-1.0-jar-with-dependencies.jar:
-	mvn package
+	mvn -Dmaven.test.skip=true package
 
 test: ./src/test/test
 	./src/test/test
+
+testJava:
+	mvn test
 	
 ./src/test/test: ./src/test/test.s
 	gcc -o ./src/test/test ./src/test/test.s ./src/test/**/*.c ./src/test/test.c
