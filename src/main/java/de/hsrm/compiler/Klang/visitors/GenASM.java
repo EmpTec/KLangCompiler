@@ -557,11 +557,6 @@ public class GenASM implements Visitor<Void> {
   }
 
   @Override
-  public Void visit(PrintStatement e) {
-    throw new RuntimeException("Das machen wir mal nicht, ne?!");
-  }
-
-  @Override
   public Void visit(VariableDeclaration e) {
     // If there is an initialization present,
     // push it to the location of the local var

@@ -386,13 +386,6 @@ public class EvalVisitor implements Visitor<Value> {
   }
 
   @Override
-  public Value visit(PrintStatement e) {
-    Value value = e.expression.welcome(this);
-    System.out.println(value.asObject());
-    return null;
-  }
-
-  @Override
   public Value visit(VariableDeclaration e) {
     Value initialValue = null;
     if (e.expression != null) {

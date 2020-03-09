@@ -28,18 +28,13 @@ braced_block
 // Only the first child of a rule alternative will be visited!
 // i.e. SCOL won't be visited, but thats unneccesary anyway
 statement
-  : print
-  | if_statement
+  : if_statement
   | variable_declaration SCOL
   | variable_assignment SCOL
   | return_statement
   | whileLoop
   | doWhileLoop
   | forLoop
-  ;
-
-print
-  : PRINT expression SCOL
   ;
 
 if_statement
@@ -123,7 +118,6 @@ forLoop
              step = variable_assignment CPAR braced_block
   ;
 
-PRINT: 'print';
 IF: 'if';
 ELSE: 'else';
 FUNC: 'function';
