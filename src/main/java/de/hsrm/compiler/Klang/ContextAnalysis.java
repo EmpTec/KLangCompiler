@@ -103,18 +103,6 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
-  public Node visitPrint(KlangParser.PrintContext ctx) {
-    ctx.start.getLine();
-    ctx.start.getCharPositionInLine();
-    Node expression = this.visit(ctx.expression());
-    PrintStatement result = new PrintStatement((Expression) expression);
-    result.type = null;
-    result.line = ctx.start.getLine();
-    result.col = ctx.start.getCharPositionInLine();
-    return result;
-  }
-
-  @Override
   public Node visitIf_statement(KlangParser.If_statementContext ctx) {
     Node condition = this.visit(ctx.cond);
     Node thenBlock = this.visit(ctx.then);

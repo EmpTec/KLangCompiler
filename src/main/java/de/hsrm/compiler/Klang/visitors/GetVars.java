@@ -180,12 +180,6 @@ class GetVars implements Visitor<Void> {
   }
 
   @Override
-  public Void visit(PrintStatement e) {
-    e.expression.welcome(this);
-    return null;
-  }
-
-  @Override
   public Void visit(VariableDeclaration e) {
     vars.add(e.name);
     types.put(e.name, e.type);

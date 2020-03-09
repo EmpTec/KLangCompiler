@@ -277,14 +277,6 @@ public class PrettyPrintVisitor implements Visitor<Void> {
   }
 
   @Override
-  public Void visit(PrintStatement e) {
-    ex.write("print ");
-    e.expression.welcome(this);
-    ex.write(";");
-    return null;
-  }
-
-  @Override
   public Void visit(VariableDeclaration e) {
     ex.write("let " + e.name + ": " + e.type.getName());
 
