@@ -113,6 +113,8 @@ public class GenASM implements Visitor<Void> {
   String[] registers = { "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9" };
   String[] floatRegisters = { "%xmm0", "%xmm1", "%xmm2", "%xmm3", "%xmm4", "%xmm5", "%xmm6", "%xmm7" };
   private int lCount = 0; // Invariante: lCount ist benutzt
+  private int currentFunctionStartLabel = 0;
+  private Parameter[] currentFunctionParams;
 
   private void intToFloat(String src, String dst) {
     this.ex.write("    cvtsi2sd " + src + ", " + dst + "\n");
@@ -606,11 +608,15 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(FunctionDefinition e) {
+    int lblStart = ++lCount;
+    this.currentFunctionStartLabel = lblStart;
+    this.currentFunctionParams = e.parameters;
     this.ex.write(".globl " + e.name + "\n");
     this.ex.write(".type " + e.name + ", @function\n");
     this.ex.write(e.name + ":\n");
     this.ex.write("    pushq %rbp\n");
     this.ex.write("    movq %rsp, %rbp\n");
+    this.ex.write(".L" + lblStart + ":\n");
 
     // hole die anzahl der lokalen variablen
     this.vars = new TreeSet<String>();
