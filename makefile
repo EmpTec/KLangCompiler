@@ -17,6 +17,9 @@ target/klang-1.0-jar-with-dependencies.jar:
 
 test: ./src/test/test
 	./src/test/test
+
+testJava:
+	mvn test
 	
 ./src/test/test: ./src/test/test.s
 	gcc -o ./src/test/test ./src/test/test.s ./src/test/**/*.c ./src/test/test.c
