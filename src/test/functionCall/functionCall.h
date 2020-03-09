@@ -20,6 +20,28 @@ long get8();
 long get9();
 long get10();
 
+long arg1Tail(long a, long b, long c, long d, long e, long f, long g, long h, long i, long j, long count);
+long arg2Tail(long a, long b, long c, long d, long e, long f, long g, long h, long i, long j, long count);
+long arg3Tail(long a, long b, long c, long d, long e, long f, long g, long h, long i, long j, long count);
+long arg4Tail(long a, long b, long c, long d, long e, long f, long g, long h, long i, long j, long count);
+long arg5Tail(long a, long b, long c, long d, long e, long f, long g, long h, long i, long j, long count);
+long arg6Tail(long a, long b, long c, long d, long e, long f, long g, long h, long i, long j, long count);
+long arg7Tail(long a, long b, long c, long d, long e, long f, long g, long h, long i, long j, long count);
+long arg8Tail(long a, long b, long c, long d, long e, long f, long g, long h, long i, long j, long count);
+long arg9Tail(long a, long b, long c, long d, long e, long f, long g, long h, long i, long j, long count);
+long arg10Tail(long a, long b, long c, long d, long e, long f, long g, long h, long i, long j, long count);
+
+long get1Tail(long count);
+long get2Tail(long count);
+long get3Tail(long count);
+long get4Tail(long count);
+long get5Tail(long count);
+long get6Tail(long count);
+long get7Tail(long count);
+long get8Tail(long count);
+long get9Tail(long count);
+long get10Tail(long count);
+
 double farg1(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
 double farg2(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);
 double farg3(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j);

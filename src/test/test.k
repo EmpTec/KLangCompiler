@@ -106,6 +106,127 @@ function get10(): int {
   return arg10(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
 
+// TAIL CALL
+function arg1Tail(a: int, b: int, c: int,d: int,e: int,f: int,g: int, h: int,i: int,j: int, count: int): int {
+  if (count <= 0) {
+    return a;
+  }
+
+  return arg1Tail(a, b, c, d, e, f, g, h, i, j, count - 1);
+}
+
+function get1Tail(count: int): int {
+  return arg1Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10);
+}
+
+function arg2Tail(a: int, b: int, c: int,d: int,e: int,f: int,g: int, h: int,i: int,j: int, count: int): int {
+  if (count <= 0) {
+    return b;
+  }
+
+  return arg2Tail(a, b, c, d, e, f, g, h, i, j, count - 1);
+}
+
+function get2Tail(count: int): int {
+  return arg2Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10);
+}
+
+function arg3Tail(a: int, b: int, c: int,d: int,e: int,f: int,g: int, h: int,i: int,j: int, count: int): int {
+  if (count <= 0) {
+    return c;
+  }
+
+  return arg3Tail(a, b, c, d, e, f, g, h, i, j, count - 1);
+}
+
+function get3Tail(count: int): int {
+  return arg3Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10);
+}
+
+function arg4Tail(a: int, b: int, c: int,d: int,e: int,f: int,g: int, h: int,i: int,j: int, count: int): int {
+  if (count <= 0) {
+    return d;
+  }
+
+  return arg4Tail(a, b, c, d, e, f, g, h, i, j, count - 1);
+}
+
+function get4Tail(count: int): int {
+  return arg4Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10);
+}
+
+function arg5Tail(a: int, b: int, c: int,d: int,e: int,f: int,g: int, h: int,i: int,j: int, count: int): int {
+  if (count <= 0) {
+    return e;
+  }
+
+  return arg5Tail(a, b, c, d, e, f, g, h, i, j, count - 1);
+}
+
+function get5Tail(count: int): int {
+  return arg5Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10);
+}
+
+function arg6Tail(a: int, b: int, c: int,d: int,e: int,f: int,g: int, h: int,i: int,j: int, count: int): int {
+  if (count <= 0) {
+    return f;
+  }
+
+  return arg6Tail(a, b, c, d, e, f, g, h, i, j, count - 1);
+}
+
+function get6Tail(count: int): int {
+  return arg6Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10);
+}
+
+function arg7Tail(a: int, b: int, c: int,d: int,e: int,f: int,g: int, h: int,i: int,j: int, count: int): int {
+  if (count <= 0) {
+    return g;
+  }
+
+  return arg7Tail(a, b, c, d, e, f, g, h, i, j, count - 1);
+}
+
+function get7Tail(count: int): int {
+  return arg7Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10);
+}
+
+function arg8Tail(a: int, b: int, c: int,d: int,e: int,f: int,g: int, h: int,i: int,j: int, count: int): int {
+  if (count <= 0) {
+    return h;
+  }
+
+  return arg8Tail(a, b, c, d, e, f, g, h, i, j, count - 1);
+}
+
+function get8Tail(count: int): int {
+  return arg8Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10);
+}
+
+function arg9Tail(a: int, b: int, c: int,d: int,e: int,f: int,g: int, h: int,i: int,j: int, count: int): int {
+  if (count <= 0) {
+    return i;
+  }
+
+  return arg9Tail(a, b, c, d, e, f, g, h, i, j, count - 1);
+}
+
+function get9Tail(count: int): int {
+  return arg9Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10);
+}
+
+function arg10Tail(a: int, b: int, c: int, d: int, e: int, f: int, g: int, h: int, i: int, j: int, count: int): int {
+  if (count <= 0) {
+    return j;
+  }
+
+  return arg10Tail(a, b, c, d, e, f, g, h, i, j, count - 1);
+}
+
+function get10Tail(count: int): int {
+  return arg10Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10);
+}
+
 // FLOATS
 
 function farg1(a: float, b: float, c: float, d: float, e: float, f: float, g: float, h: float, i: float ,j: float): float {

@@ -6,6 +6,7 @@ public class FunctionCall extends Expression {
 
   public String name;
   public Expression[] arguments;
+  public boolean isTailRecursive = false;
 
   public FunctionCall(String name, Expression[] arguments) {
     this.name = name;

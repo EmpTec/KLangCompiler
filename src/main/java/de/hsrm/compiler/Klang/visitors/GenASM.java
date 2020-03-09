@@ -113,6 +113,8 @@ public class GenASM implements Visitor<Void> {
   String[] registers = { "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9" };
   String[] floatRegisters = { "%xmm0", "%xmm1", "%xmm2", "%xmm3", "%xmm4", "%xmm5", "%xmm6", "%xmm7" };
   private int lCount = 0; // Invariante: lCount ist benutzt
+  private int currentFunctionStartLabel = 0;
+  private Parameter[] currentFunctionParams;
 
   private void intToFloat(String src, String dst) {
     this.ex.write("    cvtsi2sd " + src + ", " + dst + "\n");
@@ -566,6 +568,11 @@ public class GenASM implements Visitor<Void> {
     if (e.expression != null) {
       e.expression.welcome(this);
       int offset = this.env.get(e.name);
+      
+      if (e.expression.type.equals(Type.getFloatType())) {
+        this.ex.write("    movq %xmm0, %rax\n");
+      }
+
       this.ex.write("    movq %rax, " + offset + "(%rbp)\n");
     }
     return null;
@@ -606,11 +613,15 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(FunctionDefinition e) {
+    int lblStart = ++lCount;
+    this.currentFunctionStartLabel = lblStart;
+    this.currentFunctionParams = e.parameters;
     this.ex.write(".globl " + e.name + "\n");
     this.ex.write(".type " + e.name + ", @function\n");
     this.ex.write(e.name + ":\n");
     this.ex.write("    pushq %rbp\n");
     this.ex.write("    movq %rsp, %rbp\n");
+    this.ex.write(".L" + lblStart + ":\n");
 
     // hole die anzahl der lokalen variablen
     this.vars = new TreeSet<String>();
@@ -682,6 +693,25 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(FunctionCall e) {
+    if (e.isTailRecursive) {
+
+      // Visit the arguments and move them into the location of the corresponding local var
+      for(int i = 0; i < e.arguments.length; i++) {
+        e.arguments[i].welcome(this);
+        int offset = this.env.get(this.currentFunctionParams[i].name);
+
+        if (e.arguments[i].type.equals(Type.getFloatType())) {
+          this.ex.write("    movq %xmm0, %rax\n");
+        }
+
+        this.ex.write("    movq %rax, " + offset + "(%rbp)\n");
+      }
+
+      this.ex.write("    jmp .L" + this.currentFunctionStartLabel + "\n");
+      return null;
+    }
+
+
     if (e.arguments.length > 0) {
       // Mapping arguments index -> xmm registers index
       int[] xmmIdxs = new int[this.floatRegisters.length];
