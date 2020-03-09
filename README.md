@@ -50,7 +50,7 @@ The following simple expressions are supported. Expressions need to be put in pa
 ```
 
 ## Functions
-Functions can be defined and called. A function call can be used like any other expression. Recursion is supported
+Functions can be defined and called. A function call can be used like any other expression. Recursion is supported aswell as linking agaings c object files since we are following the calling convention
 
 ### Examples
 ```
@@ -59,6 +59,46 @@ function fun(x: int, y: int, z: bool): int {
 }
 
 fun(1, 2, 3);
+```
+
+## Structs
+Structs can be defined, created and destroyed. Structs can reference other structs as well as themselves. You can reference structs that are defined later in the code. Our structs are compatible to c structs. When defining a struct, a constructor function is implicitly defined so that you can create instances of your struct. To denote a non existing reference to a struct, use the reserved word "naught";
+
+### Examples
+```
+struct myStruct {
+  a: int;
+  b: bool;
+  c: float;
+  d: myStruct;
+}
+
+function add(x: myStruct, y: myStruct): float {
+  return x.c + y.c;
+}
+
+function isOk(x: myStruct, y: myStruct): bool {
+  return x.b && y.b;
+}
+
+function getReferenced(x: myStruct): myStruct {
+  return x.d;
+}
+
+function start(): int {
+  let x: myStruct = create myStruct(1, false, 42.0, naught);
+  let y: myStruct = create myStruct(12, true, 13.37, x);
+  let z: int = add(x, y);
+  let a: bool = isOk(x, y);
+  let y2: myStruct = getReferenced(x);
+  let isSame: bool = y == y2;
+  destroy y;
+  destroy x;
+
+  return 0;
+}
+
+start();
 ```
 
 ## Statements
@@ -123,7 +163,7 @@ KLang statically verifies the integrity of your code. These checks include:
 - Ensuring that a function returns something
 - Ensuring that a function only returns data of the correct type
 
-### Data Types
+### Primitive Data Types
 - Integer "int"
 - Boolean "bool"
 - Floats  "float"
