@@ -828,6 +828,11 @@ public class GenASM implements Visitor<Void> {
 
     // desired value now in rax
 
+    // push rax to xmm0 if the result type is a float
+    if (e.type.equals(Type.getFloatType())) {
+      this.ex.write("    movq %rax, %xmm0\n");
+    }
+
     return null;
   }
 
@@ -836,6 +841,12 @@ public class GenASM implements Visitor<Void> {
     // push arguments onto the stack
     for (var arg: e.args) {
       arg.welcome(this);
+
+      // move float values from xmm0 to rax first
+      if (arg.type.equals(Type.getFloatType())) {
+        this.ex.write("    movq %xmm0, %rax\n");
+      }
+
       this.ex.write("    pushq %rax\n");
     }
 
@@ -871,8 +882,14 @@ public class GenASM implements Visitor<Void> {
     int offset = this.env.get(e.varName);
     String fieldNameToUpdate = e.path[e.path.length - 1];
 
-    // Push the expression onto the stack
     e.expression.welcome(this);
+
+    // Move it from xmm0 rax if its a flaot
+    if (e.expression.type.equals(Type.getFloatType())) {
+      this.ex.write("    movq %xmm0, %rax\n");
+    }
+
+    // Push the expression onto the stack
     this.ex.write("    pushq %rax\n");
 
     // move struct address into rax
