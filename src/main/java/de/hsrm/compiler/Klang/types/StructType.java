@@ -46,4 +46,9 @@ public class StructType extends Type {
 
         return false;
     }
+
+    @Override
+    public boolean isNumericType() {
+        return false;
+    }
 }

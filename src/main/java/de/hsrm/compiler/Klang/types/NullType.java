@@ -33,4 +33,9 @@ public class NullType extends Type {
         return false;
     }
 
+    @Override
+    public boolean isNumericType() {
+        return false;
+    }
+
 }
