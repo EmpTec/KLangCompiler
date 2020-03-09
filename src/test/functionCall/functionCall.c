@@ -92,4 +92,28 @@ int runFunctionCallTests () {
   argumentTest("fgetMix8(...args)", 8, fgetMix8());
   argumentTest_f("fgetMix9(...args)", 9.0, fgetMix9());
   argumentTest("fgetMix10(...args)", 10, fgetMix10());
+
+  printf("\nTail Call Tests \n");
+  // Checks that tails calls are properly invoked
+  argumentTest("arg1Tail(...args)", 1, arg1Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10));
+  argumentTest("arg2Tail(...args)", 2, arg2Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10));
+  argumentTest("arg3Tail(...args)", 3, arg3Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10));
+  argumentTest("arg4Tail(...args)", 4, arg4Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10));
+  argumentTest("arg5Tail(...args)", 5, arg5Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10));
+  argumentTest("arg6Tail(...args)", 6, arg6Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10));
+  argumentTest("arg7Tail(...args)", 7, arg7Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10));
+  argumentTest("arg8Tail(...args)", 8, arg8Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10));
+  argumentTest("arg9Tail(...args)", 9, arg9Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10));
+  argumentTest("arg10Tail(...args)", 10, arg10Tail(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10));
+  // Checks that parameters are correctly passed from klang to functions
+  argumentTest("get1Tail(...args)", 1, get1Tail(10));
+  argumentTest("get2Tail(...args)", 2, get2Tail(10));
+  argumentTest("get3Tail(...args)", 3, get3Tail(10));
+  argumentTest("get4Tail(...args)", 4, get4Tail(10));
+  argumentTest("get5Tail(...args)", 5, get5Tail(10));
+  argumentTest("get6Tail(...args)", 6, get6Tail(10));
+  argumentTest("get7Tail(...args)", 7, get7Tail(10));
+  argumentTest("get8Tail(...args)", 8, get8Tail(10));
+  argumentTest("get9Tail(...args)", 9, get9Tail(10));
+  argumentTest("get10Tail(...args)", 10, get10Tail(10));
 }
