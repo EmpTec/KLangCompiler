@@ -70,7 +70,7 @@ variable_assignment
   ;
 
 field_assignment
-  : IDENT (DOT IDENT)+ EQUAL expression
+  : IDENT (PERIOD IDENT)+ EQUAL expression
   ;
 
 return_statement
@@ -83,7 +83,7 @@ destroy_statement
 
 expression
   : atom #atomExpression
-  | IDENT (DOT IDENT)+ #structFieldAccessExpression
+  | IDENT (PERIOD IDENT)+ #structFieldAccessExpression
   | OPAR expression CPAR #parenthesisExpression
   | lhs=expression MUL rhs=expression #multiplicationExpression
   | lhs=expression DIV rhs=expression #divisionExpression
@@ -177,7 +177,6 @@ GTE: '>=';
 OR: '||';
 AND: '&&';
 NOT: '!';
-DOT: '.';
 
 MUL: '*';
 ADD: '+';
