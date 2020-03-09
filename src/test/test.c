@@ -28,6 +28,9 @@ int main(){
   // Tests for while loop
   runLoopTests();
 
+  // Tests for structs
+  runStructTests();
+
   printf("\n%d tests in total\n", successes + failures);
 
   if (failures > 0) {

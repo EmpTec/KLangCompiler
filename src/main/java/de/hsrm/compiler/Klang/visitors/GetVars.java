@@ -234,4 +234,38 @@ class GetVars implements Visitor<Void> {
     return null;
   }
 
+  @Override
+  public Void visit(StructDefinition e) {
+    return null;
+  }
+
+  @Override
+  public Void visit(StructField e) {
+    return null;
+  }
+
+  @Override
+  public Void visit(StructFieldAccessExpression e) {
+    return null;
+  }
+
+  @Override
+  public Void visit(ConstructorCall e) {
+    return null;
+  }
+
+  @Override
+  public Void visit(NullExpression e) {
+    return null;
+  }
+
+  @Override
+  public Void visit(DestructorCall e) {
+    return null;
+  }
+
+  @Override
+  public Void visit(FieldAssignment e) {
+    return null;
+  }
 }

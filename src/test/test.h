@@ -7,3 +7,4 @@ void runRecursiveTests();
 void runComparisonTests();
 void runLoopTests();
 void runMathTests();
+void runStructTests();

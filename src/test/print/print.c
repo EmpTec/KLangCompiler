@@ -38,6 +38,26 @@ void err_f(char* name, double expected, double result) {
   printf("\033[0;31mERROR:\t\t%s:\tGOT: %f\tExpected: %f\033[0;0m\n", name, result, expected);
 }
 
+void succ_s(char* name, void* expected, void* result) {
+  incSuccess();
+  printf("\033[0;32mSUCCESS:\t%s:\tGOT: %p\tExpected: %p\033[0;0m\n", name, result, expected);
+}
+
+void err_s(char* name, void* expected, void* result) {
+  incFailure();
+  printf("\033[0;31mERROR:\t\t%s:\tGOT: %p\tExpected: %p\033[0;0m\n", name, result, expected);
+}
+
+void succ_b(char* name, bool expected, bool result) {
+  incSuccess();
+  printf("\033[0;32mSUCCESS:\t%s:\tGOT: %s\tExpected: %s\033[0;0m\n", name, printBool(result), printBool(expected));
+}
+
+void err_b(char* name, bool expected, bool result) {
+  incFailure();
+  printf("\033[0;31mERROR:\t\t%s:\tGOT: %s\tExpected: %s\033[0;0m\n", name, printBool(result), printBool(expected));
+}
+
 void succPrefixOne(char* name, long x,  long expected, long result) {
   incSuccess();
   printf("\033[0;32mSUCCESS:\t%s(%ld)\tGOT: %ld\tExpected: %ld\033[0;0m\n", name, x, result, expected);

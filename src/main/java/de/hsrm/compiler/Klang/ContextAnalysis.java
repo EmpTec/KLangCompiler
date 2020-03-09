@@ -16,6 +16,7 @@ import de.hsrm.compiler.Klang.types.Type;
 public class ContextAnalysis extends KlangBaseVisitor<Node> {
   Map<String, VariableDeclaration> vars = new HashMap<>();
   Map<String, FunctionInformation> funcs;
+  Map<String, StructDefinition> structs;
   Type currentDeclaredReturnType;
 
   private void checkNumeric(Node lhs, Node rhs, int line, int col) {
@@ -25,18 +26,21 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     }
   }
 
-  public ContextAnalysis(Map<String, FunctionInformation> funcs) {
+  public ContextAnalysis(Map<String, FunctionInformation> funcs, Map<String, StructDefinition> structs) {
     this.funcs = funcs;
+    this.structs = structs;
   }
 
   @Override
   public Node visitProgram(KlangParser.ProgramContext ctx) {
     FunctionDefinition[] funcs = new FunctionDefinition[ctx.functionDef().size()];
+
     for (int i = 0; i < ctx.functionDef().size(); i++) {
       funcs[i] = (FunctionDefinition) this.visit(ctx.functionDef(i));
     }
+
     Expression expression = (Expression) this.visit(ctx.expression());
-    Program result = new Program(funcs, expression);
+    Program result = new Program(funcs, this.structs, expression);
     result.type = expression.type;
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
@@ -172,6 +176,11 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int col = ctx.start.getCharPositionInLine();
     Type declaredType = Type.getByName(ctx.type_annotation().type().getText());
 
+    if (!declaredType.isPrimitiveType() && this.structs.get(declaredType.getName()) == null) {
+      String error = "Type " + declaredType.getName() + " not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
     if (this.vars.get(name) != null) {
       String error = "Redeclaration of variable with name \"" + name + "\".";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
@@ -240,6 +249,93 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     result.type = expression.type;
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
+    return result;
+  }
+
+  @Override
+  public Node visitField_assignment(KlangParser.Field_assignmentContext ctx) {
+    String varName = ctx.IDENT(0).getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
+    String[] path = new String[ctx.IDENT().size() - 1];
+
+    for (int i = 1; i < ctx.IDENT().size(); i++) {
+      path[i - 1] = ctx.IDENT(i).getText();
+    }
+
+    // Get the referenced variable, make sure it is defined
+    var variableDef = this.vars.get(varName);
+    if (variableDef == null) {
+      String error = "Variable with name " + varName + " not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    // Make sure it references a struct
+    if (variableDef.type.isPrimitiveType()) {
+      String error = "Variable must reference a struct but references " + variableDef.type.getName() + ".";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    // Get the type of the result of this expression
+    String structName = variableDef.type.getName();
+    Type fieldType;
+    try {
+      fieldType = Helper.drillType(this.structs, structName, path, 0);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+
+    // Get the expression and make sure the type combines properly
+    Expression expression = (Expression) this.visit(ctx.expression());
+    try {
+      fieldType.combine(expression.type);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+
+    Node result = new FieldAssignment(varName, structName, path, expression);
+    result.col = col;
+    result.line = line;
+    return result;
+  }
+
+  @Override
+  public Node visitStructFieldAccessExpression(KlangParser.StructFieldAccessExpressionContext ctx) {
+    String varName = ctx.IDENT(0).getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
+    String[] path = new String[ctx.IDENT().size() - 1];
+
+    for (int i = 1; i < ctx.IDENT().size(); i++) {
+      path[i - 1] = ctx.IDENT(i).getText();
+    }
+
+    // Get the referenced variable, make sure it is defined
+    var variableDef = this.vars.get(varName);
+    if (variableDef == null) {
+      String error = "Variable with name " + varName + " not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    // Make sure it references a struct
+    if (variableDef.type.isPrimitiveType()) {
+      String error = "Variable must reference a struct but references " + variableDef.type.getName() + ".";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    // Get the type of the result of this expression
+    String structName = variableDef.type.getName();
+    Type resultType;
+    try {
+      resultType = Helper.drillType(this.structs, structName, path, 0);
+    } catch (Exception e) {
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + e.getMessage());
+    }
+
+    Node result = new StructFieldAccessExpression(varName, structName, path);
+    result.type = resultType;
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -609,12 +705,26 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   }
 
   @Override
+  public Node visitNullAtom(KlangParser.NullAtomContext ctx) {
+    Node n = new NullExpression();
+    n.type = Type.getNullType();
+    n.line = ctx.start.getLine();
+    n.col = ctx.start.getCharPositionInLine();
+    return n;
+  }
+
+  @Override
   public Node visitFunctionDef(KlangParser.FunctionDefContext ctx) {
     String name = ctx.funcName.getText();
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
     Type returnType = Type.getByName(ctx.returnType.type().getText());
     this.currentDeclaredReturnType = returnType;
+
+    if (!returnType.isPrimitiveType() && this.structs.get(returnType.getName()) == null) {
+      String error = "Type " + returnType.getName() + " not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
 
     // Create a new set for the variables of the current function
     // this will be filled in the variable declaration visitor aswell
@@ -653,11 +763,19 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
   @Override
   public Node visitParameter(KlangParser.ParameterContext ctx) {
     String name = ctx.IDENT().getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
     Type type = Type.getByName(ctx.type_annotation().type().getText());
+
+    if (!type.isPrimitiveType() && this.structs.get(type.getName()) == null) {
+      String error = "Type " + type.getName() + " not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
     Parameter result = new Parameter(name);
     result.type = type;
-    result.line = ctx.start.getLine();
-    result.col = ctx.start.getCharPositionInLine();
+    result.line = line;
+    result.col = col;
     return result;
   }
 
@@ -693,6 +811,64 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
 
     FunctionCall result = new FunctionCall(name, args);
     result.type = func.returnType;
+    result.line = line;
+    result.col = col;
+    return result;
+  }
+
+  @Override
+  public Node visitConstructorCallExpression(KlangParser.ConstructorCallExpressionContext ctx) {
+    String name = ctx.IDENT().getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
+    
+    // Get the corresponding struct definition
+    var struct = this.structs.get(name);
+    if (struct == null) {
+      String error = "Struct with name \"" + name + "\" not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+    
+    // Make sure the number of arguments match the number of struct fields
+    int fieldCount = struct.fields.length;
+    int argCount = ctx.arguments().expression().size();
+    if (argCount != fieldCount) {
+      String error = "Struct \"" + name + "\" defined " + fieldCount + " fields, but got " + argCount + " constructor parameters.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    // Evaluate each expression
+    Expression[] args = new Expression[argCount];
+    for (int i = 0; i < argCount; i++) {
+      Expression expr = (Expression) this.visit(ctx.arguments().expression(i));
+      try {
+        expr.type.combine(struct.fields[i].type); // Make sure the types are matching
+      } catch (Exception e) {
+        throw new RuntimeException(Helper.getErrorPrefix(expr.line, expr.col) + "argument " + i + " " + e.getMessage());
+      }
+      args[i] = expr;
+    }
+
+    ConstructorCall result = new ConstructorCall(name, args);
+    result.type = struct.type;
+    result.line = line;
+    result.col = col;
+    return result;
+  }
+
+  @Override
+  public Node visitDestroy_statement(KlangParser.Destroy_statementContext ctx) {
+    String name = ctx.IDENT().getText();
+    int line = ctx.start.getLine();
+    int col = ctx.start.getCharPositionInLine();
+    
+    VariableDeclaration var = this.vars.get(name);
+    if (var == null) {
+      String error = "Variable with name \"" + name + "\" not defined.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
+    Node result = new DestructorCall(name);
     result.line = line;
     result.col = col;
     return result;

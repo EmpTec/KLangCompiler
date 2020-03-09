@@ -4,6 +4,8 @@ import de.hsrm.compiler.Klang.nodes.Block;
 import de.hsrm.compiler.Klang.nodes.FunctionDefinition;
 import de.hsrm.compiler.Klang.nodes.Parameter;
 import de.hsrm.compiler.Klang.nodes.Program;
+import de.hsrm.compiler.Klang.nodes.StructDefinition;
+import de.hsrm.compiler.Klang.nodes.StructField;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.*;
 import de.hsrm.compiler.Klang.nodes.statements.*;
@@ -11,7 +13,7 @@ import de.hsrm.compiler.Klang.nodes.statements.*;
 public interface Visitor<R> {
     R visit(OrExpression e);
     R visit(AndExpression e);
-    R visit (NotExpression e);
+    R visit(NotExpression e);
     R visit(IntegerExpression e);
     R visit(FloatExpression e);
     R visit(BooleanExpression e);
@@ -40,4 +42,11 @@ public interface Visitor<R> {
     R visit(FunctionCall e);
     R visit(Program e);
     R visit(Parameter e);
+    R visit(StructDefinition e);
+    R visit(StructField e);
+    R visit(StructFieldAccessExpression e);
+    R visit(ConstructorCall e);
+    R visit(NullExpression e);
+    R visit(DestructorCall e);
+    R visit(FieldAssignment e);
 }

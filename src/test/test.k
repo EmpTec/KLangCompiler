@@ -415,4 +415,68 @@ function mixdiv(x: float, y: int): float {
   return x / y;
 }
 
+struct testStruct {
+    a: int;
+    b: bool;
+    c: float;
+}
+
+struct testStructRec {
+    a: int;
+    b: testStructRec;
+}
+
+function getTestStruct(a: int, b: bool, c: float): testStruct {
+  return create testStruct(a, b, c);
+}
+
+function getTestStructRec(a: int, b: testStructRec): testStructRec {
+  return create testStructRec(a, b);
+}
+
+function getStructFieldA(t: testStruct): int {
+  return t.a;
+}
+
+function getStructFieldB(t: testStruct): bool {
+  return t.b;
+}
+
+function getStructFieldC(t: testStruct): float {
+  return t.c;
+}
+
+function setStructFieldA(t: testStruct, a: int): testStruct {
+  t.a = a;
+  return t;
+}
+
+function setStructFieldB(t: testStruct, b: bool): testStruct {
+  t.b = b;
+  return t;
+}
+
+function setStructFieldC(t: testStruct, c: float): testStruct {
+  t.c = c;
+  return t;
+}
+
+function getStructFieldRecA(t: testStructRec): int {
+  return t.a;
+}
+
+function getStructFieldRecB(t: testStructRec): testStructRec {
+  return t.b;
+}
+
+function setStructFieldRecA(t: testStructRec, a: int): testStructRec {
+  t.a = a;
+  return t;
+}
+
+function setStructFieldRecB(t: testStructRec, b: testStructRec): testStructRec {
+  t.b = b;
+  return t;
+}
+
 add(1, 1); 

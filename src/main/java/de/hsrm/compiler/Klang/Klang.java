@@ -8,8 +8,10 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import de.hsrm.compiler.Klang.nodes.Node;
+import de.hsrm.compiler.Klang.nodes.StructDefinition;
 import de.hsrm.compiler.Klang.visitors.*;
 import de.hsrm.compiler.Klang.helper.*;
 
@@ -85,13 +87,22 @@ public class Klang {
 
     // Context Analysis and DAST generation
     Node root;
+    HashMap<String, StructDefinition> structs;
     try {
       // Extract information about all functions
       var functionDefinitions = new HashMap<String, FunctionInformation>();
       new GetFunctions(functionDefinitions).visit(tree);
 
+      // Extract names of all structs
+      var structNames = new HashSet<String>();
+      new GetStructNames(structNames).visit(tree);
+
+      // Extract information about all structs
+      structs = new HashMap<String, StructDefinition>();
+      new GetStructs(structNames, structs).visit(tree);
+
       // Create the DAST
-      ContextAnalysis ctxAnal = new ContextAnalysis(functionDefinitions);
+      ContextAnalysis ctxAnal = new ContextAnalysis(functionDefinitions, structs);
       root = ctxAnal.visit(tree);
     } catch (Exception e) {
       System.err.println(e.getMessage());
@@ -110,7 +121,7 @@ public class Klang {
     if (evaluate) {
       // Evaluate the sourcecode and print the result
       System.out.println("\nEvaluating the source code:");
-      EvalVisitor evalVisitor = new EvalVisitor();
+      EvalVisitor evalVisitor = new EvalVisitor(structs);
       Value result = root.welcome(evalVisitor);
       generateOutput(out, "Result was: " + result.asObject().toString());
       return;
@@ -120,7 +131,7 @@ public class Klang {
     // System.out.println("\nPrinting the assembler code");
     StringWriter wAsm = new StringWriter();
     GenASM.ExWriter exAsm = new GenASM.ExWriter(wAsm);
-    GenASM genasm = new GenASM(exAsm, mainName);
+    GenASM genasm = new GenASM(exAsm, mainName, structs);
     root.welcome(genasm);
     generateOutput(out, wAsm.toString());
   }

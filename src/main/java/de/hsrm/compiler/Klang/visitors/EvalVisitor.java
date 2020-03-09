@@ -8,6 +8,8 @@ import de.hsrm.compiler.Klang.nodes.Block;
 import de.hsrm.compiler.Klang.nodes.FunctionDefinition;
 import de.hsrm.compiler.Klang.nodes.Parameter;
 import de.hsrm.compiler.Klang.nodes.Program;
+import de.hsrm.compiler.Klang.nodes.StructDefinition;
+import de.hsrm.compiler.Klang.nodes.StructField;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
 import de.hsrm.compiler.Klang.nodes.loops.ForLoop;
@@ -18,7 +20,13 @@ import de.hsrm.compiler.Klang.types.Type;
 public class EvalVisitor implements Visitor<Value> {
 
   Map<String, FunctionDefinition> funcs = new HashMap<>();
+  Map<String, StructDefinition> structs;
   Map<String, Value> env = new HashMap<>();
+  Map<String, Map<String, Value>> heap = new HashMap<>();
+
+  public EvalVisitor(Map<String, StructDefinition> structs) {
+    this.structs = structs;
+  }
 
   @Override
   public Value visit(IntegerExpression e) {
@@ -460,6 +468,72 @@ public class EvalVisitor implements Visitor<Value> {
 
   @Override
   public Value visit(Parameter e) {
+    return null;
+  }
+
+  @Override
+  public Value visit(StructDefinition e) {
+    // We get these from a previous visitor
+    return null;
+  }
+
+  @Override
+  public Value visit(StructField e) {
+    // Nothing to do here...
+    return null;
+  }
+
+  @Override
+  public Value visit(StructFieldAccessExpression e) {
+    Value var = this.env.get(e.varName);
+    Map<String, Value> struct = var.asStruct();
+
+    Value currentValue = struct.get(e.path[0]);
+    for (int i = 1; i < e.path.length; i++) {
+      currentValue = currentValue.asStruct().get(e.path[i]);
+    }
+
+    return currentValue;
+  }
+
+  @Override
+  public Value visit(ConstructorCall e) {
+    StructDefinition structDef = this.structs.get(e.structName);
+    Map<String, Value> struct = new HashMap<>();
+
+    for (int i = 0; i < e.args.length; i++) {
+      var arg = e.args[i].welcome(this);
+      struct.put(structDef.fields[i].name, arg);
+    }
+
+    return new Value(struct);
+  }
+
+  @Override
+  public Value visit(NullExpression e) {
+    return null;
+  }
+
+  @Override
+  public Value visit(DestructorCall e) {
+    this.env.remove(e.name);
+    return null;
+  }
+
+  @Override
+  public Value visit(FieldAssignment e) {
+    Value val = this.env.get(e.varName);
+    String fieldNameToUpdate = e.path[e.path.length - 1];
+    
+    // Find the struct that holds the field to be updated
+    Map<String, Value> struct = val.asStruct();
+    for (int i = 0; i < e.path.length - 1; i++) {
+      struct = struct.get(e.path[i]).asStruct();
+    }
+
+    // if we are here, struct contains a reference to the struct that holds the field to be updated
+    struct.put(fieldNameToUpdate, e.expression.welcome(this));
+
     return null;
   }
 

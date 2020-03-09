@@ -9,6 +9,12 @@ void err(char* name, long expected, long result);
 void succ_f(char* name, double expected, double result);
 void err_f(char* name, double expected, double result);
 
+void succ_s(char* name, void* expected, void* result);
+void err_s(char* name, void* expected, void* result);
+
+void succ_b(char* name, bool expected, bool result);
+void err_b(char* name, bool expected, bool result);
+
 void succPrefixOne(char* name, long x,  long expected, long result);
 void errPrefixOne(char* name, long x,  long expected, long result);
 

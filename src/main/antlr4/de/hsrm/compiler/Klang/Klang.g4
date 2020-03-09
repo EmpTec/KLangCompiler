@@ -5,7 +5,15 @@ parse
   ;
 
 program
-  : functionDef* expression SCOL
+  : (functionDef | structDef)* expression SCOL
+  ;
+
+structDef
+  : STRUCT structName=IDENT OBRK structField+ CBRK
+  ;
+
+structField
+  : IDENT type_annotation SCOL
   ;
 
 functionDef
@@ -31,10 +39,12 @@ statement
   : if_statement
   | variable_declaration SCOL
   | variable_assignment SCOL
+  | field_assignment SCOL
   | return_statement
   | whileLoop
   | doWhileLoop
   | forLoop
+  | destroy_statement
   ;
 
 if_statement
@@ -54,12 +64,21 @@ variable_assignment
   : IDENT EQUAL expression
   ;
 
+field_assignment
+  : IDENT (PERIOD IDENT)+ EQUAL expression
+  ;
+
 return_statement
   : RETURN expression SCOL
   ;
 
+destroy_statement
+  : DESTROY IDENT SCOL
+  ;
+
 expression
   : atom #atomExpression
+  | IDENT (PERIOD IDENT)+ #structFieldAccessExpression
   | OPAR expression CPAR #parenthesisExpression
   | lhs=expression MUL rhs=expression #multiplicationExpression
   | lhs=expression DIV rhs=expression #divisionExpression
@@ -77,12 +96,14 @@ expression
   | SUB expression #negateExpression
   | NOT expression #NotExpression
   | functionCall #functionCallExpression
+  | CREATE IDENT OPAR arguments CPAR # constructorCallExpression
   ;
 
 atom
   : INTEGER_LITERAL #intAtom
   | BOOLEAN_LITERAL #boolAtom
   | FLOAT_LITERAL #floatAtom
+  | NULL # nullAtom
   | IDENT #variable
   ;
 
@@ -94,6 +115,7 @@ type
   : INTEGER
   | BOOLEAN
   | FLOAT
+  | IDENT
   ;
 
 functionCall
@@ -121,11 +143,15 @@ forLoop
 IF: 'if';
 ELSE: 'else';
 FUNC: 'function';
+STRUCT: 'struct';
 RETURN: 'return';
 LET: 'let';
 WHILE: 'while';
 DO: 'do';
 FOR: 'for';
+CREATE: 'create';
+DESTROY: 'destroy';
+NULL: 'naught';
 
 PERIOD: '.';
 COL: ':';

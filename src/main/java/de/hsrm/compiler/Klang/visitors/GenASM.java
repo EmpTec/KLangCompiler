@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import de.hsrm.compiler.Klang.helper.Helper;
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.DoWhileLoop;
@@ -107,6 +108,7 @@ public class GenASM implements Visitor<Void> {
   private FloatWriter fw = new FloatWriter();
   private String mainName;
   Map<String, Integer> env = new HashMap<>();
+  Map<String, StructDefinition> structs;
   Set<String> vars;
   String[] registers = { "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9" };
   String[] floatRegisters = { "%xmm0", "%xmm1", "%xmm2", "%xmm3", "%xmm4", "%xmm5", "%xmm6", "%xmm7" };
@@ -147,14 +149,15 @@ public class GenASM implements Visitor<Void> {
       return false;
     }
   }
-  public GenASM(ExWriter ex, String mainName) {
+
+  public GenASM(ExWriter ex, String mainName, Map<String, StructDefinition> structs) {
     this.ex = ex;
     this.mainName = mainName;
+    this.structs = structs;
   }
 
-  public GenASM(ExWriter ex) {
-    this.ex = ex;
-    this.mainName = "main";
+  public GenASM(ExWriter ex, Map<String, StructDefinition> structs) {
+    this(ex, "main", structs);
   }
 
   @Override
@@ -787,6 +790,117 @@ public class GenASM implements Visitor<Void> {
   public Void visit(Parameter e) {
     // The work for a paremeter node is implement
     // in the function definition visitor
+    return null;
+  }
+
+  @Override
+  public Void visit(StructDefinition e) {
+    // We get these from a previous visitor
+    return null;
+  }
+
+  @Override
+  public Void visit(StructField e) {
+    // Nothing to do here...
+    return null;
+  }
+
+  @Override
+  public Void visit(StructFieldAccessExpression e) {
+    var structDef = this.structs.get(e.structName);
+    int offset = this.env.get(e.varName);
+
+    // move struct address into rax
+    this.ex.write("    movq " + offset + "(%rbp), %rax\n");
+
+    // "follow" the first path element by moving the referenced value into rax
+    this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[0]) + "(%rax), %rax\n");
+    for  (int i = 1; i < e.path.length; i++) {
+      // "follow" the current path element
+      structDef = this.structs.get(structDef.fields[Helper.getFieldIndex(structDef, e.path[i - 1])].type.getName());
+      this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[i]) + "(%rax), %rax\n");
+    }
+
+    // desired value now in rax
+
+    // push rax to xmm0 if the result type is a float
+    if (e.type.equals(Type.getFloatType())) {
+      this.ex.write("    movq %rax, %xmm0\n");
+    }
+
+    return null;
+  }
+
+  @Override
+  public Void visit(ConstructorCall e) {
+    // push arguments onto the stack
+    for (var arg: e.args) {
+      arg.welcome(this);
+
+      // move float values from xmm0 to rax first
+      if (arg.type.equals(Type.getFloatType())) {
+        this.ex.write("    movq %xmm0, %rax\n");
+      }
+
+      this.ex.write("    pushq %rax\n");
+    }
+
+    // allocate heap memory by calling malloc
+    var structDef = this.structs.get(e.structName);
+    this.ex.write("    movl $" + Helper.getFieldSizeBytes(structDef) + ", %edi\n");
+    this.ex.write("    call malloc@PLT\n"); // struct address now in rax
+
+    // push args into struct memory, last arg is ontop of the stack
+    for (int i = e.args.length - 1; i >= 0; i--) {
+      this.ex.write("    popq " + Helper.getFieldOffset(structDef, i) + "(%rax)\n");
+    }
+
+    return null;
+  }
+
+  @Override
+  public Void visit(NullExpression e) {
+    this.ex.write("    movq $0, %rax\n");
+    return null;
+  }
+
+  @Override
+  public Void visit(DestructorCall e) {
+    this.ex.write("    movq " +this.env.get(e.name) + "(%rbp), %rdi\n");
+    this.ex.write("    call free@PLT\n");
+    return null;
+  }
+
+  @Override
+  public Void visit(FieldAssignment e) {
+    var structDef = this.structs.get(e.structName);
+    int offset = this.env.get(e.varName);
+    String fieldNameToUpdate = e.path[e.path.length - 1];
+
+    e.expression.welcome(this);
+
+    // Move it from xmm0 rax if its a flaot
+    if (e.expression.type.equals(Type.getFloatType())) {
+      this.ex.write("    movq %xmm0, %rax\n");
+    }
+
+    // Push the expression onto the stack
+    this.ex.write("    pushq %rax\n");
+
+    // move struct address into rax
+    this.ex.write("    movq " + offset + "(%rbp), %rax\n");
+
+    // If there are at least two elements in the path, 
+    // move the address of the next referenced struct into rax
+    for  (int i = 1; i < e.path.length - 1; i++) {
+      structDef = this.structs.get(structDef.fields[Helper.getFieldIndex(structDef, e.path[i - 1])].type.getName());
+      this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[i]) + "(%rax), %rax\n");
+    }
+
+    // pop the expression that is ontop of the stack into the field of the struct that has to be updated
+    this.ex.write("    popq " + Helper.getFieldOffset(structDef, fieldNameToUpdate) + "(%rax)\n");
+    this.ex.write("    movq $0, %rax\n"); // clear rax sind an assignment has no result
+
     return null;
   }
 
