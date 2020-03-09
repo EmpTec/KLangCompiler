@@ -112,6 +112,9 @@ function forExample(end: int): int {
 
 ```
 
+## Tail Call Optimized
+Recursive tail calls are optimized at compile time.
+
 ## Statically typed
 KLang statically verifies the integrity of your code. These checks include:
 - Type checking
@@ -123,6 +126,7 @@ KLang statically verifies the integrity of your code. These checks include:
 ### Data Types
 - Integer "int"
 - Boolean "bool"
+- Floats  "float"
 
 ### Examples
 You can declare types for parameters, return values and variables
