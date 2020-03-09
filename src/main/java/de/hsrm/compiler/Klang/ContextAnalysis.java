@@ -176,6 +176,11 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int col = ctx.start.getCharPositionInLine();
     Type declaredType = Type.getByName(ctx.type_annotation().type().getText());
 
+    if (declaredType.equals(Type.getVoidType())) {
+      String error = "Type " + declaredType.getName() + " can not be used to declare variables.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
+
     if (!declaredType.isPrimitiveType() && this.structs.get(declaredType.getName()) == null) {
       String error = "Type " + declaredType.getName() + " not defined.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
@@ -244,10 +249,21 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
 
   @Override
   public Node visitReturn_statement(KlangParser.Return_statementContext ctx) {
+    if (currentDeclaredReturnType.equals(Type.getVoidType())) {
+      ReturnStatement result = new ReturnStatement();
+      result.line = ctx.start.getLine();
+      result.type = Type.getVoidType();
+      result.col = ctx.start.getCharPositionInLine();
+      if (ctx.expression() != null) {
+        String error = "Cannot return an expression from a void function.";
+        throw new RuntimeException(Helper.getErrorPrefix(result.line, result.col) + error);
+      }
+      return result;
+    }
     Expression expression = (Expression) this.visit(ctx.expression());
     ReturnStatement result = new ReturnStatement(expression);
-    result.type = expression.type;
     result.line = ctx.start.getLine();
+    result.type = expression.type;
     result.col = ctx.start.getCharPositionInLine();
     return result;
   }
@@ -721,7 +737,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     Type returnType = Type.getByName(ctx.returnType.type().getText());
     this.currentDeclaredReturnType = returnType;
 
-    if (!returnType.isPrimitiveType() && this.structs.get(returnType.getName()) == null) {
+    if (!returnType.isPrimitiveType() && this.structs.get(returnType.getName()) == null && !returnType.equals(Type.getVoidType())) {
       String error = "Type " + returnType.getName() + " not defined.";
       throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
     }
@@ -766,6 +782,11 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
     int line = ctx.start.getLine();
     int col = ctx.start.getCharPositionInLine();
     Type type = Type.getByName(ctx.type_annotation().type().getText());
+
+    if (type.equals(Type.getVoidType())) {
+      String error = "Type " + type.getName() + " cannot be used to declare a parameter.";
+      throw new RuntimeException(Helper.getErrorPrefix(line, col) + error);
+    }
 
     if (!type.isPrimitiveType() && this.structs.get(type.getName()) == null) {
       String error = "Type " + type.getName() + " not defined.";

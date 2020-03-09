@@ -413,6 +413,9 @@ public class EvalVisitor implements Visitor<Value> {
 
   @Override
   public Value visit(ReturnStatement e) {
+    if (e.expression == null) {
+      return new Value(null, Type.getVoidType());
+    }
     return e.expression.welcome(this);
   }
 

@@ -589,7 +589,9 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(ReturnStatement e) {
-    e.expression.welcome(this);
+    if (e.expression != null) {
+      e.expression.welcome(this);
+    }
     this.ex.write("    movq %rbp, %rsp\n");
     this.ex.write("    popq %rbp\n");
     this.ex.write("    ret\n");

@@ -29,7 +29,7 @@ parameter
   ;
 
 braced_block
-  : OBRK statement+ CBRK
+  : OBRK (statement | functionCall SCOL)+ CBRK
   ;
 
 
@@ -69,7 +69,7 @@ field_assignment
   ;
 
 return_statement
-  : RETURN expression SCOL
+  : RETURN expression? SCOL
   ;
 
 destroy_statement
@@ -116,6 +116,7 @@ type
   | BOOLEAN
   | FLOAT
   | IDENT
+  | VOID
   ;
 
 functionCall
@@ -181,6 +182,7 @@ DIV: '/';
 BOOLEAN: 'bool';
 INTEGER: 'int';
 FLOAT: 'float';
+VOID: 'void';
 
 INTEGER_LITERAL
   : [0-9]+

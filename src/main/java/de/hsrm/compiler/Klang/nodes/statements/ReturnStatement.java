@@ -11,6 +11,10 @@ public class ReturnStatement extends Statement {
         this.expression = expression;
     }
 
+    public ReturnStatement() {
+      this.expression = null;    
+    }
+
     @Override
     public <R> R welcome(Visitor<R> v) {
         return v.visit(this);

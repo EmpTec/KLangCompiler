@@ -194,7 +194,9 @@ class GetVars implements Visitor<Void> {
 
   @Override
   public Void visit(ReturnStatement e) {
-    e.expression.welcome(this);
+    if (e.expression != null) {
+      e.expression.welcome(this);
+    }
     return null;
   }
 

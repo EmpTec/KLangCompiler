@@ -12,6 +12,7 @@ import java.util.HashSet;
 
 import de.hsrm.compiler.Klang.nodes.Node;
 import de.hsrm.compiler.Klang.nodes.StructDefinition;
+import de.hsrm.compiler.Klang.types.Type;
 import de.hsrm.compiler.Klang.visitors.*;
 import de.hsrm.compiler.Klang.helper.*;
 
@@ -115,7 +116,8 @@ public class Klang {
       PrettyPrintVisitor.ExWriter ex = new PrettyPrintVisitor.ExWriter(w);
       PrettyPrintVisitor printVisitor = new PrettyPrintVisitor(ex);
       root.welcome(printVisitor);
-      System.out.println(w.toString());
+      generateOutput(out, w.toString());
+      return;
     }
 
     if (evaluate) {
@@ -123,7 +125,11 @@ public class Klang {
       System.out.println("\nEvaluating the source code:");
       EvalVisitor evalVisitor = new EvalVisitor(structs);
       Value result = root.welcome(evalVisitor);
-      generateOutput(out, "Result was: " + result.asObject().toString());
+      if (result.type.equals(Type.getVoidType())) {
+        generateOutput(out, "Result was void");
+      } else {
+        generateOutput(out, "Result was: " + result.asObject().toString());
+      }
       return;
     }
 

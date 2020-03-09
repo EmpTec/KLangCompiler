@@ -20,12 +20,17 @@ public abstract class Type {
     return NullType.getType();
   }
 
+  public static VoidType getVoidType() {
+    return VoidType.getType();
+  }
+
   public static Type getByName(String name) {
     switch (name) {
       case "bool": return getBooleanType();
       case "int": return getIntegerType();
       case "float": return getFloatType();
       case "null": return getNullType();
+      case "void": return getVoidType();
       default: return new StructType(name);
     }
   }
