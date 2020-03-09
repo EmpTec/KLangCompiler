@@ -568,6 +568,11 @@ public class GenASM implements Visitor<Void> {
     if (e.expression != null) {
       e.expression.welcome(this);
       int offset = this.env.get(e.name);
+      
+      if (e.expression.type.equals(Type.getFloatType())) {
+        this.ex.write("    movq %xmm0, %rax\n");
+      }
+
       this.ex.write("    movq %rax, " + offset + "(%rbp)\n");
     }
     return null;
