@@ -695,16 +695,20 @@ public class GenASM implements Visitor<Void> {
   public Void visit(FunctionCall e) {
     if (e.isTailRecursive) {
 
-      // Visit the arguments and move them into the location of the corresponding local var
+      // Visit the arguments and move them into the stack
       for(int i = 0; i < e.arguments.length; i++) {
         e.arguments[i].welcome(this);
-        int offset = this.env.get(this.currentFunctionParams[i].name);
 
         if (e.arguments[i].type.equals(Type.getFloatType())) {
           this.ex.write("    movq %xmm0, %rax\n");
         }
 
-        this.ex.write("    movq %rax, " + offset + "(%rbp)\n");
+        this.ex.write("    pushq %rax\n");
+      }
+
+      // push args into local var locations, last arg is ontop of the stack
+      for (int i = e.arguments.length - 1; i >= 0; i--) {
+        this.ex.write("    popq " + this.env.get(this.currentFunctionParams[i].name) + "(%rbp)\n");
       }
 
       this.ex.write("    jmp .L" + this.currentFunctionStartLabel + "\n");
