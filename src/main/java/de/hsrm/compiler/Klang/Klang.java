@@ -46,7 +46,7 @@ public class Klang {
       System.out.println("Last argument must be file");
       System.out.println("");
       System.out.println("Arguments:");
-      System.out.println("--out <file>:\t File to write to");
+      System.out.println("--o <file>:\t File to write to");
       System.out.println("--evaluate:\t Evaluates the given source code");
       System.out.println("--pretty:\t Pretty print the given source code");
       System.out
@@ -115,7 +115,8 @@ public class Klang {
       PrettyPrintVisitor.ExWriter ex = new PrettyPrintVisitor.ExWriter(w);
       PrettyPrintVisitor printVisitor = new PrettyPrintVisitor(ex);
       root.welcome(printVisitor);
-      System.out.println(w.toString());
+      generateOutput(out, w.toString());
+      return;
     }
 
     if (evaluate) {
