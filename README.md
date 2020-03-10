@@ -5,11 +5,10 @@ This is the project for Klang - the Kaiser language.
 This code was in equal parts developed by `Dennis Kaiser` and `Marvin Kaiser` at the RheinMain University of Applied Sciences for the Compilers course. 
 
 # Usage
-Pass source code via stdin
-
 example call to print help `java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang -h`
-
+example call: `java -cp <jar> <cp> -out <input> <output>`
 Arguments:
+- -out <file>   File to write to
 - -h               Print this help
 - --evaluate:      Evaluates the given source code
 - --pretty:        Pretty print the given source code
@@ -23,7 +22,46 @@ The makefile can be used to perform various functions more easily:
 - `make pretty` prettifies code.k and writes to pretty.k
 - `make eval` evaluates code.k
 - `make test` runs tests from src/test/
+- `make testJava` runs JUnit tests
 - `make cleanTests` cleans files generated from tests
+
+# Boilerplate Example
+A simple program in the KLang Language consits of some struct definitions and some function definition and a single expression that is used as the start for the compilation
+```
+struct node {
+  value: int;
+  tail: node;
+}
+
+function makeList(anz: int): node {
+  if (anz == 0) {
+    return naught;
+  }
+  return create node(anz - 1, makeList(anz - 1));
+}
+
+function get(ll: node, index: int): int {
+  if (index == 0 || ll == naught) {
+    return ll.value;
+  } else {
+    return get(ll.tail, index - 1);
+  }
+}
+
+function sum(list: node, length: int): int {
+  if (length == 0) {
+    return list.value;
+  }
+  return list.value + sum(list.tail, length -1);
+}
+
+function init(pos: int): int {
+  let n: node = makeList(5);
+  return sum(n, pos);
+}
+
+init(0);
+```
 
 # Functionality
 The KLang compiler supports generation of AMD64 assembly code, as well as prettifying and evaluating the KLang code.
@@ -44,9 +82,9 @@ The following simple expressions are supported. Expressions need to be put in pa
 
 ### Examples:
 ```
-(5 + 4)
-(8 % 2)
-(8 == 0)
+5 + 4
+8 % 2
+8 == 0
 ```
 
 ## Functions
