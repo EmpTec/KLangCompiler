@@ -1,12 +1,12 @@
 package de.hsrm.compiler.Klang.visitors;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import de.hsrm.compiler.Klang.asm.ASM;
 import de.hsrm.compiler.Klang.helper.Helper;
 import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
@@ -17,47 +17,6 @@ import de.hsrm.compiler.Klang.nodes.statements.*;
 import de.hsrm.compiler.Klang.types.Type;
 
 public class GenASM implements Visitor<Void> {
-
-  public static class ExWriter {
-    Writer w;
-    String indent = "";
-
-    void addIndent() {
-      indent = indent + "  ";
-    }
-
-    void subIndent() {
-      indent = indent.substring(2);
-    }
-
-    void nl() {
-      write("\n" + indent);
-    }
-
-    int lbl = 0;
-
-    int next() {
-      return lbl++;
-    }
-
-    public ExWriter(Writer w) {
-      this.w = w;
-    }
-
-    void lnwrite(Object o) {
-      nl();
-      write(o);
-    }
-
-    void write(Object o) {
-      try {
-        w.write(o + "");
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
   private class FloatWriter {
     private StringBuilder sb = new StringBuilder();
     private int id = -1;
@@ -104,7 +63,7 @@ public class GenASM implements Visitor<Void> {
     }
   }
 
-  public ExWriter ex;
+  private ASM asm;
   private FloatWriter fw = new FloatWriter();
   private String mainName;
   Map<String, Integer> env = new HashMap<>();
@@ -112,81 +71,81 @@ public class GenASM implements Visitor<Void> {
   Set<String> vars;
   String[] registers = { "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9" };
   String[] floatRegisters = { "%xmm0", "%xmm1", "%xmm2", "%xmm3", "%xmm4", "%xmm5", "%xmm6", "%xmm7" };
-  private int lCount = 0; // Invariante: lCount ist benutzt
+  private int lCount = 0; // Invariant: lCount is used
   private int currentFunctionStartLabel = 0;
   private Parameter[] currentFunctionParams;
-
-  private void intToFloat(String src, String dst) {
-    this.ex.write("    cvtsi2sd " + src + ", " + dst + "\n");
-  }
 
   private boolean prepareRegisters(Expression lhs, Expression rhs) {
     boolean lhsIsFloat = lhs.type.equals(Type.getFloatType());
     boolean rhsIsFloat = rhs.type.equals(Type.getFloatType());
     if (lhsIsFloat && rhsIsFloat) {
       lhs.welcome(this);
-      this.ex.write("    movsd %xmm0, %xmm2\n");
+      asm.mov("sd", "%xmm0", "%xmm2");
       rhs.welcome(this);
-      this.ex.write("    movsd %xmm0, %xmm1\n");
-      this.ex.write("    movsd %xmm2, %xmm0\n");
+      asm.mov("sd", "%xmm2", "%xmm0");
+      asm.mov("%xmm2", "%xmm0");
       return true;
     } else if (lhsIsFloat && !rhsIsFloat) {
       lhs.welcome(this);
       rhs.welcome(this);
-      this.intToFloat("%rax", "%xmm1");
+      asm.cvtsi2sd("%rax", "%xmm1");
       return true;
     } else if (!lhsIsFloat && rhsIsFloat) {
       lhs.welcome(this);
-      this.intToFloat("%rax", "%xmm2");
+      asm.cvtsi2sd("%rax", "%xmm2");
       rhs.welcome(this);
-      this.ex.write("    movsd %xmm0, %xmm1\n");
-      this.ex.write("    movsd %xmm2, %xmm0\n");
+      asm.mov("sd", "%xmm0", "%xmm1");
+      asm.mov("sd", "%xmm2", "%xmm0");
       return true;
     } else {
       lhs.welcome(this);
-      this.ex.write("    pushq %rax\n");
+      asm.push("%rax");
       rhs.welcome(this);
-      this.ex.write("    movq %rax, %rbx\n");
-      this.ex.write("    popq %rax\n");
+      asm.mov("%rax", "%rbx");
+      asm.pop("%rax");
       return false;
     }
   }
 
-  public GenASM(ExWriter ex, String mainName, Map<String, StructDefinition> structs) {
-    this.ex = ex;
+  public GenASM(String mainName, Map<String, StructDefinition> structs) {
     this.mainName = mainName;
     this.structs = structs;
+    this.asm = new ASM();
   }
 
-  public GenASM(ExWriter ex, Map<String, StructDefinition> structs) {
-    this(ex, "main", structs);
+  public GenASM(Map<String, StructDefinition> structs) {
+    this("main", structs);
+  }
+
+  public String toAsm() {
+    return asm.toAsm();
   }
 
   @Override
   public Void visit(IntegerExpression e) {
-    this.ex.write("    movq $" + e.value + ", %rax\n");
+    asm.mov(e.value, "%rax");
     return null;
   }
 
   @Override
   public Void visit(FloatExpression e) {
     String floatLabel = fw.getFloat(e.value);
-    this.ex.write("    movsd " + floatLabel + "(%rip), %xmm0\n");
+    asm.mov("sd", floatLabel, "%rip", "%xmm0");
     return null;
   }
 
   @Override
   public Void visit(BooleanExpression e) {
-    this.ex.write("    movq $" + (e.value ? 1 : 0) + ", %rax\n");
+    asm.mov(e.value ? 1 : 0, "%rax");
     return null;
   }
 
   @Override
   public Void visit(Variable e) {
     if (e.type.equals(Type.getFloatType())) {
-      this.ex.write("    movsd " + this.env.get(e.name) + "(%rbp), %xmm0\n");
+      asm.mov("sd", this.env.get(e.name), "%rbp", "%xmm0");
     } else {
-      this.ex.write("    movq " + this.env.get(e.name) + "(%rbp), %rax\n");
+      asm.mov("q", this.env.get(e.name), "%rbp", "%rax");
     }
     return null;
   }
@@ -198,18 +157,18 @@ public class GenASM implements Visitor<Void> {
 
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    ucomisd %xmm1, %xmm0\n");
+      asm.ucomi("sd", "%xmm1", "xmm0");
     } else {
-      this.ex.write("    cmp %rbx, %rax\n");
+      asm.cmp("%rbx", "%rax");
     }
-    this.ex.write("    je .L" + lblTrue + "\n");
+    asm.je(lblTrue);
     // false
-    this.ex.write("    movq $0, %rax\n");
-    this.ex.write("    jmp .L" + lblEnd + "\n");
-    this.ex.write(".L" + lblTrue + ":\n");
+    asm.mov(0, "%rax");
+    asm.jmp(lblEnd);
+    asm.label(lblTrue);
     // true
-    this.ex.write("   movq $1, %rax\n");
-    this.ex.write(".L" + lblEnd + ":\n");
+    asm.mov(1, "%rax");
+    asm.label(lblEnd);
     return null;
   }
 
@@ -220,18 +179,18 @@ public class GenASM implements Visitor<Void> {
 
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    ucomisd %xmm0, %xmm1\n");
+      asm.ucomi("sd", "%xmm0", "%xmm1");
     } else {
-      this.ex.write("    cmp %rax, %rbx\n");
+      asm.cmp("%rax", "%rbx");
     }
-    this.ex.write("    jne .L" + lblTrue + "\n");
+    asm.jne(lblTrue);
     // false
-    this.ex.write("    movq $0, %rax\n");
-    this.ex.write("    jmp .L" + lblEnd + "\n");
-    this.ex.write(".L" + lblTrue + ":\n");
+    asm.mov(0, "%rax");
+    asm.jmp(lblEnd);
+    asm.label(lblTrue);
     // true
-    this.ex.write("   movq $1, %rax\n");
-    this.ex.write(".L" + lblEnd + ":\n");
+    asm.mov(1, "%rax");
+    asm.label(lblEnd);
     return null;
   }
 
@@ -242,18 +201,18 @@ public class GenASM implements Visitor<Void> {
 
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    ucomisd %xmm1, %xmm0\n");
+      asm.ucomi("sd", "%xmm1", "%xmm0");
     } else {
-      this.ex.write("    cmp %rbx, %rax\n");
+      asm.cmp("%rbx", "%rax");
     }
-    this.ex.write("    jg .L" + lblTrue + "\n");
+    asm.jg(lblTrue);
     // false
-    this.ex.write("    movq $0, %rax\n");
-    this.ex.write("    jmp .L" + lblEnd + "\n");
-    this.ex.write(".L" + lblTrue + ":\n");
+    asm.mov(0, "%rax");
+    asm.jmp(lblEnd);
+    asm.label(lblTrue);
     // true
-    this.ex.write("   movq $1, %rax\n");
-    this.ex.write(".L" + lblEnd + ":\n");
+    asm.mov(1, "%rax");
+    asm.label(lblEnd);
     return null;
   }
 
@@ -264,18 +223,18 @@ public class GenASM implements Visitor<Void> {
 
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    ucomisd %xmm1, %xmm0\n");
+      asm.ucomi("sd", "%xmm1", "xmm0");
     } else {
-      this.ex.write("    cmp %rbx, %rax\n");
+      asm.cmp("%rbx", "%rax");
     }
-    this.ex.write("    jge .L" + lblTrue + "\n");
+    asm.jge(lblTrue);
     // false
-    this.ex.write("    movq $0, %rax\n");
-    this.ex.write("    jmp .L" + lblEnd + "\n");
-    this.ex.write(".L" + lblTrue + ":\n");
+    asm.mov(0, "%rax");
+    asm.jmp(lblEnd);
+    asm.label(lblTrue);
     // true
-    this.ex.write("    movq $1, %rax\n");
-    this.ex.write(".L" + lblEnd + ":\n");
+    asm.mov(1, "%rax");
+    asm.label(lblEnd);
     return null;
   }
 
@@ -286,18 +245,18 @@ public class GenASM implements Visitor<Void> {
 
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    ucomisd %xmm1, %xmm0\n");
+      asm.ucomi("sd", "%xmm1", "%xmm0");
     } else {
-      this.ex.write("    cmp %rbx, %rax\n");
+      asm.cmp("%rbx", "%rax");
     }
-    this.ex.write("    jl .L" + lblTrue + "\n");
+    asm.jl(lblTrue);
     // false
-    this.ex.write("    movq $0, %rax\n");
-    this.ex.write("    jmp .L" + lblEnd + "\n");
-    this.ex.write(".L" + lblTrue + ":\n");
+    asm.mov(0, "%rax");
+    asm.jmp(lblEnd);
+    asm.label(lblTrue);
     // true
-    this.ex.write("    movq $1, %rax\n");
-    this.ex.write(".L" + lblEnd + ":\n");
+    asm.mov(1, "%rax");
+    asm.label(lblEnd);
     return null;
   }
 
@@ -308,18 +267,18 @@ public class GenASM implements Visitor<Void> {
 
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    ucomisd %xmm1, %xmm0\n");
+      asm.ucomi("sd", "%xmm1", "%xmm0");
     } else {
-      this.ex.write("    cmp %rbx, %rax\n");
+      asm.cmp("%rbx", "%rax");
     }
-    this.ex.write("    jle .L" + lblTrue + "\n");
+    asm.jle(lblTrue);
     // false
-    this.ex.write("    movq $0, %rax\n");
-    this.ex.write("    jmp .L" + lblEnd + "\n");
-    this.ex.write(".L" + lblTrue + ":\n");
+    asm.mov(0, "%rax");
+    asm.jmp(lblEnd);
+    asm.label(lblTrue);
     // true
-    this.ex.write("    movq $1, %rax\n");
-    this.ex.write(".L" + lblEnd + ":\n");
+    asm.mov(1, "%rax");
+    asm.label(lblEnd);
     return null;
   }
 
@@ -327,9 +286,9 @@ public class GenASM implements Visitor<Void> {
   public Void visit(AdditionExpression e) {
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    addsd %xmm1, %xmm0\n");
+      asm.add("sd", "%xmm1", "%xmm0");
     } else {
-      this.ex.write("    addq %rbx, %rax\n");
+      asm.add("%rbx", "%rax");
     }
     return null;
   }
@@ -338,9 +297,9 @@ public class GenASM implements Visitor<Void> {
   public Void visit(SubstractionExpression e) {
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    subsd %xmm1, %xmm0\n");
+      asm.sub("sd", "%xmm1", "%xmm0");
     } else {
-      this.ex.write("    subq %rbx, %rax\n");
+      asm.sub("%rbx", "%rax");
     }
     return null;
   }
@@ -349,9 +308,9 @@ public class GenASM implements Visitor<Void> {
   public Void visit(MultiplicationExpression e) {
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    mulsd %xmm1, %xmm0\n");
+      asm.mul("sd", "%xmm1", "%xmm0");
     } else {
-      this.ex.write("    imulq %rbx, %rax\n");
+      asm.imul("%rbx", "%rax");
     }
     return null;
   }
@@ -360,10 +319,10 @@ public class GenASM implements Visitor<Void> {
   public Void visit(DivisionExpression e) {
     boolean isFloatOperation = this.prepareRegisters(e.lhs, e.rhs);
     if (isFloatOperation) {
-      this.ex.write("    divsd %xmm1, %xmm0\n");
+      asm.div("sd", "%xmm1", "%xmm0");
     } else {
-      this.ex.write("    cqto\n"); // sign extend rax into rdx since we're dealing with signed values
-      this.ex.write("    idiv %rbx\n"); // %rax/%rbx, quotient now in %rax
+      asm.cqto();
+      asm.idiv("%rbx");
     }
     return null;
   }
@@ -371,13 +330,13 @@ public class GenASM implements Visitor<Void> {
   @Override
   public Void visit(ModuloExpression e) {
     e.lhs.welcome(this);
-    this.ex.write("    pushq %rax\n");
+    asm.push("%rax");
     e.rhs.welcome(this);
-    this.ex.write("    movq %rax, %rbx\n");
-    this.ex.write("    popq %rax\n");
-    this.ex.write("    cqto\n"); // sign extend rax into rdx since we're dealing with signed values
-    this.ex.write("    idiv %rbx\n"); // %rax/%rbx, remainder now in %rdx
-    this.ex.write("    movq %rdx, %rax\n");
+    asm.mov("%rax", "%rbx");
+    asm.pop("%rax");
+    asm.cqto();
+    asm.idiv("%rbx");
+    asm.mov("%rdx", "%rax");
     return null;
   }
 
@@ -386,10 +345,10 @@ public class GenASM implements Visitor<Void> {
     e.lhs.welcome(this);
     if (e.lhs.type.equals(Type.getFloatType())) {
       String floatLabel = fw.getNegateFloat();
-      this.ex.write("    movsd " + floatLabel + "(%rip), %xmm1\n");
-      this.ex.write("    xorpd   %xmm1, %xmm0\n");
+      asm.mov("sd", floatLabel, "%rip", "%xmm1");
+      asm.xor("pd", "%xmm1", "%xmm0");
     } else {
-      this.ex.write("    neg %rax\n");
+      asm.neg("%rax");
     }
     return null;
   }
@@ -404,28 +363,28 @@ public class GenASM implements Visitor<Void> {
     // Wenn LHS != 0 bedeutet das true
     // also können wir direkt sagen dass das Ergebnis true ist
     e.lhs.welcome(this);
-    this.ex.write("    cmpq $0, %rax\n");
-    this.ex.write("    jne .L" + lblTrue + "\n");
+    asm.cmp("q", 0, "%rax");
+    asm.jne(lblTrue);
 
     // LHS war false, also werte RHS aus
     // Wenn RHS == 0 bedeutet das false,
     // also ist das Gesamtergebnis false
     e.rhs.welcome(this);
-    this.ex.write("    cmpq $0, %rax\n");
-    this.ex.write("    je .L" + lblFalse + "\n");
+    asm.cmp("q", 0, "%rax");
+    asm.je(lblFalse);
 
     // Die Expression wertet zu true aus
     // Springe am false Teil vorbei
-    this.ex.write(".L" + lblTrue + ":\n");
-    this.ex.write("    movq $1, %rax\n");
-    this.ex.write("    jmp .L" + lblEnd + "\n");
+    asm.label(lblTrue);
+    asm.mov(1, "%rax");
+    asm.jmp(lblEnd);
 
     // Die Expressoin wertet zu false aus
-    this.ex.write(".L" + lblFalse + ":\n");
-    this.ex.write("    movq $0, %rax\n");
+    asm.label(lblFalse);
+    asm.mov(0, "%rax");
 
     // Das hier ist das ende
-    this.ex.write(".L" + lblEnd + ":\n");
+    asm.label(lblEnd);
     return null;
   }
 
@@ -439,28 +398,28 @@ public class GenASM implements Visitor<Void> {
     // Wenn LHS == 0, bedeutet das false
     // also können wir direkt sagen dass das Ergebnis false ist
     e.lhs.welcome(this);
-    this.ex.write("    cmpq $0, %rax\n");
-    this.ex.write("    je .L" + lblFalse + "\n");
+    asm.cmp("q", 0, "%rax");
+    asm.je(lblFalse);
 
     // LHS war true, also werte RHS aus.
     // Wenn RHS == 0, bedeutet das false
     // also ist das Gesamtergebnis false
     e.rhs.welcome(this);
-    this.ex.write("    cmpq $0, %rax\n");
-    this.ex.write("    je .L" + lblFalse + "\n");
+    asm.cmp("q", 0, "%rax");
+    asm.je(lblFalse);
 
     // Die Expression wertet zu true aus
     // Springe am false Teil vorbei
-    this.ex.write(".L" + lblTrue + ":\n");
-    this.ex.write("    movq $1, %rax\n");
-    this.ex.write("    jmp .L" + lblEnd + "\n");
+    asm.label(lblTrue);
+    asm.mov(1, "%rax");
+    asm.jmp(lblEnd);
 
     // Die Expressoin wertet zu false aus
-    this.ex.write(".L" + lblFalse + ":\n");
-    this.ex.write("    movq $0, %rax\n");
+    asm.label(lblFalse);
+    asm.mov(0, "%rax");
 
     // Das hier ist das ende
-    this.ex.write(".L" + lblEnd + ":\n");
+    asm.label(lblEnd);
     return null;
   }
 
@@ -473,21 +432,21 @@ public class GenASM implements Visitor<Void> {
     // Wenn LHS != 0 bedeutet das true, also jumpe zum false Teil
     // Wenn nicht, falle durch zum true Teil
     e.lhs.welcome(this);
-    this.ex.write("    cmpq $0, %rax\n");
-    this.ex.write("    jne .L" + lblFalse + "\n");
+    asm.cmp("q", 0, "%rax");
+    asm.jne(lblFalse);
 
     // Hier ist das Ergebnis true
     // Springe am false Teil vorbei
-    this.ex.write("    movq $1, %rax\n");
-    this.ex.write("    jmp .L" + lblEnd + "\n");
+    asm.mov(1, "%rax");
+    asm.jmp(lblEnd);
 
     // Hier ist das Ergebnis false
     // Falle zum Ende durch
-    this.ex.write(".L" + lblFalse + ":\n");
-    this.ex.write("movq $0, %rax\n");
+    asm.label(lblFalse);
+    asm.mov(0, "%rax");
 
     // Hier ist das Ende
-    this.ex.write(".L" + lblEnd + ":\n");
+    asm.label(lblEnd);
     return null;
   }
 
@@ -497,25 +456,25 @@ public class GenASM implements Visitor<Void> {
     int lblEnd = ++lCount;
     boolean hasElse = e.alt != null || e.elif != null;
     e.cond.welcome(this);
-    this.ex.write("    cmp $0, %rax\n");
+    asm.cmp("", 0, "%rax");
     // in case of cond evaluating to false, jump to else/elif
     // Jump to end if there is no else part, this saves a label declaration
     if (hasElse) {
-      this.ex.write("    jz .L" + lblElse + "\n");
+      asm.jz(lblElse);
     } else {
-      this.ex.write("    jz .L" + lblEnd + "\n");
+      asm.jz(lblEnd);
     }
     e.then.welcome(this);
     if (hasElse) {
-      this.ex.write("    jmp .L" + lblEnd + "\n");
-      this.ex.write(".L" + lblElse + ":\n");
+      asm.jmp(lblEnd);
+      asm.label(lblElse);
       if (e.alt != null) {
         e.alt.welcome(this);
       } else {
         e.elif.welcome(this);
       }
     }
-    this.ex.write(".L" + lblEnd + ":\n");
+    asm.label(lblEnd);
     return null;
   }
 
@@ -523,24 +482,24 @@ public class GenASM implements Visitor<Void> {
   public Void visit(WhileLoop e) {
     int lblCond = ++lCount;
     int lblEnd = ++lCount;
-    this.ex.write(".L" + lblCond + ":\n");
+    asm.label(lblCond);
     e.cond.welcome(this);
-    this.ex.write("    cmp $0, %rax\n");
-    this.ex.write("    jz .L" + lblEnd + "\n");
+    asm.cmp("", 0, "%rax");
+    asm.jz(lblEnd);
     e.block.welcome(this);
-    this.ex.write("    jmp .L" + lblCond + "\n");
-    this.ex.write(".L" + lblEnd + ":\n");
+    asm.jmp(lblCond);
+    asm.label(lblEnd);
     return null;
   }
 
   @Override
   public Void visit(DoWhileLoop e) {
     int lblStart = ++lCount;
-    this.ex.write(".L" + lblStart + ":\n");
+    asm.label(lblStart);
     e.block.welcome(this);
     e.cond.welcome(this);
-    this.ex.write("    cmp $0, %rax\n");
-    this.ex.write("    jnz .L" + lblStart + "\n");
+    asm.cmp("", 0, "%rax");
+    asm.jnz(lblStart);
     return null;
   }
 
@@ -549,15 +508,14 @@ public class GenASM implements Visitor<Void> {
     int lblStart = ++lCount;
     int lblEnd = ++lCount;
     e.init.welcome(this);
-    this.ex.write(".L" + lblStart + ":\n");
+    asm.label(lblStart);
     e.condition.welcome(this);
-    this.ex.write("    cmp $0, %rax\n");
-    this.ex.write("    jz .L" + lblEnd + "\n");
+    asm.cmp("", 0, "%rax");
+    asm.jz(lblEnd);
     e.block.welcome(this);
     e.step.welcome(this);
-    this.ex.write("    jmp .L" + lblStart + "\n");
-    this.ex.write(".L" + lblEnd + ":\n");
-
+    asm.jmp(lblStart);
+    asm.label(lblEnd);
     return null;
   }
 
@@ -568,12 +526,12 @@ public class GenASM implements Visitor<Void> {
     if (e.expression != null) {
       e.expression.welcome(this);
       int offset = this.env.get(e.name);
-      
+
       if (e.expression.type.equals(Type.getFloatType())) {
-        this.ex.write("    movq %xmm0, %rax\n");
+        asm.mov("q", "%xmm0", "%rax");
       }
 
-      this.ex.write("    movq %rax, " + offset + "(%rbp)\n");
+      asm.mov("q", "%rax", offset, "%rbp");
     }
     return null;
   }
@@ -586,20 +544,20 @@ public class GenASM implements Visitor<Void> {
     // Determine where the result of this expression was placed into
     // and move it onto the stack from there
     if (e.expression.type.equals(Type.getFloatType())) {
-      this.ex.write("    movq %xmm0, " + offset + "(%rbp)\n");
+      asm.mov("q", "%xmm0", offset, "%rbp");
     } else {
-      this.ex.write("    movq %rax, " + offset + "(%rbp)\n");
+      asm.mov("q", "%rax", offset, "%rbp");
     }
-    
+
     return null;
   }
 
   @Override
   public Void visit(ReturnStatement e) {
     e.expression.welcome(this);
-    this.ex.write("    movq %rbp, %rsp\n");
-    this.ex.write("    popq %rbp\n");
-    this.ex.write("    ret\n");
+    asm.mov("%rbp", "%rsp");
+    asm.pop("%rbp");
+    asm.ret();
     return null;
   }
 
@@ -616,12 +574,10 @@ public class GenASM implements Visitor<Void> {
     int lblStart = ++lCount;
     this.currentFunctionStartLabel = lblStart;
     this.currentFunctionParams = e.parameters;
-    this.ex.write(".globl " + e.name + "\n");
-    this.ex.write(".type " + e.name + ", @function\n");
-    this.ex.write(e.name + ":\n");
-    this.ex.write("    pushq %rbp\n");
-    this.ex.write("    movq %rsp, %rbp\n");
-    this.ex.write(".L" + lblStart + ":\n");
+    asm.functionHead(e.name);
+    asm.push("%rbp");
+    asm.mov("%rsp", "%rbp");
+    asm.label(lblStart);
 
     // hole die anzahl der lokalen variablen
     this.vars = new TreeSet<String>();
@@ -661,19 +617,19 @@ public class GenASM implements Visitor<Void> {
         }
       }
     }
-    
+
     offset = 0;
     ri = 0;
     fi = 0;
     for (var param: registerParameters) {
       if (param.type.equals(Type.getFloatType())) {
-        this.ex.write("    movq "+ this.floatRegisters[fi] + ", %rax\n");
-        this.ex.write("    pushq %rax\n");
+        asm.mov(this.floatRegisters[fi], "%rax");
+        asm.push("%rax");
         offset -= 8;
         this.env.put(param.name, offset); // negative, liegt unter aktuellem BP
         fi++;
       } else {
-        this.ex.write("    pushq " + this.registers[ri] + "\n");
+        asm.push(this.registers[ri]);
         offset -= 8;
         this.env.put(param.name, offset); // negative, liegt unter aktuellem BP
         ri++;
@@ -683,7 +639,7 @@ public class GenASM implements Visitor<Void> {
     // Reserviere Platz auf dem Stack für jede lokale variable
     for (String lok_var : vars) {
       offset -= 8;
-      this.ex.write("    pushq $0\n");
+      asm.push("q", 0);
       this.env.put(lok_var, offset);
     }
 
@@ -700,18 +656,18 @@ public class GenASM implements Visitor<Void> {
         e.arguments[i].welcome(this);
 
         if (e.arguments[i].type.equals(Type.getFloatType())) {
-          this.ex.write("    movq %xmm0, %rax\n");
+          asm.mov("%xmm0", "%rax0");
         }
 
-        this.ex.write("    pushq %rax\n");
+        asm.push("%rax");
       }
 
       // push args into local var locations, last arg is ontop of the stack
       for (int i = e.arguments.length - 1; i >= 0; i--) {
-        this.ex.write("    popq " + this.env.get(this.currentFunctionParams[i].name) + "(%rbp)\n");
+        asm.pop(this.env.get(this.currentFunctionParams[i].name) + "(%rbp)");
       }
 
-      this.ex.write("    jmp .L" + this.currentFunctionStartLabel + "\n");
+      asm.jmp(this.currentFunctionStartLabel);
       return null;
     }
 
@@ -724,12 +680,12 @@ public class GenASM implements Visitor<Void> {
       // Mapping arguments index -> all purpose registers index
       int[] rIdxs = new int[this.registers.length];
       int ri = -1;
-      
+
       // Mapping arguments index -> stack
       ArrayList<Integer> stackIdxs = new ArrayList<Integer>();
 
       // Go through arguments
-      // sort them into the memory regions they go when being passed to functions 
+      // sort them into the memory regions they go when being passed to functions
       for (int i = 0; i < e.arguments.length; i++) {
         var arg = e.arguments[i];
         if (arg.type.equals(Type.getFloatType())) {
@@ -757,10 +713,10 @@ public class GenASM implements Visitor<Void> {
       for (var arg : e.arguments) {
         arg.welcome(this);
         if (arg.type.equals(Type.getFloatType())) {
-          this.ex.write("    movq %xmm0, %rax\n");
-          this.ex.write("    pushq %rax\n");
+          asm.mov("%xmm0", "%rax");
+          asm.push("%rax");
         } else {
-          this.ex.write("    pushq %rax\n");
+          asm.push("%rax");
         }
       }
 
@@ -768,14 +724,14 @@ public class GenASM implements Visitor<Void> {
       for (int i = 0; i <= fi; i++) {
         int indexInArguments = xmmIdxs[i];
         int rspOffset = (((e.arguments.length - indexInArguments) - 1) * 8);
-        this.ex.write("    movsd " + rspOffset + "(%rsp),  " + this.floatRegisters[i] + "\n");
+        asm.mov("sd", rspOffset, "%rsp", this.floatRegisters[i]);
       }
 
       // Move primitives from stack to all purpose registers
       for (int i = 0; i <= ri; i++) {
         int indexInArguments = rIdxs[i];
         int rspOffset = (((e.arguments.length - indexInArguments) - 1) * 8);
-        this.ex.write("    movq " + rspOffset + "(%rsp),  " + this.registers[i] + "\n");
+        asm.mov("q", rspOffset, "%rsp", this.registers[i]);
       }
 
       // Move everything else from a higher stack position to our stack frame start
@@ -784,39 +740,34 @@ public class GenASM implements Visitor<Void> {
         stackStartOffset -= 8;
         int indexInArguments = stackIdxs.get(i);
         int rspOffset = (((e.arguments.length - indexInArguments) - 1) * 8);
-        this.ex.write("    movq " + rspOffset + "(%rsp), %rax\n");
-        this.ex.write("    movq %rax, " + stackStartOffset + "(%rsp)\n");
+        asm.mov("q", rspOffset, "%rsp", "%rax");
+        asm.mov("q", "%rax", stackStartOffset, "%rsp");
       }
 
       // Rescue RSP
-      this.ex.write("    addq  $" + stackStartOffset + ", %rsp\n");
+      asm.add("q", stackStartOffset, "%rsp");
     }
 
-    this.ex.write("    call " + e.name + "\n");
+    asm.call(e.name);
     return null;
   }
 
   @Override
   public Void visit(Program e) {
-    this.ex.write(".text\n");
+    asm.text(".text");
     for (var func : e.funcs) {
       func.welcome(this);
-      this.ex.write("\n");
+      asm.newline();
     }
-    this.ex.write(".globl " + mainName + "\n");
-    this.ex.write(".type " + mainName + ", @function\n");
-    this.ex.write(mainName + ":\n");
-    this.ex.write("    pushq %rbp\n");
-    this.ex.write("    movq %rsp, %rbp\n");
+    asm.functionHead(mainName);
+    asm.push("%rbp");
+    asm.mov("%rsp", "%rbp");
     e.expression.welcome(this);
+    asm.mov("%rbp", "%rsp");
+    asm.pop("%rbp");
+    asm.ret();
 
-    this.ex.write("    movq %rbp, %rsp\n");
-    this.ex.write("    popq %rbp\n");
-    this.ex.write("    ret\n");
-
-    // PRINT FLOATS HERE
-    this.ex.write("\n");
-    this.ex.write(fw.getFloatSection());
+    asm.text(fw.getFloatSection());
     return null;
   }
 
@@ -845,21 +796,21 @@ public class GenASM implements Visitor<Void> {
     int offset = this.env.get(e.varName);
 
     // move struct address into rax
-    this.ex.write("    movq " + offset + "(%rbp), %rax\n");
+    asm.mov("q", offset, "%rbp", "%rax");
 
     // "follow" the first path element by moving the referenced value into rax
-    this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[0]) + "(%rax), %rax\n");
+    asm.mov("q", Helper.getFieldOffset(structDef, e.path[0]), "%rax", "%rax");
     for  (int i = 1; i < e.path.length; i++) {
       // "follow" the current path element
       structDef = this.structs.get(structDef.fields[Helper.getFieldIndex(structDef, e.path[i - 1])].type.getName());
-      this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[i]) + "(%rax), %rax\n");
+      asm.mov("q", Helper.getFieldOffset(structDef, e.path[i]), "%rax", "%rax");
     }
 
     // desired value now in rax
 
     // push rax to xmm0 if the result type is a float
     if (e.type.equals(Type.getFloatType())) {
-      this.ex.write("    movq %rax, %xmm0\n");
+      asm.mov("%rax", "%xmm0");
     }
 
     return null;
@@ -873,20 +824,20 @@ public class GenASM implements Visitor<Void> {
 
       // move float values from xmm0 to rax first
       if (arg.type.equals(Type.getFloatType())) {
-        this.ex.write("    movq %xmm0, %rax\n");
+        asm.mov("%xmm0", "%rax");
       }
 
-      this.ex.write("    pushq %rax\n");
+      asm.push("%rax");
     }
 
     // allocate heap memory by calling malloc
     var structDef = this.structs.get(e.structName);
-    this.ex.write("    movl $" + Helper.getFieldSizeBytes(structDef) + ", %edi\n");
-    this.ex.write("    call malloc@PLT\n"); // struct address now in rax
+    asm.mov("l", Helper.getFieldSizeBytes(structDef), "%edi");
+    asm.call("malloc@PLT");
 
     // push args into struct memory, last arg is ontop of the stack
     for (int i = e.args.length - 1; i >= 0; i--) {
-      this.ex.write("    popq " + Helper.getFieldOffset(structDef, i) + "(%rax)\n");
+      asm.pop(Helper.getFieldOffset(structDef, i) + "(%rax)");
     }
 
     return null;
@@ -894,14 +845,14 @@ public class GenASM implements Visitor<Void> {
 
   @Override
   public Void visit(NullExpression e) {
-    this.ex.write("    movq $0, %rax\n");
+    asm.mov("q", 0 , "%rax");
     return null;
   }
 
   @Override
   public Void visit(DestructorCall e) {
-    this.ex.write("    movq " +this.env.get(e.name) + "(%rbp), %rdi\n");
-    this.ex.write("    call free@PLT\n");
+    asm.mov("q", this.env.get(e.name), "%rbp", "%rdi");
+    asm.call("free@PLT");
     return null;
   }
 
@@ -915,25 +866,25 @@ public class GenASM implements Visitor<Void> {
 
     // Move it from xmm0 rax if its a flaot
     if (e.expression.type.equals(Type.getFloatType())) {
-      this.ex.write("    movq %xmm0, %rax\n");
+      asm.mov("%xmm0", "%rax");
     }
 
     // Push the expression onto the stack
-    this.ex.write("    pushq %rax\n");
+    asm.push("%rax");
 
     // move struct address into rax
-    this.ex.write("    movq " + offset + "(%rbp), %rax\n");
+    asm.mov("q", offset, "%rbp", "%rax");
 
-    // If there are at least two elements in the path, 
+    // If there are at least two elements in the path,
     // move the address of the next referenced struct into rax
     for  (int i = 1; i < e.path.length - 1; i++) {
       structDef = this.structs.get(structDef.fields[Helper.getFieldIndex(structDef, e.path[i - 1])].type.getName());
-      this.ex.write("    movq " + Helper.getFieldOffset(structDef, e.path[i]) + "(%rax), %rax\n");
+      asm.mov("q",  Helper.getFieldOffset(structDef, e.path[i]), "%rax", "%rax");
     }
 
     // pop the expression that is ontop of the stack into the field of the struct that has to be updated
-    this.ex.write("    popq " + Helper.getFieldOffset(structDef, fieldNameToUpdate) + "(%rax)\n");
-    this.ex.write("    movq $0, %rax\n"); // clear rax sind an assignment has no result
+    asm.pop(Helper.getFieldOffset(structDef, fieldNameToUpdate) + "(%rax)");
+    asm.mov("q", 0 , "%rax"); // clear rax since an assignment has no result
 
     return null;
   }
