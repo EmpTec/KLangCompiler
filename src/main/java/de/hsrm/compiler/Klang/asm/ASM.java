@@ -12,10 +12,6 @@ public class ASM {
     this.mnemonics = new ArrayList<Mnemonic>();
   }
 
-  public void push(String operand) {
-    mnemonics.add(new Push(operand));
-  }
-
   public void push(String dataType, int immediate) {
     mnemonics.add(new Push(dataType, immediate));
   }
@@ -24,20 +20,8 @@ public class ASM {
     mnemonics.add(new Push(dataType, operand));
   }
 
-  public void pop(String operand) {
-    mnemonics.add(new Pop(operand));
-  }
-
   public void pop(String dataType, String operand) {
     mnemonics.add(new Pop(dataType, operand));
-  }
-
-  public void mov(int immediate, String dst) {
-    mnemonics.add(new Mov(immediate, dst));
-  }
-
-  public void mov(String src, String dst) {
-    mnemonics.add(new Mov(src, dst));
   }
 
   public void mov(String dataType, String src, String dst) {
@@ -60,16 +44,12 @@ public class ASM {
     mnemonics.add(new Mov(dataType, immediate, dst));
   }
 
-  public void ucomi(String src, String dst) {
-    mnemonics.add(new Ucomi(src, dst));
-  }
-
   public void ucomi(String dataType, String src, String dst) {
     mnemonics.add(new Ucomi(dataType, src, dst));
   }
 
-  public void cmp(String src, String dst) {
-    mnemonics.add(new Cmp(src, dst));
+  public void cmp(String dataType, String src, String dst) {
+    mnemonics.add(new Cmp(dataType, src, dst));
   }
 
   public void cmp(String dataType, int immediate, String dst) {
@@ -156,10 +136,6 @@ public class ASM {
     mnemonics.add(new Label(labelPrefix, label));
   }
 
-  public void add(String src, String dst) {
-    mnemonics.add(new Add(src, dst));
-  }
-
   public void add(String dataType, String src, String dst) {
     mnemonics.add(new Add(dataType, src, dst));
   }
@@ -171,25 +147,13 @@ public class ASM {
   public void add(String dataType, int immediate, String dst) {
     mnemonics.add(new Add(dataType, immediate, dst));
   }
-
-  public void sub(String src, String dst) {
-    mnemonics.add(new Sub(src, dst));
-  }
   
   public void sub(String dataType, String src, String dst) {
     mnemonics.add(new Sub(dataType, src, dst));
   }
-
-  public void mul(String src, String dst) {
-    mnemonics.add(new Mul(src, dst));
-  }
   
   public void mul(String dataType, String src, String dst) {
     mnemonics.add(new Mul(dataType, src, dst));
-  }
-  
-  public void div(String src, String dst) {
-    mnemonics.add(new Div(src, dst));
   }
   
   public void div(String dataType, String src, String dst) {
@@ -200,12 +164,8 @@ public class ASM {
     mnemonics.add(new Idiv(dataType, operand));
   }
   
-  public void idiv(String operand) {
-    mnemonics.add(new Idiv(operand));
-  }
-  
-  public void imul(String src, String dst) {
-    mnemonics.add(new Imul(src, dst));
+  public void imul(String dataType, String src, String dst) {
+    mnemonics.add(new Imul(dataType, src, dst));
   }
 
   public void cqto() {
@@ -218,10 +178,6 @@ public class ASM {
 
   public void xor(String dataType, String src, String dst) {
     mnemonics.add(new Xor(dataType, src, dst));
-  }
-  
-  public void xor(String src, String dst) {
-    mnemonics.add(new Xor(src, dst));
   }
 
   public void neg(String operand) {

@@ -1,13 +1,8 @@
 package de.hsrm.compiler.Klang.asm.mnemonics;
 
 public class Add extends TwoOperandMnemonic {
-  public String dataType = "q";
-
-  public Add(String src, String dst) {
-    this.src = src;
-    this.dst = dst;
-  }
-
+  public String dataType;
+  
   public Add(String dataType, String src, String dst) {
     this.dataType = dataType;
     this.src = src;

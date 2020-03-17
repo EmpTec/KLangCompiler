@@ -3,16 +3,6 @@ package de.hsrm.compiler.Klang.asm.mnemonics;
 public class Mov extends TwoOperandMnemonic{
   public String dataType = "q";
 
-  public Mov(int immediate, String dst) {
-    this.src = "$" + immediate;
-    this.dst = dst;
-  }
-
-  public Mov(String src, String dst) {
-    this.src = src;
-    this.dst = dst;
-  }
-
   public Mov(String dataType, String src, String dst) {
     this.dataType = dataType;
     this.src = src;

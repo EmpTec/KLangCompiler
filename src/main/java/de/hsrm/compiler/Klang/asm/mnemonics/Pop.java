@@ -1,10 +1,7 @@
 package de.hsrm.compiler.Klang.asm.mnemonics;
 
 public class Pop extends OneOperandMnemonic {
-  public String dataType = "q";
-  public Pop(String operand) {
-    this.operand = operand;
-  }
+  public String dataType;
 
   public Pop(String dataType, String operand) {
     this.dataType = dataType;

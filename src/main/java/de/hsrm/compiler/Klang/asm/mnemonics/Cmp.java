@@ -1,9 +1,10 @@
 package de.hsrm.compiler.Klang.asm.mnemonics;
 
 public class Cmp extends TwoOperandMnemonic {
-
-  public Cmp(String src, String dst) {
-    this.dataType = "";
+  public String dataType;
+  
+  public Cmp(String dataType, String src, String dst) {
+    this.dataType = dataType;
     this.src = src;
     this.dst = dst;
   }

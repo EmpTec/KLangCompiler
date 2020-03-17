@@ -1,10 +1,7 @@
 package de.hsrm.compiler.Klang.asm.mnemonics;
 
 public class Push extends OneOperandMnemonic {
-  public Push(String operand){
-    this.dataType = "q";
-    this.operand = operand;
-  }
+  public String dataType;
 
   public Push(String dataType, int immediate){
     this.dataType = dataType;

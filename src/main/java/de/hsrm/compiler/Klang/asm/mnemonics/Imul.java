@@ -1,9 +1,10 @@
 package de.hsrm.compiler.Klang.asm.mnemonics;
 
 public class Imul extends TwoOperandMnemonic {
-  public String dataType = "q";
+  public String dataType;
 
-  public Imul(String src, String dst) {
+  public Imul(String dataType, String src, String dst) {
+    this.dataType = dataType;
     this.src = src;
     this.dst = dst;
   }

@@ -1,12 +1,7 @@
 package de.hsrm.compiler.Klang.asm.mnemonics;
 
 public class Sub extends TwoOperandMnemonic {
-  public String dataType = "q";
-
-  public Sub(String src, String dst) {
-    this.src = src;
-    this.dst = dst;
-  }
+  public String dataType;
 
   public Sub(String dataType, String src, String dst) {
     this.dataType = dataType;

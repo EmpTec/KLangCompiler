@@ -1,12 +1,7 @@
 package de.hsrm.compiler.Klang.asm.mnemonics;
 
 public class Div extends TwoOperandMnemonic {
-  public String dataType = "q";
-
-  public Div(String src, String dst) {
-    this.src = src;
-    this.dst = dst;
-  }
+  public String dataType;
 
   public Div(String dataType, String src, String dst) {
     this.dataType = dataType;

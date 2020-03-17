@@ -1,12 +1,7 @@
 package de.hsrm.compiler.Klang.asm.mnemonics;
 
 public class Ucomi extends TwoOperandMnemonic {
-  public String dataType = "q";
-
-  public Ucomi(String src, String dst) {
-    this.src = src;
-    this.dst = dst;
-  }
+  public String dataType;
 
   public Ucomi(String dataType, String src, String dst) {
     this.dataType = dataType;
