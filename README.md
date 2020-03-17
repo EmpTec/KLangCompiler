@@ -4,6 +4,11 @@ This is the project for Klang - the Kaiser language.
 # Authors
 This code was in equal parts developed by `Dennis Kaiser` and `Marvin Kaiser` at the RheinMain University of Applied Sciences for the Compilers course. 
 
+# Requirements
+- ![apache/maven](https://github.com/apache/maven)
+- A Java Runtime Environment
+
+
 # Usage
 example call to print help `java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang -h`
 example call: `java -cp <jar> <cp> -out <input> <output>`
