@@ -2,13 +2,16 @@
 .PHONY: cleanTests
 
 run: code.k target/klang-1.0-jar-with-dependencies.jar
-	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang -o code.s code.k
+	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang --no-main -o code.s code.k
 
 pretty: code.k target/klang-1.0-jar-with-dependencies.jar
 	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang --pretty -o pretty.k code.k
 
 eval: code.k target/klang-1.0-jar-with-dependencies.jar
 	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang --evaluate code.k
+
+generateHeader: code.k target/klang-1.0-jar-with-dependencies.jar
+	java -cp target/klang-1.0-jar-with-dependencies.jar de.hsrm.compiler.Klang.Klang -o code.h --generate-header code.k
 
 build: clean target/klang-1.0-jar-with-dependencies.jar
 
