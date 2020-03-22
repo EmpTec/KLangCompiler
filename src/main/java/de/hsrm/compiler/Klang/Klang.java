@@ -35,6 +35,7 @@ public class Klang {
   public static void main(String[] args) throws Exception {
     boolean evaluate = false;
     boolean prettyPrint = false;
+    boolean genHeader = false;
     String mainName = "main";
     String out = null;
 
@@ -49,6 +50,7 @@ public class Klang {
       System.out.println("--o <file>:\t File to write to");
       System.out.println("--evaluate:\t Evaluates the given source code");
       System.out.println("--pretty:\t Pretty print the given source code");
+      System.out.println(("--generate-header:\t Generate a matching C header file"));
       System.out
           .println("--no-main:\t Do not generate main function, will be generated as 'start'. Useful for testing");
       return;
@@ -61,6 +63,9 @@ public class Klang {
     }
     if (arguments.contains("--no-main")) {
       mainName = "start";
+    }
+    if (arguments.contains("--generate-header")) {
+      genHeader = true;
     }
     if (arguments.contains("-o")) {
       if (arguments.size() <= 1) {
@@ -125,6 +130,14 @@ public class Klang {
       EvalVisitor evalVisitor = new EvalVisitor(structs);
       Value result = root.welcome(evalVisitor);
       generateOutput(out, "Result was: " + result.asObject().toString());
+      return;
+    }
+
+    if (genHeader) {
+      // Generate C header file
+      GenCHeader gencheader = new GenCHeader();
+      root.welcome(gencheader);
+      generateOutput(out, gencheader.sb.toString());
       return;
     }
 
