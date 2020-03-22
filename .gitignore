@@ -13,6 +13,7 @@ src/main/antlr4/de/hsrm/compiler/Klang/.antlr
 
 # assembly files
 *.s
+src/test/test.h
 
 # build output
 out
