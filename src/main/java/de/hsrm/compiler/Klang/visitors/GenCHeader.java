@@ -4,12 +4,22 @@ import de.hsrm.compiler.Klang.nodes.*;
 import de.hsrm.compiler.Klang.nodes.expressions.*;
 import de.hsrm.compiler.Klang.nodes.loops.*;
 import de.hsrm.compiler.Klang.nodes.statements.*;
+import de.hsrm.compiler.Klang.types.Type;
 
 public class GenCHeader implements Visitor<Void> {
     public StringBuilder sb = new StringBuilder();
 
     @Override
     public Void visit(Program e) {
+        ContainsType containsBool = new ContainsType(Type.getBooleanType());
+        boolean doesContainBool = e.welcome(containsBool);
+
+        if (doesContainBool) {
+            sb.append("#include <stdbool.h>");
+            sb.append(System.lineSeparator());
+            sb.append(System.lineSeparator());
+        }
+
         for (var funDef : e.funcs) {
             funDef.welcome(this);
             sb.append(System.lineSeparator());
