@@ -35,11 +35,13 @@ testJava:
 
 clean:
 	rm -f ./src/test/test.s
+	rm -f ./src/test/test.h
 	rm -f ./src/test/test
 	rm -f code.s
 	rm -f target/klang-1.0-jar-with-dependencies.jar
 	rm -f target/klang-1.0.jar
 
 cleanTests:
+	rm -f ./src/test/test.s
 	rm -f ./src/test/test.s
 	rm -f ./src/test/test
