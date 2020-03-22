@@ -18,6 +18,11 @@ public class NullType extends Type {
     }
 
     @Override
+    public String getCName() {
+        return "NULL";
+    }
+
+    @Override
     public Type combine(Type that) {
         // You can not combine null with a primitive type
         if (that.isPrimitiveType()) {

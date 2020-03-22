@@ -14,6 +14,11 @@ public class StructType extends Type {
     }
 
     @Override
+    public String getCName() {
+        return "struct " + this.name + "*";
+    }
+
+    @Override
     public Type combine(Type that) {
         if (that.equals(this)) {
             return this;

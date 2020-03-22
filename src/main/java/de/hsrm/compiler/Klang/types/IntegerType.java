@@ -23,6 +23,11 @@ public class IntegerType extends NumericType {
   }
 
   @Override
+  public String getCName() {
+    return "long";
+  }
+
+  @Override
   public Type combine(Type that) {
     // Combining two equal types always works
     if (that.equals(this)) {

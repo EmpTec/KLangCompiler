@@ -23,6 +23,11 @@ public class FloatType extends NumericType {
   }
 
   @Override
+  public String getCName() {
+    return "double";
+  }
+
+  @Override
   public Type combine(Type that) {
     // Combining two equal types always works
     if (that.equals(this)) {
