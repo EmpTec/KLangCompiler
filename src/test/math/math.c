@@ -178,13 +178,13 @@ int runMathTests()
   math_test("mul", cMul, mul, -1, -1);
 
   printf("\nDivision Tests\n");
-  math_test("div", cDiv, div, 10, 2);
-  math_test("div", cDiv, div, 8, 4);
-  math_test("div", cDiv, div, 6, -2);
-  math_test("div", cDiv, div, -9, 3);
-  math_test("div", cDiv, div, 9, 2);
-  math_test("div", cDiv, div, 9, -2);
-  math_test("div", cDiv, div, -9, 2);
+  math_test("div", cDiv, kDiv, 10, 2);
+  math_test("div", cDiv, kDiv, 8, 4);
+  math_test("div", cDiv, kDiv, 6, -2);
+  math_test("div", cDiv, kDiv, -9, 3);
+  math_test("div", cDiv, kDiv, 9, 2);
+  math_test("div", cDiv, kDiv, 9, -2);
+  math_test("div", cDiv, kDiv, -9, 2);
 
   printf("\nModulo Tests \n");
   math_test("modulo", cModulo, modulo, 1, 1);

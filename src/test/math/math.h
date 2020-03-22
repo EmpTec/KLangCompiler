@@ -5,7 +5,7 @@
 long add(long x, long y);
 long sub(long x, long y); 
 long mul(long x, long y);
-long div(long x, long y);
+long kDiv(long x, long y);
 long modulo(long x, long y);
 long neg(long x);
 long id(long x);
