@@ -135,7 +135,7 @@ public class Klang {
 
     if (genHeader) {
       // Generate C header file
-      GenCHeader gencheader = new GenCHeader();
+      GenCHeader gencheader = new GenCHeader(out);
       root.welcome(gencheader);
       generateOutput(out, gencheader.sb.toString());
       return;
