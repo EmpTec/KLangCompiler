@@ -10,7 +10,7 @@ function mul(x: int, y: int): int {
   return (x * y);
 }
 
-function div(x: int, y: int): int {
+function kDiv(x: int, y: int): int {
   return (x / y);
 }
 

@@ -31,6 +31,7 @@ public abstract class Type {
   }
 
   public abstract String getName();
+  public abstract String getCName();
   public abstract Type combine(Type that);
   public abstract boolean isPrimitiveType();
   public abstract boolean isNumericType();

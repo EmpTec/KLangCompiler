@@ -23,6 +23,11 @@ public class BooleanType extends PrimitiveType {
   }
 
   @Override
+  public String getCName() {
+    return "bool";
+  }
+
+  @Override
   public Type combine(Type that) {
     // Combining two equal types always works
     if (that.equals(this)) {
