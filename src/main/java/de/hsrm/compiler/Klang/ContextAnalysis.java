@@ -40,9 +40,7 @@ public class ContextAnalysis extends KlangBaseVisitor<Node> {
       funcs[i] = (FunctionDefinition) this.visit(ctx.functionDef(i));
     }
 
-    Expression expression = (Expression) this.visit(ctx.expression());
-    Program result = new Program(funcs, this.structs, expression);
-    result.type = expression.type;
+    Program result = new Program(funcs, this.structs);
     result.line = ctx.start.getLine();
     result.col = ctx.start.getCharPositionInLine();
     return result;
