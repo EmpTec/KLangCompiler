@@ -599,5 +599,3 @@ function setStructFieldRecB(t: testStructRec, b: testStructRec): testStructRec {
   t.b = b;
   return t;
 }
-
-add(1, 1); 
