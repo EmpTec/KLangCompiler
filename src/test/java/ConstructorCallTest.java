@@ -10,7 +10,7 @@ public class ConstructorCallTest {
 
     @Test
     void structNotDefined() {
-        ParseTree tree = Helper.prepareParser("struct bar { a: int; } function foo(): bar { return create schwurbel(1); } foo();");
+        ParseTree tree = Helper.prepareParser("struct bar { a: int; } function foo(): bar { return create schwurbel(1); }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);
@@ -21,7 +21,7 @@ public class ConstructorCallTest {
 
     @Test
     void numConstructorParameterMissmatch() {
-        ParseTree tree = Helper.prepareParser("struct bar { a: int; } function foo(): bar { return create bar(1, false); } foo();");
+        ParseTree tree = Helper.prepareParser("struct bar { a: int; } function foo(): bar { return create bar(1, false); }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);
@@ -32,7 +32,7 @@ public class ConstructorCallTest {
 
     @Test
     void constructorParameterTypeMismatch() {
-        ParseTree tree = Helper.prepareParser("struct bar { a: int; } function foo(): bar { return create bar(false); } foo();");
+        ParseTree tree = Helper.prepareParser("struct bar { a: int; } function foo(): bar { return create bar(false); }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);

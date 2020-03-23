@@ -10,7 +10,7 @@ public class FieldAssignmentTest {
 
     @Test
     void variableNotDefined() {
-        ParseTree tree = Helper.prepareParser("struct test { a: int; } function foo(): int { str.a = 1; return 1; } foo();");
+        ParseTree tree = Helper.prepareParser("struct test { a: int; } function foo(): int { str.a = 1; return 1; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);
@@ -21,7 +21,7 @@ public class FieldAssignmentTest {
 
     @Test
     void fieldAssignmentOnNonStruct() {
-        ParseTree tree = Helper.prepareParser("struct test { a: int; } function foo(): int { let x: int = 0; x.a = 0; return 1; } foo();");
+        ParseTree tree = Helper.prepareParser("struct test { a: int; } function foo(): int { let x: int = 0; x.a = 0; return 1; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);

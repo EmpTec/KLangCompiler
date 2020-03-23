@@ -10,7 +10,7 @@ public class VariableAssignmentTest {
 
     @Test
     void variableNotDefined() {
-        ParseTree tree = Helper.prepareParser("function foo(): int { x = 1; return 1; } foo();");
+        ParseTree tree = Helper.prepareParser("function foo(): int { x = 1; return 1; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);

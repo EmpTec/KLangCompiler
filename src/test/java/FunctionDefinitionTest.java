@@ -10,7 +10,7 @@ public class FunctionDefinitionTest {
 
     @Test
     void typeNotDefined() {
-        ParseTree tree = Helper.prepareParser("function foo(): schwurbel { return 1; } foo();");
+        ParseTree tree = Helper.prepareParser("function foo(): schwurbel { return 1; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);
@@ -21,7 +21,7 @@ public class FunctionDefinitionTest {
 
     @Test
     void noReturnExpression() {
-        ParseTree tree = Helper.prepareParser("function foo(): int { let x: int; x = 0; } foo();");
+        ParseTree tree = Helper.prepareParser("function foo(): int { let x: int; x = 0; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);

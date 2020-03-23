@@ -10,7 +10,7 @@ import de.hsrm.compiler.Klang.ContextAnalysis;
 public class DestroyStatementTest {
     @Test
     void variableNotDefined() {
-        ParseTree tree = Helper.prepareParser("struct bar { a: int; } function foo(): int { destroy x; return 1; } foo();");
+        ParseTree tree = Helper.prepareParser("struct bar { a: int; } function foo(): int { destroy x; return 1; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);
