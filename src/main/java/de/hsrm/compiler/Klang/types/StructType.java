@@ -15,7 +15,7 @@ public class StructType extends Type {
 
     @Override
     public String getCName() {
-        return "struct " + this.name + "*";
+        return this.name + "*";
     }
 
     @Override
