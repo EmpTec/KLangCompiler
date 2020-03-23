@@ -222,7 +222,6 @@ class GetVars implements Visitor<Void> {
 
   @Override
   public Void visit(Program e) {
-    e.expression.welcome(this);
     for (var func : e.funcs) {
       func.welcome(this);
     }

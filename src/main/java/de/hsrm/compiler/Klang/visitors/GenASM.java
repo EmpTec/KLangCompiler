@@ -65,7 +65,6 @@ public class GenASM implements Visitor<Void> {
 
   private ASM asm;
   private FloatWriter fw = new FloatWriter();
-  private String mainName;
   Map<String, Integer> env = new HashMap<>();
   Map<String, StructDefinition> structs;
   Set<String> vars;
@@ -107,14 +106,9 @@ public class GenASM implements Visitor<Void> {
     }
   }
 
-  public GenASM(String mainName, Map<String, StructDefinition> structs) {
-    this.mainName = mainName;
+  public GenASM(Map<String, StructDefinition> structs) {
     this.structs = structs;
     this.asm = new ASM();
-  }
-
-  public GenASM(Map<String, StructDefinition> structs) {
-    this("main", structs);
   }
 
   public String toAsm() {
@@ -759,13 +753,6 @@ public class GenASM implements Visitor<Void> {
       func.welcome(this);
       asm.newline();
     }
-    asm.functionHead(mainName);
-    asm.push("q", "%rbp");
-    asm.mov("q", "%rsp", "%rbp");
-    e.expression.welcome(this);
-    asm.mov("q", "%rbp", "%rsp");
-    asm.pop("q", "%rbp");
-    asm.ret();
 
     asm.text(fw.getFloatSection());
     return null;
