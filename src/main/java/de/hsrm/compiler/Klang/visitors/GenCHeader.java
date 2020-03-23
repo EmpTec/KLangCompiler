@@ -7,28 +7,37 @@ import de.hsrm.compiler.Klang.nodes.statements.*;
 import de.hsrm.compiler.Klang.types.Type;
 
 public class GenCHeader implements Visitor<Void> {
+    private String fileName;
     public StringBuilder sb = new StringBuilder();
+
+    public GenCHeader(String fileName) {
+        this.fileName = fileName;
+    }
 
     @Override
     public Void visit(Program e) {
         ContainsType containsBool = new ContainsType(Type.getBooleanType());
         boolean doesContainBool = e.welcome(containsBool);
+        String headerName = this.fileName.replace(".", "_").replace("/", "_").toUpperCase();
+        sb.append("#ifndef " + headerName + "\n");
+        sb.append("#define " + headerName + "\n\n");
 
         if (doesContainBool) {
-            sb.append("#include <stdbool.h>");
-            sb.append(System.lineSeparator());
-            sb.append(System.lineSeparator());
+            sb.append("#include <stdbool.h>\n");
+        }
+
+        for (var structDef: e.structs.values()) {
+            structDef.welcome(this);
+            sb.append("\n\n");
         }
 
         for (var funDef : e.funcs) {
             funDef.welcome(this);
-            sb.append(System.lineSeparator());
+            sb.append("\n");
         }
-        
-        for (var structDef: e.structs.values()) {
-            structDef.welcome(this);
-            sb.append(System.lineSeparator());
-        }
+        sb.append("\n");
+
+        sb.append("#endif /*" + headerName + "*/\n\n");
 
         return null;
     }
@@ -60,19 +69,22 @@ public class GenCHeader implements Visitor<Void> {
 
     @Override
     public Void visit(StructDefinition e) {
-        sb.append("struct " + e.name + " {");
-        sb.append(System.lineSeparator());
+        sb.append("typedef struct " + e.name + "\n");
+        sb.append("{\n");
         for (var field: e.fields) {
             sb.append("\t");
             field.welcome(this);
-            sb.append(System.lineSeparator());
+            sb.append("\n");
         }
-        sb.append("};");
+        sb.append("} " + e.name +";");
         return null;
     }
 
     @Override
     public Void visit(StructField e) {
+        if (!e.type.isPrimitiveType()) {
+            sb.append("struct ");
+        }
         sb.append(e.type.getCName());
         sb.append(" " + e.name + ";");
         return null;
