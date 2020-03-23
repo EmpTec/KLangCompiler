@@ -15,10 +15,9 @@ example call: `java -cp <jar> <cp> -out <input> <output>`
 Arguments:
 - -out <file>   File to write to
 - -h               Print this help
-- --evaluate:      Evaluates the given source code
+- --evaluate:      Evaluates the given source code. Make sure to have a main function with no parameters defined
 - --pretty:        Pretty print the given source code
 - --no-compile:    Do not compile the source code
-- --no-main:       Do not generate main function, will be generated as 'start'. Useful for testing
 
 The makefile can be used to perform various functions more easily:
 - `make build` simply builds the compiler
