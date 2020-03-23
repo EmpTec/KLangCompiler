@@ -43,5 +43,5 @@ clean:
 
 cleanTests:
 	rm -f ./src/test/test.s
-	rm -f ./src/test/test.s
+	rm -f ./src/test/test.h
 	rm -f ./src/test/test
