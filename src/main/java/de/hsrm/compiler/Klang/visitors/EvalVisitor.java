@@ -457,13 +457,25 @@ public class EvalVisitor implements Visitor<Value> {
 
   @Override
   public Value visit(Program e) {
-    // Funktionsdefinitionen für die Auswertung
-    // von Funktionsaufrufen speichern
+    FunctionDefinition main = null;
     for (var funcDef : e.funcs) {
       this.funcs.put(funcDef.name, funcDef);
+      
+      // save the main function
+      if (funcDef.name.equals("main")) {
+        main = funcDef;
+        // make sure the function requires no parameters
+        if (funcDef.parameters.length > 0) {
+          throw new RuntimeException("can not evaluate sourcecode since main function has parameters defined");
+        }
+      }
     }
 
-    return e.expression.welcome(this);
+    if (main == null) {
+      throw new RuntimeException("can not evaluate sourcecode since no main function was defined");
+    }
+
+    return new FunctionCall(main.name, new Expression[0]).welcome(this);
   }
 
   @Override
