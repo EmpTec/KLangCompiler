@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include "math.h"
 #include <math.h>
+#include "math.h"
 #include "../print/print.h"
+#include "../test.h"
 
 long cAdd(long x, long y)
 {

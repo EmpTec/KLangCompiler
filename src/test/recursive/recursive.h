@@ -1,1 +1,1 @@
-long fac(long x);
+int runRecursiveTests();

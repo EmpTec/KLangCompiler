@@ -2,18 +2,19 @@
 #include <stdlib.h>
 #include "struct.h"
 #include "../print/print.h"
+#include "../test.h"
 
 // C equivalent implementations of the funcitons written in k
-struct testStruct* cGetTestStruct(long a, bool b, long c) {
-  struct testStruct* result = (struct testStruct*) malloc(sizeof(struct testStruct));
+testStruct* cGetTestStruct(long a, bool b, long c) {
+  testStruct* result = (testStruct*) malloc(sizeof(testStruct));
   result->a = a;
   result->b = b;
   result->c = c;
   return result;
 }
 
-struct testStructRec* cGetTestStructRec(long a, struct testStructRec* b) {
-  struct testStructRec* result = (struct testStructRec*) malloc(sizeof(struct testStructRec));
+testStructRec* cGetTestStructRec(long a, testStructRec* b) {
+  testStructRec* result = (testStructRec*) malloc(sizeof(testStructRec));
   result->a = a;
   result->b = b;
   return result;
@@ -77,7 +78,7 @@ int struct_testExpected_b(char *name, bool expected, bool result)
 
 int testStructCreation() {
   printf("\nStruct creation tests\n");
-  struct testStruct* result = getTestStruct(1, false, 23.3);
+  testStruct* result = getTestStruct(1, false, 23.3);
 
   struct_testExpected_l("init field a", 1, result->a);
   struct_testExpected_b("init field b", false, result->b);
@@ -86,8 +87,8 @@ int testStructCreation() {
   free(result);
 
   printf("\nRecursive struct creation tests\n");
-  struct testStructRec* innerStruct = getTestStructRec(20, NULL);
-  struct testStructRec* resultRec = getTestStructRec(10, innerStruct);
+  testStructRec* innerStruct = getTestStructRec(20, NULL);
+  testStructRec* resultRec = getTestStructRec(10, innerStruct);
 
   struct_testExpected_l("init rec field a", 10, resultRec->a);
   struct_testExpected_s("init rec field b", innerStruct, resultRec->b);
@@ -100,7 +101,7 @@ int testStructCreation() {
 
 int testStructGet() {
   printf("\nStruct getter tests\n");
-  struct testStruct* result = getTestStruct(1, false, 23.3);
+  testStruct* result = getTestStruct(1, false, 23.3);
 
   struct_testExpected_l("get field a", 1, getStructFieldA(result));
   struct_testExpected_b("get field b", false, getStructFieldB(result));
@@ -109,8 +110,8 @@ int testStructGet() {
   free(result);
 
   printf("\nStruct getter tests\n");
-  struct testStructRec* innerStruct = getTestStructRec(1, NULL);
-  struct testStructRec* resultRec = getTestStructRec(20, innerStruct);
+  testStructRec* innerStruct = getTestStructRec(1, NULL);
+  testStructRec* resultRec = getTestStructRec(20, innerStruct);
 
   struct_testExpected_l("get rec field a", 20, getStructFieldRecA(resultRec));
   struct_testExpected_s("get rec field b", innerStruct, getStructFieldRecB(resultRec));

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "comparison.h"
 #include "../print/print.h"
+#include "../test.h"
 
 int comparisonTest(char* name, long x, long y, long expected, long result) {
   if (expected == result) {

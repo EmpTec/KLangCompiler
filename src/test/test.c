@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "test.h"
+#include "comparison/comparison.h"
+#include "functionCall/functionCall.h"
+#include "loop/loop.h"
+#include "math/math.h"
+#include "recursive/recursive.h"
+#include "struct/struct.h"
 
 int successes, failures = 0;
 

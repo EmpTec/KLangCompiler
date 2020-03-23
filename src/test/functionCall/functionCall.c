@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "functionCall.h"
 #include "../print/print.h"
+#include "../test.h"
 
 int argumentTest(char* name, long expected, long result) {
   if (expected == result) {

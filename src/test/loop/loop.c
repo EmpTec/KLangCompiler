@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "loop.h"
 #include "../print/print.h"
+#include "../test.h"
 
 int loopTest(char* name, long x, long expected, long result) {
   if (expected == result) {
