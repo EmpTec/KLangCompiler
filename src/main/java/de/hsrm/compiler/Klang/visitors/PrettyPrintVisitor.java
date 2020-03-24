@@ -68,8 +68,6 @@ public class PrettyPrintVisitor implements Visitor<Void> {
       ex.nl();
     }
 
-    e.expression.welcome(this);
-    ex.write(";");
     return null;
   }
 

@@ -10,7 +10,7 @@ public class OrTest {
 
     @Test
     void onlyForBool() {
-        ParseTree tree = Helper.prepareParser("function foo(): bool { return 1 || 2; } foo();");
+        ParseTree tree = Helper.prepareParser("function foo(): bool { return 1 || 2; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);

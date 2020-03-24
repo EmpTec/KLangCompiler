@@ -5,7 +5,7 @@ parse
   ;
 
 program
-  : (functionDef | structDef)* expression SCOL
+  : (functionDef | structDef)*
   ;
 
 structDef

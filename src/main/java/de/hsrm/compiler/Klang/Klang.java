@@ -36,7 +36,6 @@ public class Klang {
     boolean evaluate = false;
     boolean prettyPrint = false;
     boolean genHeader = false;
-    String mainName = "main";
     String out = null;
 
     List<String> arguments = Arrays.asList(args);
@@ -51,8 +50,6 @@ public class Klang {
       System.out.println("--evaluate:\t Evaluates the given source code");
       System.out.println("--pretty:\t Pretty print the given source code");
       System.out.println(("--generate-header:\t Generate a matching C header file"));
-      System.out
-          .println("--no-main:\t Do not generate main function, will be generated as 'start'. Useful for testing");
       return;
     }
     if (arguments.contains("--evaluate")) {
@@ -60,9 +57,6 @@ public class Klang {
     }
     if (arguments.contains("--pretty")) {
       prettyPrint = true;
-    }
-    if (arguments.contains("--no-main")) {
-      mainName = "start";
     }
     if (arguments.contains("--generate-header")) {
       genHeader = true;
@@ -142,7 +136,7 @@ public class Klang {
     }
 
     // Generate assembler code
-    GenASM genasm = new GenASM(mainName, structs);
+    GenASM genasm = new GenASM(structs);
     root.welcome(genasm);
     generateOutput(out, genasm.toAsm());
   }

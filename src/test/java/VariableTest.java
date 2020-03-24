@@ -10,7 +10,7 @@ public class VariableTest {
 
     @Test
     void variableNotDefined() {
-        ParseTree tree = Helper.prepareParser("function foo(): int { return x; } foo();");
+        ParseTree tree = Helper.prepareParser("function foo(): int { return x; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);
@@ -21,7 +21,7 @@ public class VariableTest {
 
     @Test
     void variableNotInitialized() {
-        ParseTree tree = Helper.prepareParser("function foo(): int { let x: int; return x; } foo();");
+        ParseTree tree = Helper.prepareParser("function foo(): int { let x: int; return x; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);

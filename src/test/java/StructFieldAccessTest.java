@@ -9,7 +9,7 @@ import de.hsrm.compiler.Klang.ContextAnalysis;
 public class StructFieldAccessTest {
     @Test
     void variableNotDefined() {
-        ParseTree tree = Helper.prepareParser("struct test { a: int; } function foo(): int { return str.a; } foo();");
+        ParseTree tree = Helper.prepareParser("struct test { a: int; } function foo(): int { return str.a; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);
@@ -20,7 +20,7 @@ public class StructFieldAccessTest {
 
     @Test
     void fieldAssignmentOnNonStruct() {
-        ParseTree tree = Helper.prepareParser("struct test { a: int; } function foo(): int { let x: int = 0; return x.a; } foo();");
+        ParseTree tree = Helper.prepareParser("struct test { a: int; } function foo(): int { let x: int = 0; return x.a; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);

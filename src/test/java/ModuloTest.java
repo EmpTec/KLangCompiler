@@ -9,7 +9,7 @@ import de.hsrm.compiler.Klang.ContextAnalysis;
 public class ModuloTest {
     @Test
     void onlyForInt() {
-        ParseTree tree = Helper.prepareParser("function foo(): float { return 1.0 % 2.3; } foo();");
+        ParseTree tree = Helper.prepareParser("function foo(): float { return 1.0 % 2.3; }");
         var funcs = Helper.getFuncs(tree);
         var structs = Helper.getStructs(tree);
         ContextAnalysis ctxAnal = new ContextAnalysis(funcs, structs);
