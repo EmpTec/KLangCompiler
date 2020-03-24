@@ -54,7 +54,30 @@ public class EvalVisitor implements Visitor<Value> {
     Value lhs = e.lhs.welcome(this);
     Value rhs = e.rhs.welcome(this);
     Type resultType = Type.getBooleanType();
-    Type combineType = lhs.type.combine(rhs.type);
+
+    /**
+     * lhs and/or rhs can be null when comparing to naught, e.g.:
+     * function isEmpty(this:List): bool {
+     *   return this == naught;
+     * }
+     */
+    Type combineType = null;
+    if (lhs == null && rhs == null) {
+      // i.e. naught == naught;
+      return new Value(true);
+    } else if (lhs == null) {
+      if (rhs.type.isPrimitiveType()) {
+        throw new RuntimeException("Cannot compare naught to " + rhs.type.getName());
+      }
+      return new Value(false);
+    } else if (rhs == null) {
+      if (lhs.type.isPrimitiveType()) {
+        throw new RuntimeException("Cannot compare " + lhs.type.getName() + " to naught");
+      }
+      return new Value(false);
+    } else {
+      combineType = lhs.type.combine(rhs.type);
+    }
 
     switch(combineType.getName()) {
       case "bool": {
