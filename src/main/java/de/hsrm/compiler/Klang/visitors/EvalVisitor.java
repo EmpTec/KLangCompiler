@@ -518,7 +518,9 @@ public class EvalVisitor implements Visitor<Value> {
       struct.put(structDef.fields[i].name, arg);
     }
 
-    return new Value(struct);
+    var result = new Value(struct);
+    result.type = structDef.type;
+    return result;
   }
 
   @Override
